@@ -91,7 +91,7 @@ export default function MetricsPage({ params }: { params: Promise<{ id: string }
   const isValid = metrics.length >= 3 && metrics.every(m => m.name.trim())
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50">
       <div className="container mx-auto px-4 py-8">
 
 
@@ -99,22 +99,22 @@ export default function MetricsPage({ params }: { params: Promise<{ id: string }
           <div className="mb-8">
             <div className="flex items-center gap-4 mb-4">
               <div className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-semibold">1</div>
-                <span className="font-semibold">Metrics</span>
+                <div className="h-8 w-8 rounded-full bg-primary-600 text-white flex items-center justify-center font-semibold">1</div>
+                <span className="font-semibold text-primary-900">Metrics</span>
               </div>
-              <div className="h-px flex-1 bg-gray-300" />
-              <div className="flex items-center gap-2 text-gray-400">
-                <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center font-semibold">2</div>
+              <div className="h-px flex-1 bg-muted-300" />
+              <div className="flex items-center gap-2 text-muted-600">
+                <div className="h-8 w-8 rounded-full bg-muted-300 text-muted-700 flex items-center justify-center font-semibold">2</div>
                 <span>Archetypes</span>
               </div>
-              <div className="h-px flex-1 bg-gray-300" />
-              <div className="flex items-center gap-2 text-gray-400">
-                <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center font-semibold">3</div>
+              <div className="h-px flex-1 bg-muted-300" />
+              <div className="flex items-center gap-2 text-muted-600">
+                <div className="h-8 w-8 rounded-full bg-muted-300 text-muted-700 flex items-center justify-center font-semibold">3</div>
                 <span>Questions</span>
               </div>
             </div>
-            <h1 className="text-4xl font-bold mb-2">Define Your Metrics</h1>
-            <p className="text-gray-600">Create 3-5 personality dimensions to measure</p>
+            <h1 className="text-4xl font-bold mb-2 text-primary-900">Define Your Metrics</h1>
+            <p className="text-muted-700">Create 3-5 personality dimensions to measure</p>
           </div>
 
           <Card className="mb-6">
@@ -128,7 +128,7 @@ export default function MetricsPage({ params }: { params: Promise<{ id: string }
               {metrics.map((metric, index) => (
                 <div key={metric.id} className="border rounded-lg p-4 space-y-4">
                   <div className="flex items-start justify-between">
-                    <h3 className="font-semibold">Metric {index + 1}</h3>
+                    <h3 className="font-semibold text-primary-900">Metric {index + 1}</h3>
                     <Button
                       variant="ghost"
                       size="sm"

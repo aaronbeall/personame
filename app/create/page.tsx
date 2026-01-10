@@ -48,14 +48,14 @@ export default function CreatePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50">
       <div className="container mx-auto px-4 py-8">
 
 
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold mb-4">Create Your Personame</h1>
-            <p className="text-gray-600">Start by giving your personality quiz a name and description</p>
+            <h1 className="text-4xl font-bold mb-4 text-primary-900">Create Your Personame</h1>
+            <p className="text-muted-700">Start by giving your personality quiz a name and description</p>
           </div>
 
           <Card>
@@ -96,8 +96,8 @@ export default function CreatePage() {
               <Button
                 onClick={handleCreate}
                 disabled={!title.trim() || isCreating}
-                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                 size="lg"
+                className="w-full"
               >
                 {isCreating ? 'Creating...' : 'Continue to Metrics'}
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -105,9 +105,9 @@ export default function CreatePage() {
             </CardContent>
           </Card>
 
-          <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
-            <h3 className="font-semibold mb-2 text-blue-900">💡 What&apos;s next?</h3>
-            <p className="text-sm text-blue-800">
+          <div className="mt-8 bg-primary-50 border border-primary-200 rounded-lg p-6">
+            <h3 className="font-semibold mb-2 text-primary-900">💡 What&apos;s next?</h3>
+            <p className="text-sm text-primary-800">
               After naming your quiz, you&apos;ll define the personality metrics (like &quot;Extraversion&quot; or &quot;Creativity&quot;),
               create archetypes (personality types), and build questions that measure these traits.
             </p>

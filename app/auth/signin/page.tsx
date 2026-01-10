@@ -25,11 +25,11 @@ export default function SignInPage() {
   }, [])
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-primary-50 via-white to-secondary-50">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="h-16 w-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center">
+            <div className="h-16 w-16 bg-linear-to-r from-primary-600 to-secondary-600 rounded-2xl flex items-center justify-center">
               <Sparkles className="h-8 w-8 text-white" />
             </div>
           </div>

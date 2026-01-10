@@ -8,12 +8,12 @@ import Link from 'next/link'
 
 export default function DemoPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50">
       <div className="container mx-auto px-4 py-8">
         <nav className="flex justify-between items-center mb-8">
           <Link href="/" className="flex items-center gap-2">
-            <Sparkles className="h-8 w-8 text-purple-600" />
-            <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <Sparkles className="h-8 w-8 text-primary-600" />
+            <span className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
               Personame
             </span>
           </Link>
@@ -22,22 +22,22 @@ export default function DemoPage() {
 
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">
+            <h1 className="text-5xl font-bold mb-4 text-primary-900">
               Feature Preview
             </h1>
-            <p className="text-xl text-gray-600">
+            <p className="text-xl text-muted-700">
               Explore what makes Personame special
             </p>
           </div>
 
           {/* Creation Flow Preview */}
           <div className="mb-16">
-            <h2 className="text-3xl font-bold mb-6">Quiz Creation Flow</h2>
+            <h2 className="text-3xl font-bold mb-6 text-primary-900">Quiz Creation Flow</h2>
             <div className="grid md:grid-cols-3 gap-6">
-              <Card className="border-2 border-purple-200">
+              <Card className="border-2 border-primary-200">
                 <CardHeader>
-                  <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center mb-2">
-                    <span className="text-2xl font-bold text-purple-600">1</span>
+                  <div className="h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center mb-2">
+                    <span className="text-2xl font-bold text-primary-600">1</span>
                   </div>
                   <CardTitle>Define Metrics</CardTitle>
                   <CardDescription>
@@ -62,10 +62,10 @@ export default function DemoPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-2 border-pink-200">
+              <Card className="border-2 border-secondary-200">
                 <CardHeader>
-                  <div className="h-12 w-12 rounded-full bg-pink-100 flex items-center justify-center mb-2">
-                    <span className="text-2xl font-bold text-pink-600">2</span>
+                  <div className="h-12 w-12 rounded-full bg-secondary-100 flex items-center justify-center mb-2">
+                    <span className="text-2xl font-bold text-secondary-600">2</span>
                   </div>
                   <CardTitle>Create Archetypes</CardTitle>
                   <CardDescription>
@@ -79,14 +79,14 @@ export default function DemoPage() {
                         <span className="text-2xl">🦅</span>
                         <span className="font-semibold">The Leader</span>
                       </div>
-                      <p className="text-xs text-gray-600 mt-1">High extraversion, high conscientiousness</p>
+                      <p className="text-xs text-muted-700 mt-1">High extraversion, high conscientiousness</p>
                     </div>
                     <div className="p-3 border-l-4 border-green-400 bg-green-50 rounded">
                       <div className="flex items-center gap-2">
                         <span className="text-2xl">🦉</span>
                         <span className="font-semibold">The Thinker</span>
                       </div>
-                      <p className="text-xs text-gray-600 mt-1">High openness, low extraversion</p>
+                      <p className="text-xs text-muted-700 mt-1">High openness, low extraversion</p>
                     </div>
                   </div>
                 </CardContent>
@@ -109,11 +109,11 @@ export default function DemoPage() {
                       <div className="space-y-1 text-xs">
                         <div className="flex justify-between">
                           <span>• With many friends</span>
-                          <span className="text-purple-600">+Extraversion</span>
+                          <span className="text-primary-600">+Extraversion</span>
                         </div>
                         <div className="flex justify-between">
                           <span>• Reading alone</span>
-                          <span className="text-purple-600">-Extraversion</span>
+                          <span className="text-primary-600">-Extraversion</span>
                         </div>
                       </div>
                     </div>
@@ -129,7 +129,7 @@ export default function DemoPage() {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               <Card>
                 <CardHeader>
-                  <BarChart3 className="h-8 w-8 text-purple-600 mb-2" />
+                  <BarChart3 className="h-8 w-8 text-primary-600 mb-2" />
                   <CardTitle>Analytics Dashboard</CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -141,11 +141,11 @@ export default function DemoPage() {
 
               <Card>
                 <CardHeader>
-                  <TrendingUp className="h-8 w-8 text-pink-600 mb-2" />
+                  <TrendingUp className="h-8 w-8 text-accent-600 mb-2" />
                   <CardTitle>Coverage Analysis</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-muted-700">
                     Visualize how well your questions map to your archetypes
                   </p>
                 </CardContent>
@@ -153,11 +153,11 @@ export default function DemoPage() {
 
               <Card>
                 <CardHeader>
-                  <Users className="h-8 w-8 text-blue-600 mb-2" />
+                  <Users className="h-8 w-8 text-primary-600 mb-2" />
                   <CardTitle>Comparative Results</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-muted-700">
                     Show participants how they compare to others who took the quiz
                   </p>
                 </CardContent>
@@ -165,11 +165,11 @@ export default function DemoPage() {
 
               <Card>
                 <CardHeader>
-                  <Share2 className="h-8 w-8 text-green-600 mb-2" />
+                  <Share2 className="h-8 w-8 text-secondary-600 mb-2" />
                   <CardTitle>Social Sharing</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-muted-700">
                     Beautiful share cards for social media with custom results
                   </p>
                 </CardContent>
@@ -177,11 +177,11 @@ export default function DemoPage() {
 
               <Card>
                 <CardHeader>
-                  <Award className="h-8 w-8 text-yellow-600 mb-2" />
+                  <Award className="h-8 w-8 text-accent-600 mb-2" />
                   <CardTitle>Achievements</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-muted-700">
                     Reward users for completing quizzes and discovering new archetypes
                   </p>
                 </CardContent>
@@ -189,11 +189,11 @@ export default function DemoPage() {
 
               <Card>
                 <CardHeader>
-                  <Sparkles className="h-8 w-8 text-purple-600 mb-2" />
+                  <Sparkles className="h-8 w-8 text-secondary-600 mb-2" />
                   <CardTitle>Beautiful Results</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-muted-700">
                     Stunning visualizations with radar charts and metric breakdowns
                   </p>
                 </CardContent>
@@ -215,50 +215,50 @@ export default function DemoPage() {
               <CardContent className="space-y-6 pt-6">
                 <div>
                   <div className="flex justify-between mb-2">
-                    <span className="font-medium">Extraversion</span>
-                    <span className="text-purple-600 font-bold">85/100</span>
+                    <span className="font-medium text-primary-900">Extraversion</span>
+                    <span className="text-primary-600 font-bold">85/100</span>
                   </div>
-                  <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
-                    <div className="h-full bg-gradient-to-r from-purple-600 to-pink-600" style={{ width: '85%' }} />
+                  <div className="h-3 bg-muted-200 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-primary-600 to-secondary-600" style={{ width: '85%' }} />
                   </div>
-                  <p className="text-xs text-gray-600 mt-1">You're more extraverted than 89% of people</p>
+                  <p className="text-xs text-muted-700 mt-1">You're more extraverted than 89% of people</p>
                 </div>
 
                 <div>
                   <div className="flex justify-between mb-2">
-                    <span className="font-medium">Conscientiousness</span>
-                    <span className="text-purple-600 font-bold">78/100</span>
+                    <span className="font-medium text-primary-900">Conscientiousness</span>
+                    <span className="text-primary-600 font-bold">78/100</span>
                   </div>
-                  <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
-                    <div className="h-full bg-gradient-to-r from-purple-600 to-pink-600" style={{ width: '78%' }} />
+                  <div className="h-3 bg-muted-200 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-primary-600 to-secondary-600" style={{ width: '78%' }} />
                   </div>
-                  <p className="text-xs text-gray-600 mt-1">You're more conscientious than 72% of people</p>
+                  <p className="text-xs text-muted-700 mt-1">You're more conscientious than 72% of people</p>
                 </div>
 
                 <div>
                   <div className="flex justify-between mb-2">
-                    <span className="font-medium">Openness</span>
-                    <span className="text-purple-600 font-bold">62/100</span>
+                    <span className="font-medium text-primary-900">Openness</span>
+                    <span className="text-primary-600 font-bold">62/100</span>
                   </div>
-                  <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
-                    <div className="h-full bg-gradient-to-r from-purple-600 to-pink-600" style={{ width: '62%' }} />
+                  <div className="h-3 bg-muted-200 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-primary-600 to-secondary-600" style={{ width: '62%' }} />
                   </div>
-                  <p className="text-xs text-gray-600 mt-1">You're more open than 58% of people</p>
+                  <p className="text-xs text-muted-700 mt-1">You're more open than 58% of people</p>
                 </div>
 
                 <div className="pt-4 border-t">
-                  <div className="flex items-center justify-between text-sm text-gray-600 mb-3">
+                  <div className="flex items-center justify-between text-sm text-muted-700 mb-3">
                     <span>🦅 Leader (You!): 23%</span>
                     <span>🦉 Thinker: 31%</span>
                   </div>
-                  <div className="flex items-center justify-between text-sm text-gray-600">
+                  <div className="flex items-center justify-between text-sm text-muted-700">
                     <span>🌟 Creator: 28%</span>
                     <span>🛡️ Guardian: 18%</span>
                   </div>
                 </div>
 
                 <div className="flex gap-3">
-                  <Button className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600">
+                  <Button className="flex-1">
                     <Share2 className="h-4 w-4 mr-2" />
                     Share Results
                   </Button>
@@ -271,7 +271,7 @@ export default function DemoPage() {
           </div>
 
           {/* CTA */}
-          <div className="text-center bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl p-12 text-white">
+          <div className="text-center bg-gradient-to-r from-primary-600 to-secondary-600 rounded-2xl p-12 text-white">
             <h2 className="text-4xl font-bold mb-4">Ready to Create?</h2>
             <p className="text-xl mb-8 opacity-90">
               All these features are waiting for you
