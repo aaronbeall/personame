@@ -10,31 +10,6 @@ Get Personame running on your machine in 5 minutes.
 
 ## Option 1: Automated Setup
 
-**First, make sure PostgreSQL is running (or use Docker):**
-
-**macOS (Homebrew):**
-```bash
-brew services start postgresql
-```
-
-**Linux (systemctl):**
-```bash
-sudo systemctl start postgresql
-```
-
-**Docker:**
-```bash
-docker run -d \
-  --name personame-db \
-  -e POSTGRES_USER=personame \
-  -e POSTGRES_PASSWORD=personame \
-  -e POSTGRES_DB=personame \
-  -p 5432:5432 \
-  postgres:15
-```
-
-**Then run the setup script:**
-
 ```bash
 git clone https://github.com/aaronbeall/personame.git
 cd personame
@@ -49,14 +24,7 @@ This script will:
 5. Run database migrations
 6. Optionally seed sample data
 
-You can also configure `.env` manually (required):
-
-- `DATABASE_URL` – Use the connection string from your choice in "Initialize Database" (Option A: Local PostgreSQL or Option B: Docker)
-- `NEXTAUTH_SECRET` – Generate with `openssl rand -base64 32`
-- `NEXTAUTH_URL` – `http://localhost:3000`
-- Optional OAuth: `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET`, `GITHUB_ID`/`GITHUB_SECRET`
-
-If the script reports a database connection error, update `.env` with the correct `DATABASE_URL` and rerun `./setup.sh`.
+If the script reports a database connection error, update `.env` with the correct `DATABASE_URL` (see "Initialize Database" configuration below) and rerun `./setup.sh`.
 
 Then start the dev server:
 ```bash
@@ -182,32 +150,6 @@ npm run dev
 
 Visit [http://localhost:3000](http://localhost:3000) 🎉
 
-## Alternative: Docker Setup
-
-Don't have PostgreSQL installed? Use Docker instead:
-
-```bash
-docker run -d \
-  --name personame-db \
-  -e POSTGRES_USER=personame \
-  -e POSTGRES_PASSWORD=personame \
-  -e POSTGRES_DB=personame \
-  -p 5432:5432 \
-  postgres:15
-```
-
-Then use this `DATABASE_URL` in `.env`:
-```
-postgresql://personame:personame@localhost:5432/personame
-```
-
-## What's Next?
-
-- ✅ You're running! Create your first quiz at [/create](http://localhost:3000/create)
-- 📖 See [NEXT_STEPS.md](NEXT_STEPS.md) for the development roadmap
-- 🔧 See [DEVELOPMENT.md](DEVELOPMENT.md) for local development details
-- 📚 See [PROJECT_SUMMARY.md](PROJECT_SUMMARY.md) for technical overview
-
 ## Database Management
 
 View and edit data with Prisma Studio:
@@ -217,7 +159,14 @@ npx prisma studio
 
 Opens at [http://localhost:5555](http://localhost:5555) - great for debugging!
 
-## Setting Up OAuth (Optional)
+## What's Next?
+
+- ✅ You're running! Create your first quiz at [/create](http://localhost:3000/create)
+- 📖 See [NEXT_STEPS.md](NEXT_STEPS.md) for the development roadmap
+- 🔧 See [DEVELOPMENT.md](DEVELOPMENT.md) for local development details
+- 📚 See [PROJECT_SUMMARY.md](PROJECT_SUMMARY.md) for technical overview
+
+## Setting Up OAuth
 
 ### Google OAuth
 
