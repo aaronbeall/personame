@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, use } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -17,14 +18,16 @@ interface Metric {
   order: number
 }
 
-export default function MetricsPage({ params }: { params: { id: string } }) {
+export default function MetricsPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
+  const { status } = useSession()
+  const { id } = use(params)
   const [metrics, setMetrics] = useState<Metric[]>([])
   const [isSaving, setIsSaving] = useState(false)
 
   const fetchMetrics = async () => {
     try {
-      const res = await fetch(`/api/personames/${params.id}/metrics`)
+      const res = await fetch(`/api/personames/${id}/metrics`)
       if (res.ok) {
         const data = await res.json()
         setMetrics(data)
@@ -35,9 +38,13 @@ export default function MetricsPage({ params }: { params: { id: string } }) {
   }
 
   useEffect(() => {
-    fetchMetrics()
+    if (status === 'authenticated') {
+      fetchMetrics()
+    } else if (status === 'unauthenticated') {
+      router.push('/auth/signin')
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params.id])
+  }, [id, status])
 
   const addMetric = () => {
     const newMetric: Metric = {
@@ -62,14 +69,14 @@ export default function MetricsPage({ params }: { params: { id: string } }) {
   const saveMetrics = async () => {
     setIsSaving(true)
     try {
-      const res = await fetch(`/api/personames/${params.id}/metrics`, {
+      const res = await fetch(`/api/personames/${id}/metrics`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ metrics }),
       })
 
       if (res.ok) {
-        router.push(`/create/${params.id}/archetypes`)
+        router.push(`/create/${id}/archetypes`)
       } else {
         alert('Failed to save metrics')
       }
@@ -86,14 +93,7 @@ export default function MetricsPage({ params }: { params: { id: string } }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
       <div className="container mx-auto px-4 py-8">
-        <nav className="flex justify-between items-center mb-8">
-          <Link href="/" className="flex items-center gap-2">
-            <Sparkles className="h-8 w-8 text-purple-600" />
-            <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Personame
-            </span>
-          </Link>
-        </nav>
+
 
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">

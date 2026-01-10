@@ -19,11 +19,12 @@ const metricsSchema = z.object({
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const metrics = await prisma.metric.findMany({
-      where: { personameId: params.id },
+      where: { personameId: id },
       orderBy: { order: 'asc' },
     })
 
@@ -36,9 +37,10 @@ export async function GET(
 
 export async function POST(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const session = await getServerSession(authOptions)
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -49,7 +51,7 @@ export async function POST(
 
     // Delete existing metrics and create new ones
     await prisma.metric.deleteMany({
-      where: { personameId: params.id },
+      where: { personameId: id },
     })
 
     await prisma.metric.createMany({
@@ -59,12 +61,12 @@ export async function POST(
         minLabel: m.minLabel || null,
         maxLabel: m.maxLabel || null,
         order: m.order,
-        personameId: params.id,
+        personameId: id,
       })),
     })
 
     const newMetrics = await prisma.metric.findMany({
-      where: { personameId: params.id },
+      where: { personameId: id },
       orderBy: { order: 'asc' },
     })
 

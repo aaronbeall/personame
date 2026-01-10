@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -10,12 +11,18 @@ import Link from 'next/link'
 
 export default function CreatePage() {
   const router = useRouter()
+  const { status } = useSession()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [isCreating, setIsCreating] = useState(false)
 
   const handleCreate = async () => {
     if (!title.trim()) return
+    // Require authentication before creating a personame
+    if (status !== 'authenticated') {
+      router.push('/auth/signin')
+      return
+    }
 
     setIsCreating(true)
     try {
@@ -29,7 +36,8 @@ export default function CreatePage() {
         const personame = await res.json()
         router.push(`/create/${personame.id}/metrics`)
       } else {
-        alert('Failed to create personame. Please try again.')
+        const data = await res.json().catch(() => null)
+        alert(data?.error ?? 'Failed to create personame. Please try again.')
       }
     } catch (error) {
       console.error('Error creating personame:', error)
@@ -42,14 +50,7 @@ export default function CreatePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
       <div className="container mx-auto px-4 py-8">
-        <nav className="flex justify-between items-center mb-8">
-          <Link href="/" className="flex items-center gap-2">
-            <Sparkles className="h-8 w-8 text-purple-600" />
-            <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Personame
-            </span>
-          </Link>
-        </nav>
+
 
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-8">
