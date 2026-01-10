@@ -163,7 +163,7 @@ export default async function Home() {
       {/* Footer */}
       <footer className="border-t bg-white/50 backdrop-blur-sm py-8 mt-20">
         <div className="container mx-auto px-4 text-center text-muted-600">
-          <p>&copy; 2026 Personame. Built with Next.js and ❤️</p>
+          <p>&copy; 2026 Personame. Built with ❤️ and 🍌 by <a href="https://metamodernmonkey.com" target="_blank" rel="noopener noreferrer">MetaModernMonkey</a></p>
         </div>
       </footer>
     </div>
