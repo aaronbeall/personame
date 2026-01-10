@@ -285,7 +285,3 @@ After basic features work:
 - Look at existing components for patterns
 - NextAuth.js docs for auth questions
 - Recharts docs for visualizations
-
----
-
-Ready to start building! 🚀

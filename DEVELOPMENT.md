@@ -278,24 +278,6 @@ npx prisma migrate reset
 
 Use only in development.
 
-## Git Workflow
-
-### Creating a Feature Branch
-
-```bash
-git checkout -b feature/my-feature
-git commit -am "Add my feature"
-git push origin feature/my-feature
-```
-
-Then create a Pull Request.
-
-### Before Committing
-
-1. Run linter: `npm run lint`
-2. Type check: `npx tsc --noEmit`
-3. Test manually in browser
-
 ## Performance Tips
 
 ### Development Server Speed
@@ -324,23 +306,6 @@ Then create a Pull Request.
 - Memoize expensive computations: `useMemo`, `useCallback`
 
 ## Environment Variables
-
-Required for development:
-
-```env
-DATABASE_URL="postgresql://..."
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="<32-char-random-string>"
-```
-
-Optional (for OAuth testing):
-
-```env
-GOOGLE_CLIENT_ID="..."
-GOOGLE_CLIENT_SECRET="..."
-GITHUB_ID="..."
-GITHUB_SECRET="..."
-```
 
 See `.env.example` for all variables.
 

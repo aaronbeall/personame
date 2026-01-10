@@ -132,234 +132,49 @@ QuizResult
 
 ### Full Schema
 
-**Personame Model:**
-```prisma
-model Personame {
-  id          String   @id @default(cuid())
-  title       String
-  description String?
-  slug        String   @unique
-  status      PersonameStatus @default(DRAFT)
-  visibility  PersonameVisibility @default(PRIVATE)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  userId      String
-  user        User     @relation(...)
-  metrics     Metric[]
-  archetypes  Archetype[]
-  pages       QuestionPage[]
-  results     QuizResult[]
-}
-
-enum PersonameStatus {
-  DRAFT
-  PUBLISHED
-  ARCHIVED
-}
-
-enum PersonameVisibility {
-  PUBLIC
-  PRIVATE
-  UNLISTED
-}
-```
-
-**Metric Model:**
-```prisma
-model Metric {
-  id           String   @id @default(cuid())
-  name         String
-  description  String?
-  minLabel     String
-  maxLabel     String
-  order        Int
-  personameId  String
-  personame    Personame @relation(...)
-  archetypeMetrics ArchetypeMetric[]
-  answerWeights    AnswerWeight[]
-  metricScores     MetricScore[]
-}
-```
-
-**Archetype Model:**
-```prisma
-model Archetype {
-  id          String   @id @default(cuid())
-  name        String
-  description String
-  emoji       String?
-  color       String?
-  imageUrl    String?
-  personameId String
-  personame   Personame @relation(...)
-  metrics     ArchetypeMetric[]
-  results     QuizResult[]
-}
-
-model ArchetypeMetric {
-  archetypeId String
-  metricId    String
-  targetValue Float   // 0-100
-  relevance   Float   // 0-1
-  archetype   Archetype @relation(...)
-  metric      Metric @relation(...)
-  @@id([archetypeId, metricId])
-}
-```
-
-**Question Models:**
-```prisma
-model QuestionPage {
-  id          String   @id @default(cuid())
-  order       Int
-  title       String?
-  personameId String
-  personame   Personame @relation(...)
-  questions   Question[]
-}
-
-model Question {
-  id          String   @id @default(cuid())
-  text        String
-  type        QuestionType @default(MULTIPLE_CHOICE)
-  order       Int
-  required    Boolean  @default(true)
-  pageId      String
-  page        QuestionPage @relation(...)
-  answers     Answer[]
-}
-
-enum QuestionType {
-  MULTIPLE_CHOICE
-  SLIDER
-  SCALE
-}
-
-model Answer {
-  id         String   @id @default(cuid())
-  text       String
-  order      Int
-  questionId String
-  question   Question @relation(...)
-  weights    AnswerWeight[]
-}
-
-model AnswerWeight {
-  answerId String
-  metricId String
-  weight   Float   // -100 to +100
-  answer   Answer @relation(...)
-  metric   Metric @relation(...)
-  @@id([answerId, metricId])
-}
-```
-
-**Results Models:**
-```prisma
-model QuizResult {
-  id           String   @id @default(cuid())
-  personameId  String
-  userId       String?
-  archetypeId  String
-  createdAt    DateTime @default(now())
-  personame    Personame @relation(...)
-  user         User? @relation(...)
-  archetype    Archetype @relation(...)
-  metricScores MetricScore[]
-}
-
-model MetricScore {
-  id          String   @id @default(cuid())
-  resultId    String
-  metricId    String
-  score       Float    // 0-100
-  percentile  Float?   // 0-100
-  result      QuizResult @relation(...)
-  metric      Metric @relation(...)
-}
-```
+See `prisma/schema.prisma`
 
 ## Algorithms
 
+All calculation utilities are located in [lib/quiz-calculations.ts](lib/quiz-calculations.ts).
+
 ### Metric Score Calculation
 
-When a user submits quiz answers:
-
-```typescript
-// Initialize all metrics to neutral (50)
-const metricScores = metrics.map(m => ({ 
-  metricId: m.id, 
-  value: 50 
-}));
-
-// Apply weights from each selected answer
-for (const answer of selectedAnswers) {
-  for (const weight of answer.weights) {
-    const metric = metricScores.find(m => m.metricId === weight.metricId);
-    metric.value += weight.weight;
-  }
-}
-
-// Normalize to 0-100 range
-for (const metric of metricScores) {
-  metric.value = Math.max(0, Math.min(100, metric.value));
-}
+**Pseudocode:**
 ```
+1. Initialize all metrics to 50 (neutral baseline)
+2. For each user answer:
+   - Add the answer's weight value to its associated metric
+3. Clamp all scores to 0-100 range
+4. Return array of { metricId, metricName, score }
+```
+
+**Implementation:** `calculateMetricScores()` in [lib/quiz-calculations.ts](lib/quiz-calculations.ts)
 
 ### Archetype Matching
 
-Find the best-fit archetype using weighted Euclidean distance:
-
-```typescript
-function matchArchetype(userScores: MetricScore[], archetypes: Archetype[]) {
-  let bestMatch = null;
-  let minDistance = Infinity;
-
-  for (const archetype of archetypes) {
-    let distance = 0;
-    
-    for (const metric of archetype.metrics) {
-      const userScore = userScores.find(s => s.metricId === metric.metricId);
-      const diff = userScore.score - metric.targetValue;
-      
-      // Weight by relevance
-      distance += (diff * diff) * metric.relevance;
-    }
-    
-    distance = Math.sqrt(distance);
-    
-    if (distance < minDistance) {
-      minDistance = distance;
-      bestMatch = archetype;
-    }
-  }
-
-  return {
-    archetype: bestMatch,
-    matchPercentage: (1 - minDistance / 100) * 100
-  };
-}
+**Pseudocode:**
 ```
+1. For each archetype:
+   - Calculate weighted Euclidean distance:
+     distance = sqrt(sum((userScore - targetValue)² × relevance))
+   - Convert to match score: 100 - distance
+2. Return archetype with highest match score
+```
+
+**Implementation:** `findBestArchetype()` in [lib/quiz-calculations.ts](lib/quiz-calculations.ts)
 
 ### Percentile Calculation
 
-Compare user to past participants:
+**Pseudocode:**
+```
+1. Sort all historical scores for the metric
+2. Find position where user score would be inserted
+3. Calculate: (position / total) × 100
+4. Return rounded percentile
+```
 
-```typescript
-async function calculatePercentile(metricId: string, userScore: float) {
-  // Get all scores for this metric
-  const allScores = await prisma.metricScore.findMany({
-    where: { metricId },
-    select: { score: true },
-    orderBy: { score: 'asc' }
-  });
-
-  // Find position
-  const lowerCount = allScores.filter(s => s.score < userScore).length;
-  const percentile = (lowerCount / allScores.length) * 100;
-
-  return Math.round(percentile);
-}
+**Implementation:** `calculatePercentile()` in [lib/quiz-calculations.ts](lib/quiz-calculations.ts)
 ```
 
 ## API Routes
@@ -415,20 +230,7 @@ Defined in [app/globals.css](app/globals.css) using `@theme` directive:
   --color-primary-50: #eff2ff;
   --color-primary-600: #5568ff;
   --color-primary-700: #3d4ed9;
-
-  /* Secondary: Purple */
-  --color-secondary-50: #faf5ff;
-  --color-secondary-600: #a855f7;
-  --color-secondary-700: #9333ea;
-
-  /* Accent: Pink */
-  --color-accent-50: #fef2f8;
-  --color-accent-600: #f91880;
-  --color-accent-700: #db2777;
-
-  /* Neutral: Grays */
-  --color-muted-50: #f9fafb;
-  /* ... full scale 50-900 */
+  /* ... etc */
 }
 ```
 
@@ -456,20 +258,7 @@ All components follow consistent patterns:
 
 ## Environment Variables
 
-```env
-# Database
-DATABASE_URL="postgresql://user:pass@localhost:5432/personame"
-
-# NextAuth
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="<random-secret>"
-
-# OAuth Providers
-GOOGLE_CLIENT_ID="<from-google-cloud>"
-GOOGLE_CLIENT_SECRET="<from-google-cloud>"
-GITHUB_ID="<from-github>"
-GITHUB_SECRET="<from-github>"
-```
+See `.env.example` for all environment variables.
 
 ## Development Workflow
 
@@ -610,16 +399,3 @@ npx prisma db push
 - **Next Steps**: See NEXT_STEPS.md for implementation guide
 - **Schema**: See prisma/schema.prisma for data model
 - **Demo**: Visit /demo to see feature preview
-
-## Support & Contributing
-
-This is an open-source project. Contributions welcome!
-
-- Report issues on GitHub
-- Submit pull requests
-- Suggest features
-- Improve documentation
-
----
-
-Built with ❤️ and modern web technologies

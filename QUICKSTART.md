@@ -159,13 +159,6 @@ npx prisma studio
 
 Opens at [http://localhost:5555](http://localhost:5555) - great for debugging!
 
-## What's Next?
-
-- ✅ You're running! Create your first quiz at [/create](http://localhost:3000/create)
-- 📖 See [NEXT_STEPS.md](NEXT_STEPS.md) for the development roadmap
-- 🔧 See [DEVELOPMENT.md](DEVELOPMENT.md) for local development details
-- 📚 See [PROJECT_SUMMARY.md](PROJECT_SUMMARY.md) for technical overview
-
 ## Setting Up OAuth
 
 ### Google OAuth
