@@ -1,76 +1,61 @@
 # Next Steps for Personame
 
-## Immediate Tasks
+Development roadmap and implementation priorities.
 
-### 1. Set Up Environment
-```bash
-# Copy environment file
-cp .env.example .env
+## Current Status
 
-# Add your credentials to .env:
-# - DATABASE_URL (PostgreSQL connection string)
-# - NEXTAUTH_SECRET (generate with: openssl rand -base64 32)
-# - GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET (from Google Cloud Console)
-# - GITHUB_ID and GITHUB_SECRET (from GitHub OAuth Apps)
+### ✅ Completed
+- Project setup (Next.js 16, TypeScript, Tailwind CSS 4)
+- Database schema with Prisma
+- Authentication (Google & GitHub OAuth)
+- Landing page with hero and features
+- Quiz creation starter page
+- **Metrics editor** with full CRUD operations
 
-# Generate Prisma client
-npx prisma generate
+### 🚧 Up Next
+See priority features below.
 
-# Run database migrations
-npx prisma migrate dev --name init
+## Priority 1: Complete Quiz Creation Flow
 
-# Start development server
-npm run dev
-```
+### A. Archetypes Editor
+**Path:** `/create/[id]/archetypes`
 
-### 2. Test Current Features
-- ✅ Landing page at http://localhost:3000
-- ✅ Sign in page at http://localhost:3000/auth/signin
-- ✅ Create quiz flow at http://localhost:3000/create
-- ✅ Metrics editor (after creating a quiz)
+Build the interface for defining personality types:
 
-### 3. Priority Features to Build
-
-#### A. Archetypes Editor (`/create/[id]/archetypes/page.tsx`)
-Create page for defining personality types:
-- Add/remove archetypes
+**Features:**
+- Add/remove/edit archetypes
 - Set name, description, emoji, color
-- For each metric: set target value (0-100) and relevance (0-1)
-- Visualization: radar chart showing archetype positions
-- Analysis: diversity score (how spread out archetypes are)
+- For each metric: define target value (0-100) and relevance weight (0-1)
+- Visualization: radar chart showing archetype positions in metric space
+- Analysis: diversity score showing how well-spread archetypes are
 
-#### B. Questions Builder (`/create/[id]/questions/page.tsx`)
-Create page for building quiz questions:
-- Organize questions into pages
-- Question types: multiple choice, slider, scale
-- For each answer: assign metric weights
-- Preview mode
-- Coverage analysis: how well questions map to metrics
-
-#### C. Quiz Taking Interface (`/quiz/[slug]/page.tsx`)
-Public page for taking quizzes:
-- Display questions page by page
-- Progress indicator
-- Answer validation
-- Submit and calculate results
-
-#### D. Results Display (`/quiz/[slug]/results/[id]/page.tsx`)
-Show quiz results:
-- Matched archetype with description
-- Metric scores visualization (radar chart)
-- Comparison statistics
-- Share buttons
-
-## Required API Routes
-
-### Archetypes
+**API Route:**
 ```typescript
 // app/api/personames/[id]/archetypes/route.ts
-GET  - Fetch all archetypes for a personame
-POST - Save archetypes (with metric targets)
+GET  - Fetch all archetypes
+POST - Save archetypes with metric targets
 ```
 
-### Questions
+**Component Suggestions:**
+- `ArchetypeEditor.tsx` - Form for archetype properties
+- `MetricTargetSlider.tsx` - Slider for setting target values
+- `ArchetypeRadarChart.tsx` - Recharts radar visualization
+- `DiversityAnalysis.tsx` - Shows archetype spread
+
+### B. Questions Builder
+**Path:** `/create/[id]/questions`
+
+Create the question and answer system:
+
+**Features:**
+- Organize questions into pages
+- Question types: multiple choice, slider
+- For each answer: assign weights to metrics (-100 to +100)
+- Drag-and-drop reordering
+- Preview mode
+- Coverage analysis: visualize which metric ranges questions cover
+
+**API Routes:**
 ```typescript
 // app/api/personames/[id]/questions/route.ts
 GET    - Fetch all questions and pages
@@ -78,126 +63,207 @@ POST   - Save questions structure
 DELETE - Remove question
 
 // app/api/personames/[id]/publish/route.ts
-POST - Publish personame (set status to PUBLISHED)
+POST - Publish quiz (set status to PUBLISHED)
 ```
 
-### Quiz Taking
+**Component Suggestions:**
+- `QuestionBuilder.tsx` - Question form (text, type, answers)
+- `AnswerWeightEditor.tsx` - UI for assigning metric weights
+- `CoverageHeatmap.tsx` - Visualize metric coverage
+- `QuestionPreview.tsx` - Preview mode
+
+### C. Review & Publish
+**Path:** `/create/[id]/review`
+
+Final review before publishing:
+
+**Features:**
+- Summary of metrics, archetypes, questions
+- Validation checks (enough questions, metrics covered, etc.)
+- Preview quiz in taking mode
+- Publish button
+- Generate shareable slug/URL
+
+## Priority 2: Quiz Taking & Results
+
+### D. Quiz Taking Interface
+**Path:** `/quiz/[slug]`
+
+Public interface for taking quizzes:
+
+**Features:**
+- Display questions page by page
+- Progress indicator
+- Answer selection/input
+- Validation (required questions)
+- Submit and calculate results
+
+**API Routes:**
 ```typescript
 // app/api/quiz/[slug]/route.ts
-GET - Fetch quiz for taking (public endpoint)
+GET - Fetch published quiz (public endpoint)
 
 // app/api/quiz/[slug]/submit/route.ts
 POST - Submit answers, calculate result, return result ID
-
-// app/api/quiz/[slug]/results/[resultId]/route.ts
-GET - Fetch specific result with comparisons
 ```
 
-## Component Recommendations
+**Scoring Algorithm:**
+```typescript
+// lib/quiz-calculations.ts
+1. Initialize all metrics to 50 (neutral)
+2. For each answer:
+   - Add answer's weight to corresponding metric
+3. Normalize scores to 0-100 range
+4. For each archetype:
+   - Calculate weighted Euclidean distance
+   - Factor in metric relevance weights
+5. Return archetype with smallest distance
+```
+
+### E. Results Display
+**Path:** `/quiz/[slug]/results/[id]`
+
+Show quiz results:
+
+**Features:**
+- Matched archetype with full description
+- Metric scores visualization (radar chart)
+- Percentile comparisons ("You're more extraverted than 67% of people")
+- Share buttons (Twitter, Facebook, Copy Link)
+- Retake quiz option
+
+**API Route:**
+```typescript
+// app/api/quiz/[slug]/results/[id]/route.ts
+GET - Fetch result with comparisons
+```
+
+**Component Suggestions:**
+- `ResultsHero.tsx` - Archetype display
+- `MetricScoresChart.tsx` - Radar chart
+- `PercentileComparisons.tsx` - Show rankings
+- `ShareButtons.tsx` - Social sharing
+
+## Priority 3: Analytics & Discovery
+
+### F. Analytics Dashboard
+**Path:** `/dashboard/[id]/analytics`
+
+Creator analytics:
+
+**Features:**
+- Total views and completions
+- Archetype distribution (pie chart)
+- Metric score distributions (histograms)
+- Time-based trends
+- Demographic insights (if collected)
+
+### G. Homepage Enhancement
+
+Improve discovery:
+
+**Features:**
+- Load real quizzes from database
+- Trending (most taken recently)
+- Popular (most completions overall)
+- Recent (newly published)
+- Search functionality
+- Category filtering
+
+### H. User Profile
+**Path:** `/profile`
+
+User dashboard:
+
+**Features:**
+- Created quizzes (with edit links)
+- Taken quizzes (with result links)
+- Statistics
+- Settings
+
+## Component Library Needs
 
 ### Visualization Components
 ```tsx
-// components/charts/RadarChart.tsx
-// Display metric scores in a radar/spider chart
-// Use recharts library
-
-// components/charts/ArchetypeMap.tsx
-// 2D visualization of archetypes in metric space
-// Shows diversity
-
-// components/charts/CoverageHeatmap.tsx
-// Shows which metric ranges are covered by questions
+// components/charts/
+RadarChart.tsx          // Metric scores visualization
+ArchetypeMap.tsx        // 2D plot of archetypes
+CoverageHeatmap.tsx     // Question coverage analysis
+DistributionChart.tsx   // Histograms for analytics
 ```
 
 ### Builder Components
 ```tsx
-// components/builders/QuestionBuilder.tsx
-// Form for creating/editing questions
-
-// components/builders/AnswerWeightEditor.tsx
-// UI for assigning metric weights to answers
-
-// components/builders/ArchetypeEditor.tsx
-// Form for archetype with metric target sliders
+// components/builders/
+QuestionBuilder.tsx       // Question form
+AnswerWeightEditor.tsx   // Metric weight assignment
+ArchetypeEditor.tsx      // Archetype form with sliders
+PageOrganizer.tsx        // Drag-drop page organization
 ```
 
-## Database Seeding
-
-Consider creating seed data for testing:
-```typescript
-// prisma/seed.ts
-// Create example personames with full structure
-// Run with: npx prisma db seed
+### Quiz Components
+```tsx
+// components/quiz/
+QuestionDisplay.tsx      // Display question
+AnswerOption.tsx         // Answer choice
+ProgressBar.tsx          // Quiz progress
+ResultsCard.tsx          // Result display
 ```
 
-## UI/UX Enhancements
+## Code Quality Improvements
 
-1. **Animations**
-   - Add framer-motion for smooth transitions
-   - Page transitions in quiz taking
-   - Results reveal animation
+- [ ] Add JSDoc comments to complex functions
+- [ ] Write unit tests for scoring algorithms
+- [ ] Add E2E tests for quiz creation flow
+- [ ] Set up error tracking (Sentry)
+- [ ] Add loading skeleton components
+- [ ] Optimize database queries with proper indexes
+- [ ] Add API rate limiting
+- [ ] Implement caching for public quizzes
 
-2. **Responsive Design**
-   - Test on mobile devices
-   - Optimize charts for small screens
-   - Touch-friendly sliders
+## Advanced Features (Future)
 
-3. **Accessibility**
-   - Keyboard navigation
-   - ARIA labels
-   - Screen reader support
+### Enhanced Question Types
+- Image-based questions
+- Ranking questions (order items)
+- Matrix questions (rate multiple items)
+- Open-ended text responses
 
-## Advanced Features (Later)
+### Social Features
+- Comments on results
+- Compare with friends
+- Leaderboards
+- Badges/achievements
 
-1. **Analytics Dashboard** (`/dashboard/[id]/analytics`)
-   - Total views/completions
-   - Archetype distribution
-   - Metric score distributions
-   - Time-based trends
+### Creator Tools
+- A/B testing different questions
+- Question analytics (which answers chosen most)
+- Duplicate quiz functionality
+- Templates for common quiz types
 
-2. **User Profile** (`/profile`)
-   - Created personames
-   - Taken quizzes
-   - Achievements
-   - Statistics
+### Platform Features
+- Teams/organizations
+- White-label embedding
+- Premium features (custom domains, remove branding)
+- API for third-party integrations
 
-3. **Social Features**
-   - Share on Twitter/Facebook
-   - Embed quizzes
-   - Compare with friends
-   - Leaderboards
+## Database Optimizations
 
-4. **Advanced Question Types**
-   - Image-based questions
-   - Ranking questions
-   - Matrix questions
+After basic features work:
 
-## Code Quality
+- [ ] Add indexes for common queries
+- [ ] Implement soft deletes for quizzes
+- [ ] Add caching layer (Redis)
+- [ ] Archive old results (data retention policy)
+- [ ] Optimize slug generation (ensure uniqueness)
 
-- Add ESLint rules for consistency
-- Set up Prettier for formatting
-- Add type safety checks
-- Write JSDoc comments for complex functions
+## Development Tips
 
-## Monitoring & Analytics
-
-- Set up error tracking (Sentry)
-- Add analytics (Vercel Analytics or Google Analytics)
-- Monitor database performance
-- Track quiz completion rates
-
-## Current Project Status
-
-### ✅ Completed
-- Project setup with Next.js 14 + TypeScript
-- Database schema with Prisma
-- Authentication with NextAuth.js
-- Landing page with hero and features
-- Sign in page with OAuth
-- Quiz creation starter page
-- Metrics editor with full CRUD
-
-### 🚧 In Progress
+- Use Prisma Studio to inspect data: `npx prisma studio`
+- Check API responses in browser DevTools Network tab
+- Use React DevTools to debug component state
+- Test responsive design in mobile viewport
+- Use TypeScript strict mode to catch errors early
 - Need to implement remaining creation steps
 - Need quiz taking flow
 - Need results display

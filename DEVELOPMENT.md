@@ -1,291 +1,391 @@
-# Personame Development Guide
+# Local Development Guide
 
-## Architecture Overview
+How to set up and work on Personame locally.
 
-Personame is built with Next.js 14 using the App Router, TypeScript, and a PostgreSQL database managed by Prisma ORM.
+## Prerequisites
 
-### Key Concepts
+- Node.js 18+
+- PostgreSQL 15 (or Docker)
+- Git
 
-#### 1. Personame (Quiz)
-A complete personality assessment consisting of:
-- **Metrics**: 3-5 personality dimensions (e.g., Openness, Extraversion)
-- **Archetypes**: Personality types with target metric values
-- **Questions**: Quiz questions with answers that weight metrics
+See [QUICKSTART.md](QUICKSTART.md) for detailed setup.
 
-#### 2. Creation Flow
-1. **Step 1: Metrics** - Define personality dimensions
-2. **Step 2: Archetypes** - Create personality types with target values
-3. **Step 3: Questions** - Build quiz questions with metric weightings
+## Getting Started
 
-#### 3. Taking Flow
-1. User answers all questions
-2. System calculates metric scores
-3. System matches to closest archetype
-4. Results displayed with comparisons
+### 1. Install
 
-## Database Schema
-
-### Core Models
-
-**Personame**
-- Main quiz entity
-- Has status (DRAFT, PUBLISHED, CLOSED)
-- Has visibility (PRIVATE, PUBLIC)
-
-**Metric**
-- Personality dimension (e.g., "Extraversion")
-- Has minLabel and maxLabel (e.g., "Introverted" → "Extraverted")
-- Order determines display sequence
-
-**Archetype**
-- Personality type/result
-- Has name, description, emoji, color, imageUrl
-- Connected to metrics via ArchetypeMetric
-
-**ArchetypeMetric**
-- Junction table between Archetype and Metric
-- Contains targetValue (0-100) and relevance (0-1)
-- Used for matching user scores to archetypes
-
-**Question & Answer**
-- Quiz questions organized into pages
-- Answers have AnswerWeight entries
-- Each AnswerWeight affects a metric by a value
-
-**QuizResult**
-- Stores user's completed quiz
-- Links to matched archetype
-- Contains UserAnswer and MetricScore records
-
-## API Routes
-
-### `/api/personames`
-- GET: List personames (with filters)
-- POST: Create new personame
-
-### `/api/personames/[id]/metrics`
-- GET: Fetch metrics for a personame
-- POST: Save metrics (replaces all)
-
-### Additional Routes to Implement
-
-```
-/api/personames/[id]/archetypes
-/api/personames/[id]/questions
-/api/personames/[id]/publish
-/api/quiz/[slug]/take
-/api/quiz/[slug]/submit
-/api/quiz/[slug]/results/[resultId]
-```
-
-## Component Structure
-
-### UI Components (`components/ui/`)
-- Reusable, unstyled components
-- Built following shadcn/ui patterns
-- Examples: Button, Card, Input, Slider
-
-### Feature Components (to build)
-```
-components/
-├── quiz/
-│   ├── QuestionBuilder.tsx
-│   ├── QuizPreview.tsx
-│   └── MetricWeightEditor.tsx
-├── archetypes/
-│   ├── ArchetypeEditor.tsx
-│   ├── ArchetypeCard.tsx
-│   └── MetricTargetSlider.tsx
-└── results/
-    ├── ResultDisplay.tsx
-    ├── MetricChart.tsx
-    └── ComparisonStats.tsx
-```
-
-## Scoring Algorithm
-
-### 1. Calculate Metric Scores
-```typescript
-// Start at neutral (50)
-// Add weights from each answer
-// Normalize to 0-100 range
-```
-
-### 2. Match to Archetype
-```typescript
-// For each archetype:
-//   Calculate weighted Euclidean distance
-//   Consider relevance of each metric
-// Return archetype with smallest distance
-```
-
-### 3. Generate Comparisons
-```typescript
-// Query all results for this personame
-// Calculate percentiles for each metric
-// Count archetype distribution
-```
-
-## Styling Guidelines
-
-### Colors
-- Primary: Purple gradient (purple-600 to pink-600)
-- Accent: Pink
-- Background: Gradient from purple-50 via pink-50 to blue-50
-
-### Typography
-- Headings: Bold, gradient text for main titles
-- Body: Inter font, readable sizes
-
-### Components
-- Cards with subtle borders and hover effects
-- Rounded corners (rounded-lg, rounded-2xl)
-- Smooth transitions
-
-## Authentication
-
-Using NextAuth.js with:
-- Google OAuth
-- GitHub OAuth
-- Session-based authentication
-- Prisma adapter for database storage
-
-## Development Workflow
-
-1. **Local Database**
 ```bash
-# Start PostgreSQL (or use Docker)
-docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=password postgres
-
-# Run migrations
-npx prisma migrate dev
-
-# View database
-npx prisma studio
+npm install
 ```
 
-2. **Environment Setup**
+### 2. Environment Variables
+
 ```bash
 cp .env.example .env
-# Edit .env with your credentials
 ```
 
-3. **Development Server**
+See [QUICKSTART.md](QUICKSTART.md) for how to populate `.env`.
+
+### 3. Database Setup
+
+*First make sure database is running.* 
+
+See [QUICKSTART.md](QUICKSTART.md) for how to run PostgreSQL locally, and ensure your `.env` URL is correct.
+
+First time, or when `schema.prisma` changes:
+
+```bash
+# Generate Prisma client code
+npx prisma generate
+
+# Run migrations (creates tables)
+npx prisma migrate dev
+
+# (Optional) Populate with sample data
+npm run db:seed
+```
+
+After initial install, tables will persist and you don't need to run these again unless schema changes.
+
+### 4. Start Development Server
+
 ```bash
 npm run dev
 ```
 
-## Testing Strategy
+Open [http://localhost:3000](http://localhost:3000)
 
-### Unit Tests (to add)
-- Quiz calculation functions
-- Utility functions
-- Validation schemas
+## Common Development Tasks
 
-### Integration Tests (to add)
-- API routes
-- Database operations
-- Authentication flow
+### Running the Dev Server
 
-### E2E Tests (to add)
-- Quiz creation flow
-- Quiz taking flow
-- Results display
-
-## Performance Considerations
-
-1. **Database Queries**
-   - Use Prisma's include/select for optimized queries
-   - Add indexes on frequently queried fields
-   - Consider pagination for large result sets
-
-2. **Caching**
-   - Cache public personames list
-   - Cache quiz questions for taking flow
-   - Use React Query for client-side caching
-
-3. **Images**
-   - Use Next.js Image component
-   - Consider CDN for archetype images
-   - Optimize emoji rendering
-
-## Security Considerations
-
-1. **Authentication**
-   - Verify user owns personame before editing
-   - Rate limit quiz submissions
-   - Sanitize user inputs
-
-2. **Data Privacy**
-   - Anonymous results by default
-   - User must login to save results
-   - No PII in quiz results
-
-3. **Validation**
-   - Use Zod schemas for all inputs
-   - Validate metric ranges (0-100)
-   - Check archetype relevance (0-1)
-
-## Deployment
-
-### Vercel (Recommended)
 ```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy
-vercel
+npm run dev
 ```
 
-### Environment Variables
-Required for production:
-- DATABASE_URL
-- NEXTAUTH_URL
-- NEXTAUTH_SECRET
-- GOOGLE_CLIENT_ID
-- GOOGLE_CLIENT_SECRET
-- GITHUB_ID
-- GITHUB_SECRET
+Server runs on http://localhost:3000 with hot reload enabled (Turbopack).
 
-### Database
-- Use Vercel Postgres, Supabase, or any PostgreSQL provider
-- Run migrations: `npx prisma migrate deploy`
-- Generate client: `npx prisma generate`
+### Viewing the Database
 
-## Roadmap
+```bash
+npx prisma studio
+```
 
-### Phase 1: Core Creation ✅
-- [x] Landing page
-- [x] Authentication
-- [x] Metrics editor
-- [ ] Archetypes editor
-- [ ] Question builder
+Opens interactive database GUI at http://localhost:5555. Great for:
+- Inspecting data
+- Testing relationships
+- Debugging schema issues
+- Manual data entry
 
-### Phase 2: Taking & Results
-- [ ] Quiz taking interface
-- [ ] Results calculation
-- [ ] Results display
-- [ ] Analytics dashboard
+### Making Database Changes
 
-### Phase 3: Discovery & Social
-- [ ] Public personames listing
-- [ ] Search and filters
-- [ ] Social sharing
-- [ ] User profiles
+1. Edit `prisma/schema.prisma`
+2. Create migration:
+   ```bash
+   npx prisma migrate dev --name description_of_change
+   ```
+3. Prisma client auto-generates
+4. Dev server auto-reloads
 
-### Phase 4: Enhancements
-- [ ] Archetype diversity analysis
-- [ ] Quiz coverage visualization
-- [ ] Achievements system
-- [ ] Advanced insights
+### Type Checking
 
-## Contributing
+```bash
+# Check for TypeScript errors
+npx tsc --noEmit
+```
 
-See CONTRIBUTING.md for guidelines (to be created).
+### Code Linting
+
+```bash
+# Run ESLint
+npm run lint
+
+# Fix fixable issues
+npm run lint -- --fix
+```
+
+### Building for Production
+
+```bash
+npm run build
+npm start
+```
+
+## Debugging
+
+### Browser DevTools
+
+1. Open http://localhost:3000 in Chrome/Firefox
+2. Press F12 to open DevTools
+3. **Network tab**: View API requests/responses
+4. **Console tab**: Check for errors
+5. **React DevTools** (extension): Inspect component tree
+
+### VS Code Debugging
+
+Create `.vscode/launch.json`:
+
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Next.js",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/.bin/next",
+      "args": ["dev"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    }
+  ]
+}
+```
+
+### Prisma Studio Debugging
+
+Inspect database state while development server is running:
+
+```bash
+npx prisma studio
+```
+
+Check what data actually got saved vs. what you expected.
+
+### API Debugging
+
+Test API routes with curl or Postman:
+
+```bash
+# Create personame
+curl -X POST http://localhost:3000/api/personames \
+  -H "Content-Type: application/json" \
+  -d '{"title":"My Quiz","description":"Test"}'
+
+# List personames
+curl http://localhost:3000/api/personames
+```
+
+## File Organization
+
+### App Structure
+- `app/` - Pages and API routes
+- `components/` - React components
+- `lib/` - Utilities (auth, database, helpers)
+- `prisma/` - Database schema and migrations
+- `types/` - TypeScript type definitions
+- `public/` - Static assets (logos, images)
+
+### Adding a New Page
+
+1. Create file: `app/new-feature/page.tsx`
+2. Add navigation link in `components/app-header.tsx`
+3. Use `useRouter` from `next/navigation` for links
+4. Style with Tailwind CSS
+
+### Adding an API Route
+
+1. Create file: `app/api/new-feature/route.ts`
+2. Export handlers: `export async function GET(req) { ... }`
+3. Return JSON: `return NextResponse.json({ data })`
+4. Use Zod for input validation (see existing routes)
+
+### Adding a Component
+
+1. Create file: `components/MyComponent.tsx`
+2. Use TypeScript for props
+3. Export as default
+4. Style with Tailwind classes from `globals.css`
+
+## Testing
+
+### Manual Testing
+
+Test features directly in browser:
+
+1. Start dev server: `npm run dev`
+2. Open http://localhost:3000
+3. Test user flows end-to-end
+4. Check console for errors
+5. Use DevTools to inspect network
+
+### Unit Tests (to implement)
+
+```bash
+# Run tests
+npm run test
+
+# Watch mode
+npm run test -- --watch
+```
+
+### Component Testing
+
+Test components in isolation using React Testing Library (to add).
+
+### E2E Testing
+
+Test complete user flows with Playwright or Cypress (to add).
+
+## Database Management
+
+### Seeding with Sample Data
+
+Load test data into your database:
+
+```bash
+npm run db:seed
+```
+
+This populates the database with:
+- **Test user**: `test@personame.dev` (no password, use OAuth or Prisma Studio)
+- **Sample quiz**: Complete personality assessment with all components
+- **Metrics**: 4 personality dimensions (Extraversion, Intuition, Thinking, Structure)
+- **Archetypes**: 4 personality types (Advocate, Logistician, Entertainer, Architect)
+- **Questions**: 4 questions with multiple choice answers and metric weights
+- **Results**: 2 sample results for testing analytics and comparisons
+
+Great for:
+- Testing quiz taking flow with real data
+- Developing analytics features
+- Understanding data relationships
+- Demo/screenshot purposes
+
+**Note:** Seeding is safe to run multiple times (uses `upsert` to avoid duplicates).
+
+### Inspecting Tables
+
+```bash
+npx prisma studio
+```
+
+Then navigate to any table to view/edit records.
+
+### Querying Data
+
+```bash
+# Execute raw SQL
+npx prisma db execute --stdin <<< "SELECT * FROM Personame LIMIT 10;"
+```
+
+### Resetting Database
+
+⚠️ **Warning: Deletes all data**
+
+```bash
+npx prisma migrate reset
+```
+
+Use only in development.
+
+## Git Workflow
+
+### Creating a Feature Branch
+
+```bash
+git checkout -b feature/my-feature
+git commit -am "Add my feature"
+git push origin feature/my-feature
+```
+
+Then create a Pull Request.
+
+### Before Committing
+
+1. Run linter: `npm run lint`
+2. Type check: `npx tsc --noEmit`
+3. Test manually in browser
+
+## Performance Tips
+
+### Development Server Speed
+
+- Turbopack is enabled (faster than Webpack)
+- Hot reload should be near-instant
+- If slow, try: `rm -rf .next && npm run dev`
+
+### Database Queries
+
+- Use Prisma `select` to fetch only needed fields
+- Use `include` to load relations
+- Avoid N+1 queries (check dev console)
+- Example:
+  ```typescript
+  const personame = await prisma.personame.findUnique({
+    where: { id },
+    include: { metrics: true, archetypes: true }
+  });
+  ```
+
+### Client-Side Performance
+
+- Use React DevTools Profiler to find slow components
+- Lazy load heavy components: `const Chart = dynamic(() => import('./Chart'))`
+- Memoize expensive computations: `useMemo`, `useCallback`
+
+## Environment Variables
+
+Required for development:
+
+```env
+DATABASE_URL="postgresql://..."
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="<32-char-random-string>"
+```
+
+Optional (for OAuth testing):
+
+```env
+GOOGLE_CLIENT_ID="..."
+GOOGLE_CLIENT_SECRET="..."
+GITHUB_ID="..."
+GITHUB_SECRET="..."
+```
+
+See `.env.example` for all variables.
+
+## Troubleshooting
+
+### "Cannot find module" errors
+
+```bash
+# Regenerate Prisma client
+npx prisma generate
+
+# Clear Next.js cache
+rm -rf .next
+
+# Restart dev server
+npm run dev
+```
+
+### Database connection errors
+
+1. Check PostgreSQL is running: `brew services list` (macOS) or `docker ps`
+2. Verify `DATABASE_URL` in `.env`
+3. Test connection: `npx prisma db execute --stdin <<< "SELECT 1;"`
+
+### NextAuth not recognizing user
+
+1. Check cookies in browser DevTools
+2. Verify session exists: `npx prisma studio` → Session table
+3. Try signing out and back in
+
+### Styling not updating
+
+1. Check Tailwind classes are in `globals.css` `@theme` block
+2. Verify class names are correct (typos break styling)
+3. Restart dev server: `npm run dev`
+
+## Architecture & Technical Details
+
+For complete technical documentation, see:
+- **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** - Architecture, schema, algorithms
+- **[NEXT_STEPS.md](NEXT_STEPS.md)** - Development roadmap
 
 ## Resources
 
 - [Next.js Docs](https://nextjs.org/docs)
 - [Prisma Docs](https://www.prisma.io/docs)
-- [NextAuth.js Docs](https://next-auth.js.org)
 - [Tailwind CSS Docs](https://tailwindcss.com/docs)
+- [NextAuth.js Docs](https://next-auth.js.org)
