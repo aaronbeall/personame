@@ -104,7 +104,7 @@ If your local Postgres uses trust/peer auth (Homebrew default), you can use your
 postgresql://$(whoami)@localhost:5432/personame
 ```
 
-#### Option B: Docker PostgreSQL
+#### Option B: Docker PostgreSQL (Simpler)
 
 Run PostgreSQL in Docker:
 
