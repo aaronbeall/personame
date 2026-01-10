@@ -12,7 +12,7 @@ const createPersonameSchema = z.object({
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions)
-    
+
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -61,7 +61,7 @@ export async function GET(req: Request) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const where: any = {}
-    
+
     if (status) {
       where.status = status
     }

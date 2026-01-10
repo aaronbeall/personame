@@ -107,7 +107,7 @@ export default function CreatePage() {
           <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
             <h3 className="font-semibold mb-2 text-blue-900">💡 What&apos;s next?</h3>
             <p className="text-sm text-blue-800">
-              After naming your quiz, you&apos;ll define the personality metrics (like &quot;Extraversion&quot; or &quot;Creativity&quot;), 
+              After naming your quiz, you&apos;ll define the personality metrics (like &quot;Extraversion&quot; or &quot;Creativity&quot;),
               create archetypes (personality types), and build questions that measure these traits.
             </p>
           </div>

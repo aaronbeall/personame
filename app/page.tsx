@@ -25,22 +25,6 @@ export default async function Home() {
               </Button>
             </Link>
           </div>
-        </nav>        <nav className="flex justify-between items-center mb-16">          <div className="flex items-center gap-2">
-            <Sparkles className="h-8 w-8 text-purple-600" />
-            <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Personame
-            </span>
-          </div>
-          <div className="flex gap-4">
-            <Link href="/auth/signin">
-              <Button variant="ghost">Sign In</Button>
-            </Link>
-            <Link href="/create">
-              <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
-                Create Quiz
-              </Button>
-            </Link>
-          </div>
         </nav>
 
         <div className="text-center max-w-4xl mx-auto mb-20">
@@ -48,7 +32,7 @@ export default async function Home() {
             Create Personality Quizzes That Matter
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Design custom personality assessments with powerful metrics and archetypes. 
+            Design custom personality assessments with powerful metrics and archetypes.
             Share them with the world and discover insights about your audience.
           </p>
           <div className="flex gap-4 justify-center">
@@ -119,7 +103,7 @@ export default async function Home() {
               </Button>
             </div>
           </div>
-          
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Placeholder cards - will be populated from API */}
             <Card className="hover:shadow-lg transition-shadow cursor-pointer">
