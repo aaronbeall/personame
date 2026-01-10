@@ -1,79 +1,29 @@
 # 🚀 Quick Start Guide
 
-## Welcome to Personame!
-
-This guide will help you get Personame up and running in minutes.
+Get Personame running on your machine in 5 minutes.
 
 ## Prerequisites
 
-Before you begin, make sure you have:
+- ✅ **Node.js 18+** ([Download](https://nodejs.org/))
+- ✅ **PostgreSQL** or **Docker** - ([PostgreSQL install](https://www.postgresql.org/download/) or [Docker](https://www.docker.com/))
+- ✅ **Git** ([Download](https://git-scm.com/))
 
-- ✅ Node.js 18 or higher ([Download here](https://nodejs.org/))
-- ✅ PostgreSQL database ([Install guide](https://www.postgresql.org/download/) or use Docker)
-- ✅ Git ([Download here](https://git-scm.com/))
+## Option 1: Automated Setup
 
-## Option 1: Automated Setup (Recommended)
+**First, make sure PostgreSQL is running (or use Docker):**
 
-Run our setup script:
-
+**macOS (Homebrew):**
 ```bash
-./setup.sh
+brew services start postgresql
 ```
 
-This will:
-1. Create your `.env` file
-2. Install dependencies
-3. Generate Prisma client
-4. Run database migrations
-
-## Option 2: Manual Setup
-
-### Step 1: Install Dependencies
-
+**Linux (systemctl):**
 ```bash
-npm install
+sudo systemctl start postgresql
 ```
 
-### Step 2: Set Up Environment
-
+**Docker:**
 ```bash
-cp .env.example .env
-```
-
-Edit `.env` and fill in:
-
-**Required:**
-- `DATABASE_URL` - Your PostgreSQL connection string
-- `NEXTAUTH_SECRET` - Generate with: `openssl rand -base64 32`
-
-**Optional (for OAuth):**
-- `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
-- `GITHUB_ID` and `GITHUB_SECRET`
-
-### Step 3: Database Setup
-
-```bash
-# Generate Prisma client
-npx prisma generate
-
-# Run migrations
-npx prisma migrate dev --name init
-```
-
-### Step 4: Start Development Server
-
-```bash
-npm run dev
-```
-
-Visit [http://localhost:3000](http://localhost:3000) 🎉
-
-## Quick Database Setup with Docker
-
-Don't have PostgreSQL installed? Use Docker:
-
-```bash
-# Start PostgreSQL in a container
 docker run -d \
   --name personame-db \
   -e POSTGRES_USER=personame \
@@ -81,33 +31,211 @@ docker run -d \
   -e POSTGRES_DB=personame \
   -p 5432:5432 \
   postgres:15
-
-# Use this DATABASE_URL in your .env:
-# postgresql://personame:personame@localhost:5432/personame
 ```
+
+**Then run the setup script:**
+
+```bash
+git clone https://github.com/aaronbeall/personame.git
+cd personame
+./setup.sh
+```
+
+This script will:
+1. Install dependencies
+2. Offer interactive `.env` configuration (database, `NEXTAUTH_URL`, generate `NEXTAUTH_SECRET`)
+3. Optionally start a Docker PostgreSQL container
+4. Generate Prisma client
+5. Run database migrations
+6. Optionally seed sample data
+
+You can also configure `.env` manually (required):
+
+- `DATABASE_URL` – Use the connection string from your choice in "Initialize Database" (Option A: Local PostgreSQL or Option B: Docker)
+- `NEXTAUTH_SECRET` – Generate with `openssl rand -base64 32`
+- `NEXTAUTH_URL` – `http://localhost:3000`
+- Optional OAuth: `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET`, `GITHUB_ID`/`GITHUB_SECRET`
+
+If the script reports a database connection error, update `.env` with the correct `DATABASE_URL` and rerun `./setup.sh`.
+
+Then start the dev server:
+```bash
+npm run dev
+```
+
+Visit [http://localhost:3000](http://localhost:3000) 🎉
+
+## Option 2: Manual Setup
+
+### 1. Install Dependencies
+
+```bash
+npm install
+```
+
+### 2. Configure Environment
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and add:
+
+**Required:**
+- `DATABASE_URL` - See "Initialize Database" section below for the connection string
+- `NEXTAUTH_SECRET` - Generate with `openssl rand -base64 32`
+- `NEXTAUTH_URL` - `http://localhost:3000`
+
+**Optional (for OAuth):**
+- `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
+- `GITHUB_ID` and `GITHUB_SECRET`
+
+### 3. Initialize Database
+
+Choose one option below:
+
+#### Option A: Local PostgreSQL
+
+Make sure PostgreSQL is running:
+
+**macOS (Homebrew):**
+```bash
+brew services start postgresql
+```
+
+**Linux (systemctl):**
+```bash
+sudo systemctl start postgresql
+```
+
+**Windows:**
+- PostgreSQL runs as a service automatically after installation
+
+Verify it's running:
+```bash
+psql --version
+```
+
+Create database and user (recommended):
+```bash
+# Create a dedicated role with password and a database owned by it
+psql -h localhost -d postgres -c "CREATE ROLE personame WITH LOGIN PASSWORD 'personame';"
+psql -h localhost -d postgres -c "ALTER ROLE personame CREATEDB;"
+psql -h localhost -d postgres -c "CREATE DATABASE personame OWNER personame;"
+```
+
+Set your `DATABASE_URL` in `.env`:
+
+If you created the `personame` role above, use:
+```
+postgresql://personame:personame@localhost:5432/personame
+```
+
+If your local Postgres uses trust/peer auth (Homebrew default), you can use your macOS username without a password:
+```
+postgresql://$(whoami)@localhost:5432/personame
+```
+
+#### Option B: Docker PostgreSQL
+
+Run PostgreSQL in Docker:
+
+```bash
+docker run -d \
+  --name personame-db \
+  -e POSTGRES_USER=personame \
+  -e POSTGRES_PASSWORD=personame \
+  -e POSTGRES_DB=personame \
+  -p 5432:5432 \
+  postgres:15
+```
+
+Set your `DATABASE_URL` in `.env`:
+```
+postgresql://personame:personame@localhost:5432/personame
+```
+
+#### Then: Run Migrations
+
+After choosing your database option and setting `DATABASE_URL`:
+
+```bash
+# Generate Prisma client code
+npx prisma generate
+
+# Run migrations (creates tables)
+npx prisma migrate dev
+```
+
+This will prompt you to name the migration (e.g., "init") and create your database schema.
+
+You can also load sample data (optional):
+```bash
+npm run db:seed
+```
+
+### 4. Start Development Server
+
+```bash
+npm run dev
+```
+
+Visit [http://localhost:3000](http://localhost:3000) 🎉
+
+## Alternative: Docker Setup
+
+Don't have PostgreSQL installed? Use Docker instead:
+
+```bash
+docker run -d \
+  --name personame-db \
+  -e POSTGRES_USER=personame \
+  -e POSTGRES_PASSWORD=personame \
+  -e POSTGRES_DB=personame \
+  -p 5432:5432 \
+  postgres:15
+```
+
+Then use this `DATABASE_URL` in `.env`:
+```
+postgresql://personame:personame@localhost:5432/personame
+```
+
+## What's Next?
+
+- ✅ You're running! Create your first quiz at [/create](http://localhost:3000/create)
+- 📖 See [NEXT_STEPS.md](NEXT_STEPS.md) for the development roadmap
+- 🔧 See [DEVELOPMENT.md](DEVELOPMENT.md) for local development details
+- 📚 See [PROJECT_SUMMARY.md](PROJECT_SUMMARY.md) for technical overview
+
+## Database Management
+
+View and edit data with Prisma Studio:
+```bash
+npx prisma studio
+```
+
+Opens at [http://localhost:5555](http://localhost:5555) - great for debugging!
 
 ## Setting Up OAuth (Optional)
 
 ### Google OAuth
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project (or select existing)
-3. Navigate to "APIs & Services" → "Credentials"
-4. Click "Create Credentials" → "OAuth client ID"
-5. Choose "Web application"
-6. Add authorized redirect URI: `http://localhost:3000/api/auth/callback/google`
-7. Copy Client ID and Client Secret to `.env`
+2. Create project → "APIs & Services" → "Credentials"
+3. "Create Credentials" → "OAuth client ID" → "Web application"
+4. Add redirect URI: `http://localhost:3000/api/auth/callback/google`
+5. Copy Client ID and Secret to `.env`
 
 ### GitHub OAuth
 
 1. Go to [GitHub Settings](https://github.com/settings/developers)
-2. Click "New OAuth App"
+2. "New OAuth App"
 3. Fill in:
    - Application name: `Personame (Dev)`
-   - Homepage URL: `http://localhost:3000`
-   - Authorization callback URL: `http://localhost:3000/api/auth/callback/github`
-4. Copy Client ID and generate Client Secret
-5. Add to `.env`
+   - Homepage: `http://localhost:3000`
+   - Callback URL: `http://localhost:3000/api/auth/callback/github`
+4. Copy Client ID and Secret to `.env`
 
 ## Useful Commands
 
@@ -115,78 +243,39 @@ docker run -d \
 # Development
 npm run dev              # Start dev server
 npm run build            # Build for production
-npm run start            # Start production server
+npm start                # Start production server
 
 # Database
-npm run db:generate      # Generate Prisma client
-npm run db:migrate       # Run migrations
-npm run db:studio        # Open Prisma Studio (GUI)
-npm run db:push          # Push schema without migration
-
-# Linting
-npm run lint             # Run ESLint
+npx prisma generate      # Generate Prisma client
+npx prisma migrate dev   # Run migrations
+npx prisma studio        # Open database GUI (port 5555)
+npx prisma db push       # Push schema without migration
 ```
-
-## Exploring the App
-
-### Pages to Check Out
-
-1. **Landing Page** - [http://localhost:3000](http://localhost:3000)
-   - Beautiful hero section
-   - Feature showcase
-   - Trending quizzes
-
-2. **Demo Page** - [http://localhost:3000/demo](http://localhost:3000/demo)
-   - Feature preview
-   - Example results
-   - Visual walkthrough
-
-3. **Sign In** - [http://localhost:3000/auth/signin](http://localhost:3000/auth/signin)
-   - OAuth authentication
-   - Google & GitHub login
-
-4. **Create Quiz** - [http://localhost:3000/create](http://localhost:3000/create)
-   - Start creating a personality quiz
-   - Define metrics
-
-### Database Management
-
-Open Prisma Studio to view/edit your database:
-
-```bash
-npm run db:studio
-```
-
-This opens a GUI at [http://localhost:5555](http://localhost:5555) where you can:
-- View all tables
-- Add/edit/delete records
-- Test relationships
-- Debug data issues
 
 ## Troubleshooting
 
-### "Cannot connect to database"
+### Cannot connect to database
 
-1. Check if PostgreSQL is running:
-   ```bash
-   # macOS with Homebrew
-   brew services list
-   
-   # Docker
-   docker ps
-   ```
+**Check PostgreSQL is running:**
+```bash
+# macOS with Homebrew
+brew services list
 
-2. Verify `DATABASE_URL` in `.env`:
-   ```
-   postgresql://user:password@localhost:5432/database_name
-   ```
+# Docker
+docker ps
+```
 
-3. Test connection:
-   ```bash
-   npx prisma db execute --stdin <<< "SELECT 1;"
-   ```
+**Verify DATABASE_URL format:**
+```
+postgresql://user:password@localhost:5432/database_name
+```
 
-### "Module not found" errors
+**Test connection:**
+```bash
+npx prisma db execute --stdin <<< "SELECT 1;"
+```
+
+### Module not found errors
 
 Regenerate Prisma client:
 ```bash
@@ -195,10 +284,9 @@ npx prisma generate
 
 ### OAuth not working
 
-1. Check redirect URIs match exactly
-2. Verify client ID and secret in `.env`
-3. Make sure OAuth app is not in development mode (for production)
-4. Check browser console for specific errors
+1. Verify redirect URIs match exactly
+2. Check client ID and secret in `.env`
+3. Ensure variables are loaded (restart dev server)
 
 ### Port already in use
 
@@ -207,56 +295,17 @@ Change the port:
 PORT=3001 npm run dev
 ```
 
-## What to Build Next?
+### Prisma client out of sync
 
-Check out these guides:
+After schema changes:
+```bash
+npx prisma generate
+npx prisma migrate dev
+```
 
-1. **[NEXT_STEPS.md](NEXT_STEPS.md)** - Implementation roadmap
-2. **[DEVELOPMENT.md](DEVELOPMENT.md)** - Architecture details
-3. **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** - Complete overview
-
-## Getting Help
-
-- 📖 Check the documentation files
-- 🐛 Found a bug? Open an issue
-- 💡 Have an idea? Start a discussion
-- 📧 Need help? Ask in the community
-
-## Key Features to Explore
-
-### Current Features ✅
-- Landing page with hero section
-- Authentication (Google & GitHub)
-- Quiz creation starter
-- Metrics editor (Step 1)
-
-### Coming Soon 🚧
-- Archetypes editor (Step 2)
-- Questions builder (Step 3)
-- Quiz taking interface
-- Results and analytics
-
-## Tips for Development
-
-1. **Keep Prisma Studio open** - Great for debugging database issues
-2. **Check the console** - Both browser and terminal for errors
-3. **Use the demo page** - Visual reference for what you're building
-4. **Read the schema** - `prisma/schema.prisma` explains the data model
-5. **Follow the patterns** - Look at existing components for guidance
-
-## Production Deployment
-
-When ready to deploy:
-
-1. Push to GitHub
-2. Connect to Vercel
-3. Add environment variables
-4. Deploy!
-
-See deployment guide in [DEVELOPMENT.md](DEVELOPMENT.md)
-
----
-
-**Ready to create something amazing! 🎨✨**
-
-Visit [http://localhost:3000](http://localhost:3000) to get started!
+## What's Next?
+ 
+ - ✅ You're running! Create your first quiz at [/create](http://localhost:3000/create)
+ - 📖 See [NEXT_STEPS.md](NEXT_STEPS.md) for the development roadmap
+ - 🔧 See [DEVELOPMENT.md](DEVELOPMENT.md) for local development details
+ - 📚 See [PROJECT_SUMMARY.md](PROJECT_SUMMARY.md) for technical overview
