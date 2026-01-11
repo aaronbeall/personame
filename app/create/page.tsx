@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
@@ -17,11 +17,34 @@ export default function CreatePage() {
   const [description, setDescription] = useState('')
   const [isCreating, setIsCreating] = useState(false)
 
+  // Restore draft from localStorage on mount
+  useEffect(() => {
+    const draft = localStorage.getItem('personame-draft')
+    if (draft) {
+      try {
+        const { title: savedTitle, description: savedDescription } = JSON.parse(draft)
+        if (savedTitle) setTitle(savedTitle)
+        if (savedDescription) setDescription(savedDescription)
+      } catch {
+        // Invalid JSON, ignore
+      }
+    }
+  }, [])
+
+  // Save draft to localStorage whenever title/description changes
+  useEffect(() => {
+    if (title || description) {
+      localStorage.setItem('personame-draft', JSON.stringify({ title, description }))
+    }// Clear draft after successful creation
+    localStorage.removeItem('personame-draft')
+
+  }, [title, description])
+
   const handleCreate = async () => {
     if (!title.trim()) return
     // Require authentication before creating a personame
     if (status !== 'authenticated') {
-      router.push('/auth/signin')
+      router.push('/auth/signin?callbackUrl=/create')
       return
     }
 
@@ -51,7 +74,6 @@ export default function CreatePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50">
       <div className="container mx-auto px-4 py-8">
-
 
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-8">
