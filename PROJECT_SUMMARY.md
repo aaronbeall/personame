@@ -267,7 +267,6 @@ See `.env.example` for all environment variables.
 npm install
 cp .env.example .env
 # Edit .env with credentials
-npx prisma generate
 npx prisma migrate dev
 npm run dev
 ```
@@ -292,9 +291,8 @@ npm run lint             # ESLint
 ### Making Schema Changes
 
 1. Edit `prisma/schema.prisma`
-2. Run `npx prisma migrate dev --name description_of_change`
-3. Run `npx prisma generate`
-4. Restart dev server if needed
+2. Run `npx prisma migrate dev --name description_of_change` (creates migration, applies to DB, auto-generates client)
+3. Restart dev server if needed
 
 ### Debugging Tips
 

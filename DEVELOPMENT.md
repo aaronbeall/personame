@@ -35,10 +35,7 @@ See [QUICKSTART.md](QUICKSTART.md) for how to run PostgreSQL locally, and ensure
 First time, or when `schema.prisma` changes:
 
 ```bash
-# Generate Prisma client code
-npx prisma generate
-
-# Run migrations (creates tables)
+# Run migrations (creates tables and generates Prisma client)
 npx prisma migrate dev
 
 # (Optional) Populate with sample data
@@ -79,13 +76,36 @@ Opens interactive database GUI at http://localhost:5555. Great for:
 
 ### Making Database Changes
 
-1. Edit `prisma/schema.prisma`
-2. Create migration:
+#### Workflow: Test First, Migrate Later
+
+1. **Edit schema**: Update `prisma/schema.prisma` with your changes
+
+2. **Test your changes** (without committing to a migration):
+   ```bash
+   # Apply schema to DB without creating a migration file
+   npx prisma db push
+   
+   # Update Prisma client to match schema changes
+   npx prisma generate
+   
+   # Optionally reseed with sample data
+   npm run db:seed
+   ```
+   This lets you test the schema changes in your dev server before versioning them.
+
+3. **Reset DB if needed** (discards uncommitted schema changes):
+   ```bash
+   npx prisma migrate reset
+   ```
+   This rebuilds the DB from committed migrations and reruns the seed. Use when you want to discard schema edits and start fresh.
+
+4. **Once happy with changes**, commit to a migration:
    ```bash
    npx prisma migrate dev --name description_of_change
    ```
-3. Prisma client auto-generates
-4. Dev server auto-reloads
+   This creates a migration file, applies it to the DB, and auto-generates the client.
+
+5. **Dev server auto-reloads** when client regenerates
 
 ### Type Checking
 
