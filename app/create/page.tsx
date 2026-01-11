@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Sparkles, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
@@ -83,9 +84,8 @@ export default function CreatePage() {
                 <label htmlFor="description" className="block text-sm font-medium mb-2">
                   Description (optional)
                 </label>
-                <textarea
+                <Textarea
                   id="description"
-                  className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   placeholder="Describe what participants will learn from taking your quiz..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
