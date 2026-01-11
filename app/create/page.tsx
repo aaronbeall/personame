@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Sparkles, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
-import { ErrorBanner } from '@/components/error-banner'
+import { ErrorBanner } from '@/components/ui/error-banner'
 
 export default function CreatePage() {
   const router = useRouter()

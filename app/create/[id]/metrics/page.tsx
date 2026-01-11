@@ -7,10 +7,12 @@ import { useQuery, useMutation } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Sparkles, Plus, Trash2, ArrowRight, ArrowLeft, Lightbulb, Tag, FileText, ArrowDown, ArrowUp } from 'lucide-react'
+import { Plus, Trash2, ArrowRight, ArrowLeft, Lightbulb, Tag, FileText, ArrowDown, ArrowUp, Palette } from 'lucide-react'
 import Link from 'next/link'
-import { getMetricColor } from '@/lib/metric-colors'
-import { ErrorBanner } from '@/components/error-banner'
+import { getMetricColor, getMetricColorInfo, METRIC_COLOR_THEME } from '@/lib/metric-colors'
+import { ErrorBanner } from '@/components/ui/error-banner'
+import { EmojiPicker } from '@/components/ui/emoji-picker'
+import { ColorPicker } from '@/components/ui/color-picker'
 
 interface Metric {
   id: string
@@ -19,6 +21,8 @@ interface Metric {
   minLabel: string
   maxLabel: string
   order: number
+  emoji?: string
+  color?: string
 }
 
 export default function MetricsPage({ params }: { params: Promise<{ id: string }> }) {
@@ -26,6 +30,7 @@ export default function MetricsPage({ params }: { params: Promise<{ id: string }
   const { status } = useSession()
   const { id } = use(params)
   const [metrics, setMetrics] = useState<Metric[]>([])
+  const [optionsOpen, setOptionsOpen] = useState<string | null>(null)
 
   const { data: fetchedMetrics } = useQuery({
     queryKey: ['metrics', id],
@@ -76,6 +81,8 @@ export default function MetricsPage({ params }: { params: Promise<{ id: string }
       minLabel: '',
       maxLabel: '',
       order: metrics.length,
+      emoji: '',
+      color: getMetricColorInfo(metrics.length).name,
     }
     setMetrics([...metrics, newMetric])
   }
@@ -139,26 +146,68 @@ export default function MetricsPage({ params }: { params: Promise<{ id: string }
             <CardContent className="space-y-6">
               <ErrorBanner error={saveMetricsMutation.error} />
               {metrics.map((metric, index) => {
+                const colorInfo = METRIC_COLOR_THEME.find((c) => c.name === metric.color)
+                const colorClass = colorInfo?.class || getMetricColor(index)
+                const name = metric.name || `Metric ${index + 1}`
+                const description = metric.description || 'Personality dimension'
+                const min = metric.minLabel || 'Min'
+                const max = metric.maxLabel || 'Max'
+
                 return (
                   <div key={metric.id} className="relative border border-border rounded-xl p-5 space-y-4 bg-gradient-to-br from-white to-primary-50/30 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className={`h-10 w-10 rounded-lg ${getMetricColor(index)} flex items-center justify-center text-white font-bold shadow-sm`}>
-                          {index + 1}
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className={`h-11 w-11 rounded-full ${colorClass} flex items-center justify-center text-white font-bold shadow-sm text-lg`}>
+                          {metric.emoji || (index + 1)}
                         </div>
-                        <div>
-                          <h3 className="font-semibold text-primary-900">Metric {index + 1}</h3>
-                          <p className="text-xs text-muted-500">Personality dimension</p>
+                        <div className="min-w-0">
+                          <h3 className="font-semibold text-primary-900 truncate">{name}</h3>
+                          <p className="text-xs text-muted-500 truncate">{description}</p>
+                          <div className="flex items-center gap-2 mt-1 text-xs text-muted-700">
+                            <span className="rounded-full bg-muted-100 px-3 py-1 font-medium">{min} – {max}</span>
+                          </div>
                         </div>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeMetric(metric.id)}
-                        className="text-destructive-600 hover:text-destructive-700 hover:bg-destructive-50"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        {optionsOpen === metric.id ? (
+                          <>
+                            <EmojiPicker
+                              value={metric.emoji}
+                              onSelect={(emoji) => updateMetric(metric.id, 'emoji', emoji)}
+                            />
+                            <ColorPicker
+                              value={metric.color}
+                              onSelect={(color) => updateMetric(metric.id, 'color', color)}
+                            />
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setOptionsOpen(null)}
+                              className="text-muted-700 hover:text-muted-900"
+                            >
+                              Done
+                            </Button>
+                          </>
+                        ) : (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setOptionsOpen(metric.id)}
+                            className="text-primary-700 hover:text-primary-800 hover:bg-primary-50"
+                          >
+                            <Palette className="h-4 w-4 mr-1" />
+                            Edit style
+                          </Button>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeMetric(metric.id)}
+                          className="text-destructive-600 hover:text-destructive-700 hover:bg-destructive-50"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-4">
