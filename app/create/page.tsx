@@ -3,19 +3,41 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
+import { useMutation } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Sparkles, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
+import { ErrorBanner } from '@/components/error-banner'
 
 export default function CreatePage() {
   const router = useRouter()
   const { status } = useSession()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [isCreating, setIsCreating] = useState(false)
+
+  const createPersonaMutation = useMutation({
+    mutationFn: async (data: { title: string; description: string }) => {
+      const res = await fetch('/api/personames', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({ error: 'Failed to create persona' }))
+        throw new Error(error.error ?? 'Failed to create persona')
+      }
+
+      return res.json()
+    },
+    onSuccess: (persona) => {
+      localStorage.removeItem('personame-draft')
+      router.push(`/create/${persona.id}/metrics`)
+    },
+  })
 
   // Restore draft from localStorage on mount
   useEffect(() => {
@@ -42,33 +64,13 @@ export default function CreatePage() {
 
   const handleCreate = async () => {
     if (!title.trim()) return
-    // Require authentication before creating a personame
+    // Require authentication before creating a persona
     if (status !== 'authenticated') {
       router.push('/auth/signin?callbackUrl=/create')
       return
     }
 
-    setIsCreating(true)
-    try {
-      const res = await fetch('/api/personames', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, description }),
-      })
-
-      if (res.ok) {
-        const personame = await res.json()
-        router.push(`/create/${personame.id}/metrics`)
-      } else {
-        const data = await res.json().catch(() => null)
-        alert(data?.error ?? 'Failed to create personame. Please try again.')
-      }
-    } catch (error) {
-      console.error('Error creating personame:', error)
-      alert('An error occurred. Please try again.')
-    } finally {
-      setIsCreating(false)
-    }
+    createPersonaMutation.mutate({ title, description })
   }
 
   return (
@@ -89,6 +91,7 @@ export default function CreatePage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              <ErrorBanner error={createPersonaMutation.error} />
               <div>
                 <label htmlFor="title" className="block text-sm font-medium mb-2">
                   Quiz Title *
@@ -117,11 +120,11 @@ export default function CreatePage() {
 
               <Button
                 onClick={handleCreate}
-                disabled={!title.trim() || isCreating}
+                disabled={!title.trim() || createPersonaMutation.isPending}
                 size="lg"
                 className="w-full"
               >
-                {isCreating ? 'Creating...' : 'Continue to Metrics'}
+                {createPersonaMutation.isPending ? 'Creating...' : 'Continue to Metrics'}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </CardContent>

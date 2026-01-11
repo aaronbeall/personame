@@ -3,12 +3,14 @@
 import { useState, useEffect, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
+import { useQuery, useMutation } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Sparkles, Plus, Trash2, ArrowRight, ArrowLeft, AlertCircle, Lightbulb, Tag, FileText, ArrowDown, ArrowUp } from 'lucide-react'
+import { Sparkles, Plus, Trash2, ArrowRight, ArrowLeft, Lightbulb, Tag, FileText, ArrowDown, ArrowUp } from 'lucide-react'
 import Link from 'next/link'
 import { getMetricColor } from '@/lib/metric-colors'
+import { ErrorBanner } from '@/components/error-banner'
 
 interface Metric {
   id: string
@@ -24,28 +26,47 @@ export default function MetricsPage({ params }: { params: Promise<{ id: string }
   const { status } = useSession()
   const { id } = use(params)
   const [metrics, setMetrics] = useState<Metric[]>([])
-  const [isSaving, setIsSaving] = useState(false)
 
-  const fetchMetrics = async () => {
-    try {
+  const { data: fetchedMetrics } = useQuery({
+    queryKey: ['metrics', id],
+    queryFn: async () => {
       const res = await fetch(`/api/personames/${id}/metrics`)
-      if (res.ok) {
-        const data = await res.json()
-        setMetrics(data)
-      }
-    } catch (error) {
-      console.error('Error fetching metrics:', error)
-    }
-  }
+      if (!res.ok) throw new Error('Failed to fetch metrics')
+      return res.json() as Promise<Metric[]>
+    },
+    enabled: status === 'authenticated',
+  })
 
   useEffect(() => {
-    if (status === 'authenticated') {
-      fetchMetrics()
-    } else if (status === 'unauthenticated') {
+    if (fetchedMetrics) {
+      setMetrics(fetchedMetrics)
+    }
+  }, [fetchedMetrics])
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
       router.push('/auth/signin')
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, status])
+  }, [status, router])
+
+  const saveMetricsMutation = useMutation({
+    mutationFn: async (metricsToSave: Metric[]) => {
+      const res = await fetch(`/api/personames/${id}/metrics`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ metrics: metricsToSave }),
+      })
+
+      if (!res.ok) {
+        throw new Error('Failed to save metrics')
+      }
+
+      return res.json()
+    },
+    onSuccess: () => {
+      router.push(`/create/${id}/archetypes`)
+    },
+  })
 
   const addMetric = () => {
     const newMetric: Metric = {
@@ -67,26 +88,16 @@ export default function MetricsPage({ params }: { params: Promise<{ id: string }
     setMetrics(metrics.filter(m => m.id !== id))
   }
 
-  const saveMetrics = async () => {
-    setIsSaving(true)
-    try {
-      const res = await fetch(`/api/personames/${id}/metrics`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ metrics }),
-      })
-
-      if (res.ok) {
-        router.push(`/create/${id}/archetypes`)
-      } else {
-        alert('Failed to save metrics')
-      }
-    } catch (error) {
-      console.error('Error saving metrics:', error)
-      alert('An error occurred')
-    } finally {
-      setIsSaving(false)
+  const saveMetrics = () => {
+    if (metrics.length === 0) {
+      return
     }
+
+    if (metrics.some(m => !m.name.trim() || !m.minLabel.trim() || !m.maxLabel.trim())) {
+      return
+    }
+
+    saveMetricsMutation.mutate(metrics)
   }
 
   const isValid = metrics.length >= 1 && metrics.every(m => m.name.trim() && m.minLabel.trim() && m.maxLabel.trim())
@@ -126,23 +137,8 @@ export default function MetricsPage({ params }: { params: Promise<{ id: string }
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              <ErrorBanner error={saveMetricsMutation.error} />
               {metrics.map((metric, index) => {
-                const colors = [
-                  'bg-gradient-to-br from-blue-500 to-blue-600',
-                  'bg-gradient-to-br from-purple-500 to-purple-600',
-                  'bg-gradient-to-br from-pink-500 to-pink-600',
-                  'bg-gradient-to-br from-rose-500 to-rose-600',
-                  'bg-gradient-to-br from-orange-500 to-orange-600',
-                  'bg-gradient-to-br from-amber-500 to-amber-600',
-                  'bg-gradient-to-br from-green-500 to-green-600',
-                  'bg-gradient-to-br from-teal-500 to-teal-600',
-                  'bg-gradient-to-br from-cyan-500 to-cyan-600',
-                  'bg-gradient-to-br from-indigo-500 to-indigo-600',
-                  'bg-gradient-to-br from-violet-500 to-violet-600',
-                  'bg-gradient-to-br from-fuchsia-500 to-fuchsia-600',
-                ]
-                const badgeColor = colors[index % colors.length]
-
                 return (
                   <div key={metric.id} className="relative border border-border rounded-xl p-5 space-y-4 bg-gradient-to-br from-white to-primary-50/30 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-start justify-between">
@@ -250,10 +246,10 @@ export default function MetricsPage({ params }: { params: Promise<{ id: string }
             </Link>
             <Button
               onClick={saveMetrics}
-              disabled={!isValid || isSaving}
+              disabled={!isValid || saveMetricsMutation.isPending}
               className="bg-gradient-to-r from-primary to-secondary hover:from-primary-600 hover:to-secondary-600 text-white shadow-md"
             >
-              {isSaving ? 'Saving...' : 'Continue to Archetypes'}
+              {saveMetricsMutation.isPending ? 'Saving...' : 'Continue to Archetypes'}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
