@@ -2,10 +2,11 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Sparkles, TrendingUp, Clock, Users } from 'lucide-react'
+import { AppFooter } from '@/components/app-footer'
 
 export default async function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50">
+    <div className="min-h-screen">
       {/* Hero Section */}
       <div className="container mx-auto px-4 py-16">
         <div className="text-center max-w-4xl mx-auto mb-20">
@@ -159,13 +160,6 @@ export default async function Home() {
           </Link>
         </div>
       </div>
-
-      {/* Footer */}
-      <footer className="border-t bg-white/50 backdrop-blur-sm py-8 mt-20">
-        <div className="container mx-auto px-4 text-center text-muted-600">
-          <p>&copy; 2026 Personame. Built with ❤️ and 🍌 by <a href="https://metamodernmonkey.com" target="_blank" rel="noopener noreferrer">MetaModernMonkey</a></p>
-        </div>
-      </footer>
     </div>
   )
 }
