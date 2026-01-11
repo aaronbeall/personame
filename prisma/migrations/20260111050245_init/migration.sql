@@ -1,8 +1,8 @@
 -- CreateEnum
-CREATE TYPE "PersonameStatus" AS ENUM ('DRAFT', 'PUBLISHED', 'CLOSED');
+CREATE TYPE "PersonaStatus" AS ENUM ('DRAFT', 'PUBLISHED', 'CLOSED');
 
 -- CreateEnum
-CREATE TYPE "PersonameVisibility" AS ENUM ('PRIVATE', 'PUBLIC');
+CREATE TYPE "PersonaVisibility" AS ENUM ('PRIVATE', 'PUBLIC');
 
 -- CreateEnum
 CREATE TYPE "QuestionType" AS ENUM ('MULTIPLE_CHOICE', 'SLIDER', 'SCALE');
@@ -56,13 +56,17 @@ CREATE TABLE "VerificationToken" (
 );
 
 -- CreateTable
-CREATE TABLE "Personame" (
+CREATE TABLE "Persona" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT,
     "slug" TEXT NOT NULL,
-    "status" "PersonameStatus" NOT NULL DEFAULT 'DRAFT',
-    "visibility" "PersonameVisibility" NOT NULL DEFAULT 'PRIVATE',
+    "emoji" TEXT,
+    "color" TEXT,
+    "style" TEXT,
+    "icon" TEXT,
+    "status" "PersonaStatus" NOT NULL DEFAULT 'DRAFT',
+    "visibility" "PersonaVisibility" NOT NULL DEFAULT 'PRIVATE',
     "creatorId" TEXT NOT NULL,
     "views" INTEGER NOT NULL DEFAULT 0,
     "completions" INTEGER NOT NULL DEFAULT 0,
@@ -70,7 +74,7 @@ CREATE TABLE "Personame" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "publishedAt" TIMESTAMP(3),
 
-    CONSTRAINT "Personame_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Persona_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -81,7 +85,11 @@ CREATE TABLE "Metric" (
     "minLabel" TEXT,
     "maxLabel" TEXT,
     "order" INTEGER NOT NULL DEFAULT 0,
-    "personameId" TEXT NOT NULL,
+    "emoji" TEXT,
+    "color" TEXT,
+    "style" TEXT,
+    "icon" TEXT,
+    "personaId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -97,7 +105,9 @@ CREATE TABLE "Archetype" (
     "color" TEXT,
     "imageUrl" TEXT,
     "order" INTEGER NOT NULL DEFAULT 0,
-    "personameId" TEXT NOT NULL,
+    "style" TEXT,
+    "icon" TEXT,
+    "personaId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -123,7 +133,12 @@ CREATE TABLE "QuizPage" (
     "title" TEXT,
     "description" TEXT,
     "order" INTEGER NOT NULL DEFAULT 0,
-    "personameId" TEXT NOT NULL,
+    "hidden" BOOLEAN NOT NULL DEFAULT false,
+    "emoji" TEXT,
+    "color" TEXT,
+    "style" TEXT,
+    "icon" TEXT,
+    "personaId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -137,6 +152,10 @@ CREATE TABLE "Question" (
     "type" "QuestionType" NOT NULL,
     "order" INTEGER NOT NULL DEFAULT 0,
     "required" BOOLEAN NOT NULL DEFAULT true,
+    "emoji" TEXT,
+    "color" TEXT,
+    "style" TEXT,
+    "icon" TEXT,
     "pageId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -149,6 +168,10 @@ CREATE TABLE "Answer" (
     "id" TEXT NOT NULL,
     "text" TEXT NOT NULL,
     "order" INTEGER NOT NULL DEFAULT 0,
+    "emoji" TEXT,
+    "color" TEXT,
+    "style" TEXT,
+    "icon" TEXT,
     "questionId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -171,7 +194,7 @@ CREATE TABLE "AnswerWeight" (
 -- CreateTable
 CREATE TABLE "QuizResult" (
     "id" TEXT NOT NULL,
-    "personameId" TEXT NOT NULL,
+    "personaId" TEXT NOT NULL,
     "userId" TEXT,
     "archetypeId" TEXT NOT NULL,
     "completedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -223,25 +246,25 @@ CREATE UNIQUE INDEX "VerificationToken_token_key" ON "VerificationToken"("token"
 CREATE UNIQUE INDEX "VerificationToken_identifier_token_key" ON "VerificationToken"("identifier", "token");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Personame_slug_key" ON "Personame"("slug");
+CREATE UNIQUE INDEX "Persona_slug_key" ON "Persona"("slug");
 
 -- CreateIndex
-CREATE INDEX "Personame_creatorId_idx" ON "Personame"("creatorId");
+CREATE INDEX "Persona_creatorId_idx" ON "Persona"("creatorId");
 
 -- CreateIndex
-CREATE INDEX "Personame_status_idx" ON "Personame"("status");
+CREATE INDEX "Persona_status_idx" ON "Persona"("status");
 
 -- CreateIndex
-CREATE INDEX "Personame_visibility_idx" ON "Personame"("visibility");
+CREATE INDEX "Persona_visibility_idx" ON "Persona"("visibility");
 
 -- CreateIndex
-CREATE INDEX "Personame_publishedAt_idx" ON "Personame"("publishedAt");
+CREATE INDEX "Persona_publishedAt_idx" ON "Persona"("publishedAt");
 
 -- CreateIndex
-CREATE INDEX "Metric_personameId_idx" ON "Metric"("personameId");
+CREATE INDEX "Metric_personaId_idx" ON "Metric"("personaId");
 
 -- CreateIndex
-CREATE INDEX "Archetype_personameId_idx" ON "Archetype"("personameId");
+CREATE INDEX "Archetype_personaId_idx" ON "Archetype"("personaId");
 
 -- CreateIndex
 CREATE INDEX "ArchetypeMetric_archetypeId_idx" ON "ArchetypeMetric"("archetypeId");
@@ -253,7 +276,7 @@ CREATE INDEX "ArchetypeMetric_metricId_idx" ON "ArchetypeMetric"("metricId");
 CREATE UNIQUE INDEX "ArchetypeMetric_archetypeId_metricId_key" ON "ArchetypeMetric"("archetypeId", "metricId");
 
 -- CreateIndex
-CREATE INDEX "QuizPage_personameId_idx" ON "QuizPage"("personameId");
+CREATE INDEX "QuizPage_personaId_idx" ON "QuizPage"("personaId");
 
 -- CreateIndex
 CREATE INDEX "Question_pageId_idx" ON "Question"("pageId");
@@ -271,7 +294,7 @@ CREATE INDEX "AnswerWeight_metricId_idx" ON "AnswerWeight"("metricId");
 CREATE UNIQUE INDEX "AnswerWeight_answerId_metricId_key" ON "AnswerWeight"("answerId", "metricId");
 
 -- CreateIndex
-CREATE INDEX "QuizResult_personameId_idx" ON "QuizResult"("personameId");
+CREATE INDEX "QuizResult_personaId_idx" ON "QuizResult"("personaId");
 
 -- CreateIndex
 CREATE INDEX "QuizResult_userId_idx" ON "QuizResult"("userId");
@@ -298,13 +321,13 @@ ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId"
 ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Personame" ADD CONSTRAINT "Personame_creatorId_fkey" FOREIGN KEY ("creatorId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Persona" ADD CONSTRAINT "Persona_creatorId_fkey" FOREIGN KEY ("creatorId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Metric" ADD CONSTRAINT "Metric_personameId_fkey" FOREIGN KEY ("personameId") REFERENCES "Personame"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Metric" ADD CONSTRAINT "Metric_personaId_fkey" FOREIGN KEY ("personaId") REFERENCES "Persona"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Archetype" ADD CONSTRAINT "Archetype_personameId_fkey" FOREIGN KEY ("personameId") REFERENCES "Personame"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Archetype" ADD CONSTRAINT "Archetype_personaId_fkey" FOREIGN KEY ("personaId") REFERENCES "Persona"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ArchetypeMetric" ADD CONSTRAINT "ArchetypeMetric_archetypeId_fkey" FOREIGN KEY ("archetypeId") REFERENCES "Archetype"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -313,7 +336,7 @@ ALTER TABLE "ArchetypeMetric" ADD CONSTRAINT "ArchetypeMetric_archetypeId_fkey" 
 ALTER TABLE "ArchetypeMetric" ADD CONSTRAINT "ArchetypeMetric_metricId_fkey" FOREIGN KEY ("metricId") REFERENCES "Metric"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "QuizPage" ADD CONSTRAINT "QuizPage_personameId_fkey" FOREIGN KEY ("personameId") REFERENCES "Personame"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "QuizPage" ADD CONSTRAINT "QuizPage_personaId_fkey" FOREIGN KEY ("personaId") REFERENCES "Persona"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Question" ADD CONSTRAINT "Question_pageId_fkey" FOREIGN KEY ("pageId") REFERENCES "QuizPage"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -328,7 +351,7 @@ ALTER TABLE "AnswerWeight" ADD CONSTRAINT "AnswerWeight_answerId_fkey" FOREIGN K
 ALTER TABLE "AnswerWeight" ADD CONSTRAINT "AnswerWeight_metricId_fkey" FOREIGN KEY ("metricId") REFERENCES "Metric"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "QuizResult" ADD CONSTRAINT "QuizResult_personameId_fkey" FOREIGN KEY ("personameId") REFERENCES "Personame"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "QuizResult" ADD CONSTRAINT "QuizResult_personaId_fkey" FOREIGN KEY ("personaId") REFERENCES "Persona"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "QuizResult" ADD CONSTRAINT "QuizResult_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;

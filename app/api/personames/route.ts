@@ -1,10 +1,11 @@
+import { PersonaStatus, PersonaVisibility, Prisma } from "@prisma/client";
 import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
-const createPersonameSchema = z.object({
+const createPersonaSchema = z.object({
   title: z.string().min(1).max(200),
   description: z.string().optional(),
 })
@@ -18,7 +19,7 @@ export async function POST(req: Request) {
     }
 
     const json = await req.json()
-    const body = createPersonameSchema.parse(json)
+    const body = createPersonaSchema.parse(json)
 
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
@@ -33,8 +34,7 @@ export async function POST(req: Request) {
     const randomSuffix = Math.random().toString(36).substring(2, 8)
     const slug = `${baseSlug}-${randomSuffix}`
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const personame: any = await prisma.personame.create({
+    const persona = await prisma.persona.create({
       data: {
         title: body.title,
         description: body.description,
@@ -43,12 +43,12 @@ export async function POST(req: Request) {
       },
     })
 
-    return NextResponse.json(personame)
+    return NextResponse.json(persona)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: error.errors }, { status: 400 })
+      return NextResponse.json({ error: error.issues }, { status: 400 })
     }
-    console.error('Error creating personame:', error)
+    console.error('Error creating persona:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -56,11 +56,10 @@ export async function POST(req: Request) {
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url)
-    const status = searchParams.get('status')
-    const visibility = searchParams.get('visibility')
+    const status = searchParams.get('status') as PersonaStatus | null
+    const visibility = searchParams.get('visibility') as PersonaVisibility | null
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const where: any = {}
+    const where = {} as Prisma.PersonaWhereInput
 
     if (status) {
       where.status = status
@@ -69,7 +68,7 @@ export async function GET(req: Request) {
       where.visibility = visibility
     }
 
-    const personames = await prisma.personame.findMany({
+    const personas = await prisma.persona.findMany({
       where,
       include: {
         creator: {
@@ -90,9 +89,9 @@ export async function GET(req: Request) {
       take: 20,
     })
 
-    return NextResponse.json(personames)
+    return NextResponse.json(personas)
   } catch (error) {
-    console.error('Error fetching personames:', error)
+    console.error('Error fetching personas:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

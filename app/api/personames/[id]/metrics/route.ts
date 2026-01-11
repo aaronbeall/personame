@@ -24,7 +24,7 @@ export async function GET(
   try {
     const { id } = await params
     const metrics = await prisma.metric.findMany({
-      where: { personameId: id },
+      where: { personaId: id },
       orderBy: { order: 'asc' },
     })
 
@@ -51,7 +51,7 @@ export async function POST(
 
     // Delete existing metrics and create new ones
     await prisma.metric.deleteMany({
-      where: { personameId: id },
+      where: { personaId: id },
     })
 
     await prisma.metric.createMany({
@@ -61,12 +61,12 @@ export async function POST(
         minLabel: m.minLabel || null,
         maxLabel: m.maxLabel || null,
         order: m.order,
-        personameId: id,
+        personaId: id,
       })),
     })
 
     const newMetrics = await prisma.metric.findMany({
-      where: { personameId: id },
+      where: { personaId: id },
       orderBy: { order: 'asc' },
     })
 

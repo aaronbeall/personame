@@ -39,17 +39,17 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String       @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?      @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
-  personames    Personame[]
+  personas      Persona[]
   results       QuizResult[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 }
 
 model VerificationToken {
@@ -60,28 +60,32 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// Personame (Quiz)
-model Personame {
-  id          String   @id @default(cuid())
+// Persona (Quiz)
+model Persona {
+  id          String            @id @default(cuid())
   title       String
   description String?
-  slug        String   @unique
-  status      PersonameStatus @default(DRAFT)
-  visibility  PersonameVisibility @default(PRIVATE)
-  
-  creatorId   String
-  creator     User     @relation(fields: [creatorId], references: [id], onDelete: Cascade)
-  
-  metrics     Metric[]
-  archetypes  Archetype[]
-  pages       QuizPage[]
-  results     QuizResult[]
-  
-  views       Int      @default(0)
-  completions Int      @default(0)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  slug        String            @unique
+  emoji       String?
+  color       String?
+  style       String?
+  icon        String?
+  status      PersonaStatus     @default(DRAFT)
+  visibility  PersonaVisibility @default(PRIVATE)
+
+  creatorId String
+  creator   User   @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  metrics    Metric[]
+  archetypes Archetype[]
+  pages      QuizPage[]
+  results    QuizResult[]
+
+  views       Int @default(0)
+  completions Int @default(0)
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   publishedAt DateTime?
 
   @@index([creatorId])
@@ -90,74 +94,80 @@ model Personame {
   @@index([publishedAt])
 }
 
-enum PersonameStatus {
+enum PersonaStatus {
   DRAFT
   PUBLISHED
   CLOSED
 }
 
-enum PersonameVisibility {
+enum PersonaVisibility {
   PRIVATE
   PUBLIC
 }
 
 // Metrics (e.g., Openness, Conscientiousness)
 model Metric {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
   description String?
-  minLabel    String?  // Label for minimum value (e.g., "Introverted")
-  maxLabel    String?  // Label for maximum value (e.g., "Extroverted")
-  order       Int      @default(0)
-  
-  personameId String
-  personame   Personame @relation(fields: [personameId], references: [id], onDelete: Cascade)
-  
+  minLabel    String? // Label for minimum value (e.g., "Introverted")
+  maxLabel    String? // Label for maximum value (e.g., "Extroverted")
+  order       Int     @default(0)
+  emoji       String?
+  color       String?
+  style       String?
+  icon        String?
+
+  personaId String
+  persona   Persona @relation(fields: [personaId], references: [id], onDelete: Cascade)
+
   archetypeMetrics ArchetypeMetric[]
   answerWeights    AnswerWeight[]
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
 
-  @@index([personameId])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([personaId])
 }
 
 // Archetypes (personality types)
 model Archetype {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
   description String?
   emoji       String?
-  color       String?  // Hex color
+  color       String?
   imageUrl    String?
-  order       Int      @default(0)
-  
-  personameId String
-  personame   Personame @relation(fields: [personameId], references: [id], onDelete: Cascade)
-  
-  metrics     ArchetypeMetric[]
-  results     QuizResult[]
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  order       Int     @default(0)
+  style       String?
+  icon        String?
 
-  @@index([personameId])
+  personaId String
+  persona   Persona @relation(fields: [personaId], references: [id], onDelete: Cascade)
+
+  metrics ArchetypeMetric[]
+  results QuizResult[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([personaId])
 }
 
 // Archetype target values for each metric
 model ArchetypeMetric {
-  id           String   @id @default(cuid())
-  targetValue  Float    // Target value for this metric (0-100)
-  relevance    Float    @default(1.0) // How important this metric is (0-1)
-  
-  archetypeId  String
-  archetype    Archetype @relation(fields: [archetypeId], references: [id], onDelete: Cascade)
-  
-  metricId     String
-  metric       Metric   @relation(fields: [metricId], references: [id], onDelete: Cascade)
-  
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id          String @id @default(cuid())
+  targetValue Float // Target value for this metric (0-100)
+  relevance   Float  @default(1.0) // How important this metric is (0-1)
+
+  archetypeId String
+  archetype   Archetype @relation(fields: [archetypeId], references: [id], onDelete: Cascade)
+
+  metricId String
+  metric   Metric @relation(fields: [metricId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([archetypeId, metricId])
   @@index([archetypeId])
@@ -166,37 +176,46 @@ model ArchetypeMetric {
 
 // Quiz Pages
 model QuizPage {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   title       String?
   description String?
-  order       Int      @default(0)
-  
-  personameId String
-  personame   Personame @relation(fields: [personameId], references: [id], onDelete: Cascade)
-  
-  questions   Question[]
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  order       Int     @default(0)
+  hidden      Boolean @default(false)
+  emoji       String?
+  color       String?
+  style       String?
+  icon        String?
 
-  @@index([personameId])
+  personaId String
+  persona   Persona @relation(fields: [personaId], references: [id], onDelete: Cascade)
+
+  questions Question[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([personaId])
 }
 
 // Questions
 model Question {
-  id          String   @id @default(cuid())
-  text        String
-  type        QuestionType
-  order       Int      @default(0)
-  required    Boolean  @default(true)
-  
-  pageId      String
-  page        QuizPage @relation(fields: [pageId], references: [id], onDelete: Cascade)
-  
-  answers     Answer[]
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id       String       @id @default(cuid())
+  text     String
+  type     QuestionType
+  order    Int          @default(0)
+  required Boolean      @default(true)
+  emoji    String?
+  color    String?
+  style    String?
+  icon     String?
+
+  pageId String
+  page   QuizPage @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  answers Answer[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([pageId])
 }
@@ -209,33 +228,37 @@ enum QuestionType {
 
 // Answer options for questions
 model Answer {
-  id          String   @id @default(cuid())
-  text        String
-  order       Int      @default(0)
-  
-  questionId  String
-  question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  
+  id    String  @id @default(cuid())
+  text  String
+  order Int     @default(0)
+  emoji String?
+  color String?
+  style String?
+  icon  String?
+
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
   weights     AnswerWeight[]
   userAnswers UserAnswer[]
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([questionId])
 }
 
 // How each answer affects metrics
 model AnswerWeight {
-  id       String @id @default(cuid())
-  value    Float  // Points added to metric (-100 to +100)
-  
+  id    String @id @default(cuid())
+  value Float // Points added to metric (-100 to +100)
+
   answerId String
   answer   Answer @relation(fields: [answerId], references: [id], onDelete: Cascade)
-  
+
   metricId String
   metric   Metric @relation(fields: [metricId], references: [id], onDelete: Cascade)
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -246,23 +269,23 @@ model AnswerWeight {
 
 // Quiz Results
 model QuizResult {
-  id            String   @id @default(cuid())
-  
-  personameId   String
-  personame     Personame @relation(fields: [personameId], references: [id], onDelete: Cascade)
-  
-  userId        String?
-  user          User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-  
-  archetypeId   String
-  archetype     Archetype @relation(fields: [archetypeId], references: [id], onDelete: Cascade)
-  
-  answers       UserAnswer[]
-  metricScores  MetricScore[]
-  
-  completedAt   DateTime @default(now())
-  
-  @@index([personameId])
+  id String @id @default(cuid())
+
+  personaId String
+  persona   Persona @relation(fields: [personaId], references: [id], onDelete: Cascade)
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  archetypeId String
+  archetype   Archetype @relation(fields: [archetypeId], references: [id], onDelete: Cascade)
+
+  answers      UserAnswer[]
+  metricScores MetricScore[]
+
+  completedAt DateTime @default(now())
+
+  @@index([personaId])
   @@index([userId])
   @@index([archetypeId])
   @@index([completedAt])
@@ -270,16 +293,16 @@ model QuizResult {
 
 // User's answer to a question
 model UserAnswer {
-  id       String @id @default(cuid())
-  
+  id String @id @default(cuid())
+
   resultId String
   result   QuizResult @relation(fields: [resultId], references: [id], onDelete: Cascade)
-  
+
   answerId String
   answer   Answer @relation(fields: [answerId], references: [id], onDelete: Cascade)
-  
-  value    Float? // For slider/scale questions
-  
+
+  value Float? // For slider/scale questions
+
   createdAt DateTime @default(now())
 
   @@index([resultId])
@@ -288,14 +311,14 @@ model UserAnswer {
 
 // Final metric scores for a result
 model MetricScore {
-  id       String @id @default(cuid())
-  score    Float  // Final calculated score (0-100)
-  
+  id    String @id @default(cuid())
+  score Float // Final calculated score (0-100)
+
   resultId String
   result   QuizResult @relation(fields: [resultId], references: [id], onDelete: Cascade)
-  
+
   metricName String // Stored for historical data
-  
+
   createdAt DateTime @default(now())
 
   @@index([resultId])

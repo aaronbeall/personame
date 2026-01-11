@@ -18,8 +18,8 @@ async function main() {
 
   console.log('✅ User:', user.email);
 
-  // Create test personame (Myers-Briggs inspired)
-  const personame = await prisma.personame.create({
+  // Create test persona (Myers-Briggs inspired)
+  const persona = await prisma.persona.create({
     data: {
       title: 'Personality Type Quiz',
       slug: `personality-type-${Date.now()}`,
@@ -27,7 +27,7 @@ async function main() {
         'Discover your personality type based on four key dimensions.',
       status: 'PUBLISHED',
       visibility: 'PUBLIC',
-      userId: user.id,
+      creatorId: user.id,
 
       // Create 4 metrics
       metrics: {
@@ -66,10 +66,10 @@ async function main() {
     include: { metrics: true },
   });
 
-  console.log('✅ Personame:', personame.title);
+  console.log('✅ Persona:', persona.title);
 
   // Get metrics for reference
-  const [extraversion, intuition, thinking, structure] = personame.metrics;
+  const [extraversion, intuition, thinking, structure] = persona.metrics;
 
   // Create 4 archetypes
   const archetypes = await Promise.all([
@@ -80,7 +80,7 @@ async function main() {
           'Idealistic and principled. You are driven by your values and passion for making the world better.',
         emoji: '🌟',
         color: '#a855f7',
-        personameId: personame.id,
+        personaId: persona.id,
         metrics: {
           create: [
             {
@@ -114,7 +114,7 @@ async function main() {
           'Practical and fact-oriented. You excel at organization and reliable execution of plans.',
         emoji: '⚙️',
         color: '#5568ff',
-        personameId: personame.id,
+        personaId: persona.id,
         metrics: {
           create: [
             {
@@ -148,7 +148,7 @@ async function main() {
           'Spontaneous and charismatic. You bring energy and enthusiasm to any situation.',
         emoji: '🎭',
         color: '#f91880',
-        personameId: personame.id,
+        personaId: persona.id,
         metrics: {
           create: [
             {
@@ -182,7 +182,7 @@ async function main() {
           'Analytical and strategic. You see the bigger picture and plan for future possibilities.',
         emoji: '🏗️',
         color: '#06b6d4',
-        personameId: personame.id,
+        personaId: persona.id,
         metrics: {
           create: [
             {
@@ -214,11 +214,11 @@ async function main() {
   console.log(`✅ Created ${archetypes.length} archetypes`);
 
   // Create question page
-  const page = await prisma.questionPage.create({
+  const page = await prisma.quizPage.create({
     data: {
       title: 'Getting to Know You',
       order: 1,
-      personameId: personame.id,
+      personaId: persona.id,
     },
   });
 
@@ -238,7 +238,7 @@ async function main() {
               weights: {
                 create: {
                   metricId: extraversion.id,
-                  weight: 50,
+                  value: 50,
                 },
               },
             },
@@ -248,7 +248,7 @@ async function main() {
               weights: {
                 create: {
                   metricId: extraversion.id,
-                  weight: -40,
+                  value: -40,
                 },
               },
             },
@@ -258,7 +258,7 @@ async function main() {
               weights: {
                 create: {
                   metricId: extraversion.id,
-                  weight: -50,
+                  value: -50,
                 },
               },
             },
@@ -280,7 +280,7 @@ async function main() {
               weights: {
                 create: {
                   metricId: intuition.id,
-                  weight: -40,
+                  value: -40,
                 },
               },
             },
@@ -290,7 +290,7 @@ async function main() {
               weights: {
                 create: {
                   metricId: intuition.id,
-                  weight: 40,
+                  value: 40,
                 },
               },
             },
@@ -300,7 +300,7 @@ async function main() {
               weights: {
                 create: {
                   metricId: intuition.id,
-                  weight: 0,
+                  value: 0,
                 },
               },
             },
@@ -322,7 +322,7 @@ async function main() {
               weights: {
                 create: {
                   metricId: thinking.id,
-                  weight: 45,
+                  value: 45,
                 },
               },
             },
@@ -332,7 +332,7 @@ async function main() {
               weights: {
                 create: {
                   metricId: thinking.id,
-                  weight: -45,
+                  value: -45,
                 },
               },
             },
@@ -342,7 +342,7 @@ async function main() {
               weights: {
                 create: {
                   metricId: thinking.id,
-                  weight: 0,
+                  value: 0,
                 },
               },
             },
@@ -364,7 +364,7 @@ async function main() {
               weights: {
                 create: {
                   metricId: structure.id,
-                  weight: 50,
+                  value: 50,
                 },
               },
             },
@@ -374,7 +374,7 @@ async function main() {
               weights: {
                 create: {
                   metricId: structure.id,
-                  weight: -50,
+                  value: -50,
                 },
               },
             },
@@ -384,7 +384,7 @@ async function main() {
               weights: {
                 create: {
                   metricId: structure.id,
-                  weight: 0,
+                  value: 0,
                 },
               },
             },
@@ -399,29 +399,25 @@ async function main() {
   // Create some sample results
   const result1 = await prisma.quizResult.create({
     data: {
-      personameId: personame.id,
+      personaId: persona.id,
       archetypeId: archetypes[0].id, // The Advocate
       metricScores: {
         create: [
           {
-            metricId: extraversion.id,
+            metricName: extraversion.name,
             score: 72,
-            percentile: 65,
           },
           {
-            metricId: intuition.id,
+            metricName: intuition.name,
             score: 78,
-            percentile: 72,
           },
           {
-            metricId: thinking.id,
+            metricName: thinking.name,
             score: 25,
-            percentile: 30,
           },
           {
-            metricId: structure.id,
+            metricName: structure.name,
             score: 71,
-            percentile: 68,
           },
         ],
       },
@@ -430,29 +426,25 @@ async function main() {
 
   const result2 = await prisma.quizResult.create({
     data: {
-      personameId: personame.id,
+      personaId: persona.id,
       archetypeId: archetypes[1].id, // The Logistician
       metricScores: {
         create: [
           {
-            metricId: extraversion.id,
+            metricName: extraversion.name,
             score: 28,
-            percentile: 25,
           },
           {
-            metricId: intuition.id,
+            metricName: intuition.name,
             score: 22,
-            percentile: 20,
           },
           {
-            metricId: thinking.id,
+            metricName: thinking.name,
             score: 76,
-            percentile: 75,
           },
           {
-            metricId: structure.id,
+            metricName: structure.name,
             score: 82,
-            percentile: 80,
           },
         ],
       },
@@ -464,8 +456,8 @@ async function main() {
   console.log('\n✨ Seeding complete!');
   console.log(`\n📊 Summary:`);
   console.log(`  - User: ${user.email}`);
-  console.log(`  - Quiz: "${personame.title}"`);
-  console.log(`  - Metrics: ${personame.metrics.length}`);
+  console.log(`  - Quiz: "${persona.title}"`);
+  console.log(`  - Metrics: ${persona.metrics.length}`);
   console.log(`  - Archetypes: ${archetypes.length}`);
   console.log(`  - Questions: ${questions.length}`);
   console.log(

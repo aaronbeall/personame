@@ -7,9 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "db:init": "prisma migrate dev --name init",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "db:push": "prisma db push",
+    "db:update": "prisma db push && prisma generate",
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
     "setup": "./setup.sh"
