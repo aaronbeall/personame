@@ -1,44 +1,28 @@
-// Slider component for range input
-import * as React from 'react'
+import * as SliderPrimitive from '@radix-ui/react-slider'
 import { cn } from '@/lib/utils'
+import { ColorThemeName, getColorTheme, getColorThemeClass } from '@/lib/colors'
 
-export interface SliderProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label?: string
-  showValue?: boolean
+interface SliderProps extends React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root> {
+  // color?: string | null;
 }
 
-const Slider = React.forwardRef<HTMLInputElement, SliderProps>(
-  ({ className, label, showValue = true, ...props }, ref) => {
-    const [value, setValue] = React.useState(props.defaultValue || props.min || 0)
-
-    return (
-      <div className="space-y-2">
-        {label && (
-          <div className="flex justify-between items-center">
-            <label className="text-sm font-medium">{label}</label>
-            {showValue && <span className="text-sm text-muted-foreground">{value}</span>}
-          </div>
-        )}
-        <input
-          type="range"
-          className={cn(
-            'w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer',
-            'accent-purple-600',
-            '[&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-purple-600',
-            '[&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-purple-600 [&::-moz-range-thumb]:border-0',
-            className
-          )}
-          ref={ref}
-          onChange={(e) => {
-            setValue(e.target.value)
-            props.onChange?.(e)
-          }}
-          {...props}
-        />
-      </div>
-    )
-  }
+const Slider = ({ color, className, ...props }: SliderProps) => (
+  <SliderPrimitive.Root
+    className={cn('relative flex w-full touch-none select-none items-center', className)}
+    {...props}
+  >
+    <SliderPrimitive.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-muted-300">
+      <SliderPrimitive.Range className={cn('absolute h-full', getColorTheme(color)?.class)} />
+    </SliderPrimitive.Track>
+    <SliderPrimitive.Thumb
+      className={cn(
+        'block h-5 w-5 rounded-full border-2 border-white bg-white shadow-md ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+        getColorTheme(color ?? '')?.class ?? 'bg-blue-500'
+      )}
+    />
+  </SliderPrimitive.Root>
 )
-Slider.displayName = 'Slider'
+
+Slider.displayName = SliderPrimitive.Root.displayName
 
 export { Slider }

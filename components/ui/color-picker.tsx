@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import * as Popover from '@radix-ui/react-popover'
-import { METRIC_COLOR_THEME } from '@/lib/metric-colors'
+import { COLOR_THEME } from '@/lib/colors'
 import { Check } from 'lucide-react'
 
 interface ColorPickerProps {
@@ -14,7 +14,7 @@ interface ColorPickerProps {
 export function ColorPicker({ value, onSelect }: ColorPickerProps) {
   const [open, setOpen] = useState(false)
 
-  const selectedColor = METRIC_COLOR_THEME.find((c) => c.name === value)
+  const selectedColor = COLOR_THEME.find((c) => c.name === value)
 
   const handleColorSelect = (colorName: string) => {
     onSelect(colorName)
@@ -27,13 +27,13 @@ export function ColorPicker({ value, onSelect }: ColorPickerProps) {
         <Button
           type="button"
           variant="outline"
-          className="h-10 w-24 p-0 relative overflow-hidden"
+          className="h-10 w-16 p-0 relative overflow-hidden"
         >
           <div
-            className={`absolute inset-0 ${selectedColor?.class || 'bg-gradient-to-br from-gray-300 to-gray-400'}`}
+            className={`absolute inset-0 ${selectedColor?.class ?? 'bg-linear-to-br from-gray-300 to-gray-400'}`}
           />
           <span className="relative z-10 text-white font-medium text-xs drop-shadow">
-            {selectedColor?.label || 'Color'}
+            {selectedColor?.label ?? 'Color'}
           </span>
         </Button>
       </Popover.Trigger>
@@ -45,7 +45,7 @@ export function ColorPicker({ value, onSelect }: ColorPickerProps) {
           align="start"
         >
           <div className="grid grid-cols-3 gap-2">
-            {METRIC_COLOR_THEME.map((color) => (
+            {COLOR_THEME.map((color) => (
               <button
                 key={color.name}
                 type="button"

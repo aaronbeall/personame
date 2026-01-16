@@ -1,9 +1,8 @@
-import Link from 'next/link'
-import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Sparkles, TrendingUp, Clock, Users } from 'lucide-react'
-import { AppFooter } from '@/components/app-footer'
+import { Clock, Sparkles, TrendingUp, Users } from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
 
 export default async function Home() {
   return (
@@ -18,7 +17,7 @@ export default async function Home() {
             className="object-cover"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/60" />
+          <div className="absolute inset-0 bg-linear-to-b from-black/40 to-black/60" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center max-w-3xl mx-auto px-4">
               <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-2xl">
@@ -30,7 +29,7 @@ export default async function Home() {
               </p>
               <div className="flex gap-4 justify-center">
                 <Link href="/create">
-                  <Button size="lg" className="rounded-full bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white shadow-lg hover:shadow-xl transition-shadow">
+                  <Button size="lg" className="rounded-full bg-linear-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white shadow-lg hover:shadow-xl transition-shadow">
                     <Sparkles className="h-5 w-5 mr-2" />
                     Start Creating
                   </Button>
@@ -166,7 +165,7 @@ export default async function Home() {
         </div>
 
         {/* CTA */}
-        <div className="text-center bg-gradient-to-r from-primary-600 to-secondary-600 rounded-2xl p-12 text-white">
+        <div className="text-center bg-linear-to-r from-primary-600 to-secondary-600 rounded-2xl p-12 text-white">
           <h2 className="text-4xl font-bold mb-4">Ready to create your first Personame?</h2>
           <p className="text-xl mb-8 opacity-90">
             Join thousands of creators building engaging personality quizzes

@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
 import { useMutation } from '@tanstack/react-query'
+import { useProtectedPage } from '@/hooks/use-protected-page'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -15,7 +15,7 @@ import { AppLayoutBackground } from '@/components/app-layout-background'
 
 export default function CreatePage() {
   const router = useRouter()
-  const { status } = useSession()
+  useProtectedPage()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
 
@@ -65,11 +65,6 @@ export default function CreatePage() {
 
   const handleCreate = async () => {
     if (!title.trim()) return
-    // Require authentication before creating a persona
-    if (status !== 'authenticated') {
-      router.push('/auth/signin?callbackUrl=/create')
-      return
-    }
 
     createPersonaMutation.mutate({ title, description })
   }

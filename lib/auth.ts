@@ -34,5 +34,13 @@ export const authOptions: NextAuthOptions = {
       }
       return session
     },
+    redirect: async ({ url, baseUrl }) => {
+      // If the callback URL is relative, use it; otherwise use baseUrl
+      if (url.startsWith('/')) return `${baseUrl}${url}`
+      // Only allow redirects to the same domain
+      else if (new URL(url).origin === baseUrl) return url
+      // Default fallback
+      return baseUrl
+    },
   },
 }

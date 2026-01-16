@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Search, ChevronDown, X } from 'lucide-react'
 import * as Popover from '@radix-ui/react-popover'
 import emojiData from 'full-emoji-list'
+import { ChevronDown, X, SmilePlus, ArrowLeft } from 'lucide-react'
+import { useCallback, useMemo, useState } from 'react'
 import { SearchInput } from './search-input'
+import { cn } from '@/lib/utils'
 
 interface EmojiPickerProps {
   value?: string
@@ -20,10 +20,18 @@ interface EmojiGroup {
   variants: Array<{ emoji: string; name: string }>
 }
 
-export function EmojiPicker({ value, onSelect, placeholder = '😀' }: EmojiPickerProps) {
+export function EmojiPicker({ value, onSelect }: EmojiPickerProps) {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
-  const [variantSelector, setVariantSelector] = useState<EmojiGroup | null>(null)
+  const [variants, setVariants] = useState<EmojiGroup | null>(null)
+  const [variantSearch, setVariantSearch] = useState('')
+
+  const toggle = useCallback((isOpen: boolean) => {
+    setOpen(isOpen)
+    setSearch('')
+    setVariants(null)
+    setVariantSearch('')
+  }, [])
 
   // Group emojis by category and handle variants
   const emojiGroups = useMemo(() => {
@@ -92,7 +100,8 @@ export function EmojiPicker({ value, onSelect, placeholder = '😀' }: EmojiPick
 
   const handleEmojiClick = (group: EmojiGroup) => {
     if (group.variants.length > 0) {
-      setVariantSelector(group)
+      setVariants(group)
+      setVariantSearch('')
     } else {
       handleEmojiSelect(group.base)
     }
@@ -100,20 +109,24 @@ export function EmojiPicker({ value, onSelect, placeholder = '😀' }: EmojiPick
 
   const handleEmojiSelect = (emoji: string) => {
     onSelect(emoji)
-    setOpen(false)
-    setSearch('')
-    setVariantSelector(null)
+    toggle(false);
   }
 
+  // Show emoji-plus icon if value is null/empty
+  const showEmoji = value || ''
+  const triggerContent = showEmoji
+    ? showEmoji
+    : <SmilePlus className="w-6 h-6 text-muted-400" />
+
   return (
-    <Popover.Root open={open} onOpenChange={setOpen}>
+    <Popover.Root open={open} onOpenChange={toggle}>
       <Popover.Trigger asChild>
         <Button
           type="button"
           variant="outline"
-          className="h-10 w-10 p-0 text-2xl"
+          className="h-10 w-10 p-0 text-2xl flex items-center justify-center"
         >
-          {value || placeholder}
+          {triggerContent}
         </Button>
       </Popover.Trigger>
 
@@ -125,25 +138,30 @@ export function EmojiPicker({ value, onSelect, placeholder = '😀' }: EmojiPick
         >
           <div className="p-3 border-b border-border">
             <SearchInput
-              placeholder="Search emojis..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              placeholder={variants ? "Search variants..." : "Search emojis..."}
+              value={variants ? variantSearch : search}
+              onChange={(e) => variants ? setVariantSearch(e.target.value) : setSearch(e.target.value)}
             />
-            {value && (
-              <div className="flex justify-end mt-2">
+            {/* Show current selection with remove button, styled inline */}
+            {value && !variants && (
+              <div className="flex items-center gap-2 mt-2">
+                <span className="text-2xl">{value}</span>
                 <button
                   type="button"
                   onClick={() => handleEmojiSelect('')}
                   className="text-xs text-muted-600 hover:text-destructive-600 flex items-center gap-1 px-2 py-1 rounded hover:bg-muted-100"
+                  title="Remove emoji"
                 >
                   <X className="h-3 w-3" />
-                  Use no emoji
                 </button>
               </div>
             )}
           </div>
 
-          <div className="max-h-80 overflow-y-auto p-3">
+          <div className={cn(
+            "max-h-80 overflow-y-auto p-3",
+            variants ? 'hidden' : 'block'
+          )}>
             {Object.entries(filteredGroups).map(([category, emojiGroups]) => (
               <div key={category} className="mb-4 last:mb-0">
                 <h3 className="text-xs font-semibold text-muted-600 uppercase mb-2">
@@ -175,37 +193,33 @@ export function EmojiPicker({ value, onSelect, placeholder = '😀' }: EmojiPick
             )}
           </div>
 
-          {variantSelector && (
-            <div className="absolute inset-0 bg-white/95 backdrop-blur-sm rounded-lg p-3 flex flex-col">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold text-muted-900">
-                  Variants for {variantSelector.baseName}
-                </h3>
+          {variants && (
+            <div className=" bg-white/95 backdrop-blur-sm rounded-lg p-3 flex flex-col">
+              <div className="flex items-center gap-2 mb-3">
                 <button
-                  onClick={() => setVariantSelector(null)}
+                  onClick={() => {
+                    setVariants(null)
+                    setVariantSearch('')
+                  }}
                   className="p-1 hover:bg-muted-100 rounded transition-colors"
+                  title="Back"
                 >
-                  <X className="h-4 w-4 text-muted-600" />
+                  <ArrowLeft className="h-4 w-4 text-muted-600" />
                 </button>
+                <h3 className="text-sm font-semibold text-muted-900 flex-1">
+                  Variants for {variants.baseName}
+                </h3>
               </div>
-              <button
-                type="button"
-                onClick={() => handleEmojiSelect('')}
-                className="self-end text-[11px] text-muted-600 hover:text-destructive-600 flex items-center gap-1 px-2 py-1 rounded hover:bg-muted-100 mb-2"
-              >
-                <X className="h-3 w-3" />
-                Use no emoji
-              </button>
               <div className="space-y-1 overflow-y-auto flex-1">
-                <button
-                  type="button"
-                  onClick={() => handleEmojiSelect(variantSelector.base)}
-                  className="w-full flex items-center gap-2 p-1.5 rounded hover:bg-primary-50 transition-colors text-left text-sm"
-                >
-                  <span className="text-lg min-w-fit">{variantSelector.base}</span>
-                  <span className="text-muted-700 text-xs truncate">Default</span>
-                </button>
-                {variantSelector.variants.map((variant, index) => (
+                {/* Filter variants by variantSearch */}
+                {[
+                  { emoji: variants.base, name: variants.baseName },
+                  ...variants.variants
+                ].filter(v =>
+                  !variantSearch.trim() ||
+                  v.name.toLowerCase().includes(variantSearch.toLowerCase()) ||
+                  v.emoji.includes(variantSearch)
+                ).map((variant, index) => (
                   <button
                     key={`${variant.emoji}-${index}`}
                     type="button"
@@ -216,6 +230,16 @@ export function EmojiPicker({ value, onSelect, placeholder = '😀' }: EmojiPick
                     <span className="text-muted-700 text-xs truncate">{variant.name}</span>
                   </button>
                 ))}
+                {/* If no variants match search */}
+                {[
+                  { emoji: variants.base, name: 'Default' },
+                  ...variants.variants
+                ].filter(v =>
+                  v.name.toLowerCase().includes(variantSearch.toLowerCase()) ||
+                  v.emoji.includes(variantSearch)
+                ).length === 0 && (
+                    <div className="text-center text-muted-500 py-4 text-xs">No variants found</div>
+                  )}
               </div>
             </div>
           )}

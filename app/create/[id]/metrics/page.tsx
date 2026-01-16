@@ -2,18 +2,19 @@
 
 import { useState, useEffect, use } from 'react'
 import { useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
-import { useQuery, useMutation } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useProtectedPage } from '@/hooks/use-protected-page'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Plus, Trash2, ArrowRight, ArrowLeft, Lightbulb, Tag, FileText, ArrowDown, ArrowUp, Palette } from 'lucide-react'
 import Link from 'next/link'
-import { getMetricColor, getMetricColorInfo, METRIC_COLOR_THEME } from '@/lib/metric-colors'
+import { getColorThemeClassByIndex, getColorThemeByIndex, COLOR_THEME, getColorTheme } from '@/lib/colors'
 import { ErrorBanner } from '@/components/ui/error-banner'
 import { EmojiPicker } from '@/components/ui/emoji-picker'
 import { ColorPicker } from '@/components/ui/color-picker'
 import { AppLayoutBackground } from '@/components/app-layout-background'
+import { StepProgress } from '@/components/step-progress'
 
 interface Metric {
   id: string
@@ -28,7 +29,8 @@ interface Metric {
 
 export default function MetricsPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
-  const { status } = useSession()
+  const queryClient = useQueryClient()
+  useProtectedPage()
   const { id } = use(params)
   const [metrics, setMetrics] = useState<Metric[]>([])
   const [optionsOpen, setOptionsOpen] = useState<string | null>(null)
@@ -40,20 +42,14 @@ export default function MetricsPage({ params }: { params: Promise<{ id: string }
       if (!res.ok) throw new Error('Failed to fetch metrics')
       return res.json() as Promise<Metric[]>
     },
-    enabled: status === 'authenticated',
   })
 
   useEffect(() => {
     if (fetchedMetrics) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setMetrics(fetchedMetrics)
     }
   }, [fetchedMetrics])
-
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin')
-    }
-  }, [status, router])
 
   const saveMetricsMutation = useMutation({
     mutationFn: async (metricsToSave: Metric[]) => {
@@ -69,7 +65,8 @@ export default function MetricsPage({ params }: { params: Promise<{ id: string }
 
       return res.json()
     },
-    onSuccess: () => {
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['metrics', id] })
       router.push(`/create/${id}/archetypes`)
     },
   })
@@ -83,7 +80,7 @@ export default function MetricsPage({ params }: { params: Promise<{ id: string }
       maxLabel: '',
       order: metrics.length,
       emoji: '',
-      color: getMetricColorInfo(metrics.length).name,
+      color: getColorThemeByIndex(metrics.length).name,
     }
     setMetrics([...metrics, newMetric])
   }
@@ -144,8 +141,8 @@ export default function MetricsPage({ params }: { params: Promise<{ id: string }
           <CardContent className="space-y-6">
             <ErrorBanner error={saveMetricsMutation.error} />
             {metrics.map((metric, index) => {
-              const colorInfo = METRIC_COLOR_THEME.find((c) => c.name === metric.color)
-              const colorClass = colorInfo?.class || getMetricColor(index)
+              const colorInfo = getColorTheme(metric.color);
+              const colorClass = colorInfo?.class ?? getColorThemeClassByIndex(index)
               const name = metric.name || `Metric ${index + 1}`
               const description = metric.description || 'Personality dimension'
               const min = metric.minLabel || 'Min'

@@ -1,8 +1,10 @@
+import { nonNull } from "./utils";
+
 /**
  * Color palette for metric badges and UI elements with human-friendly names.
  * Uses Tailwind's default color palette for a vibrant, diverse spectrum.
  */
-export const METRIC_COLOR_THEME = [
+export const COLOR_THEME = [
   { name: 'blue', label: 'Blue', class: 'bg-gradient-to-br from-blue-500 to-blue-600' },
   { name: 'purple', label: 'Purple', class: 'bg-gradient-to-br from-purple-500 to-purple-600' },
   { name: 'pink', label: 'Pink', class: 'bg-gradient-to-br from-pink-500 to-pink-600' },
@@ -17,19 +19,25 @@ export const METRIC_COLOR_THEME = [
   { name: 'fuchsia', label: 'Fuchsia', class: 'bg-gradient-to-br from-fuchsia-500 to-fuchsia-600' },
 ] as const
 
-/**
- * Get a color class for a metric by index
- * @param index - The metric index (0-based)
- * @returns A Tailwind gradient class string
- */
-export function getMetricColor(index: number): string {
-  return METRIC_COLOR_THEME[index % METRIC_COLOR_THEME.length].class
-}
+export type ColorThemeName = typeof COLOR_THEME[number]['name'];
 
 /**
- * Get the named color object for a metric by index
- * @param index - The metric index (0-based)
+ * Get color theme by name or index. Defaults to first color if not found.
  */
-export function getMetricColorInfo(index: number) {
-  return METRIC_COLOR_THEME[index % METRIC_COLOR_THEME.length]
-}
+export const getColorTheme = (name?: string | null, index?: number) =>
+  COLOR_THEME.find(c => c.name === name) ?? COLOR_THEME[(index ?? 0) % COLOR_THEME.length];
+
+export const getColorThemeByName = (name: ColorThemeName) =>
+  nonNull(COLOR_THEME.find(c => c.name === name));
+
+export const getColorThemeLabel = (name: ColorThemeName) =>
+  nonNull(COLOR_THEME.find(c => c.name === name)).label;
+
+export const getColorThemeClass = (name: ColorThemeName) =>
+  nonNull(COLOR_THEME.find(c => c.name === name)).class;
+
+export const getColorThemeClassByIndex = (index: number): string =>
+  COLOR_THEME[index % COLOR_THEME.length].class;
+
+export const getColorThemeByIndex = (index: number) =>
+  COLOR_THEME[index % COLOR_THEME.length];

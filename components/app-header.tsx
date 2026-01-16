@@ -13,17 +13,17 @@ export function AppHeader() {
   const [open, setOpen] = useState(false)
 
   const userImage = session?.user?.image
-  const userName = session?.user?.name || 'User'
+  const userName = session?.user?.name ?? 'User'
   const initial = userName.charAt(0).toUpperCase()
 
   return (
-    <header className="w-full border-b border-muted-200 bg-gradient-to-r from-primary-100 via-accent-100 to-secondary-100 shadow-lg">
+    <header className="w-full border-b border-muted-200 bg-linear-to-r from-primary-100 via-accent-100 to-secondary-100 shadow-lg">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <div className="h-9 w-9 relative">
             <Image src="/logo.png" alt="Personame" fill sizes="36px" className="object-contain" />
           </div>
-          <span className="text-xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
+          <span className="text-xl font-bold bg-linear-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
             Personame
           </span>
         </Link>
@@ -32,7 +32,7 @@ export function AppHeader() {
           {status === 'authenticated' ? (
             <>
               <Link href="/create">
-                <Button className="bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white shadow-md hover:shadow-lg transition-shadow px-4 h-9 text-sm font-semibold">
+                <Button className="bg-linear-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white shadow-md hover:shadow-lg transition-shadow px-4 h-9 text-sm font-semibold">
                   <Sparkles className="h-4 w-4 mr-1.5" />
                   Create
                 </Button>
@@ -45,7 +45,7 @@ export function AppHeader() {
                   >
                     {userImage ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={userImage} alt="avatar" className="h-full w-full object-cover" />
+                      <img src={userImage} alt="avatar" className="h-full w-full object-cover" referrerPolicy="no-referrer" />
                     ) : (
                       <span className="text-sm font-semibold text-primary-700">{initial}</span>
                     )}
