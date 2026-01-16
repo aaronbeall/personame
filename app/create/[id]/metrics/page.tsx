@@ -141,7 +141,7 @@ export default function MetricsPage({ params }: { params: Promise<{ id: string }
             <ErrorBanner error={saveMetricsMutation.error} />
             {metrics.map((metric, index) => {
               const colorInfo = getColorTheme(metric.color, index);
-              const colorClass = colorInfo.class
+              const colorClass = colorInfo.bgClass;
               const name = metric.name || `Metric ${index + 1}`
               const description = metric.description || 'Personality dimension'
               const min = metric.minLabel || 'Min'

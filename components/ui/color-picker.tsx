@@ -3,18 +3,20 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import * as Popover from '@radix-ui/react-popover'
-import { COLOR_THEME } from '@/lib/colors'
+import { COLOR_THEME, findColorThemeByName, getColorTheme } from '@/lib/colors'
 import { Check } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface ColorPickerProps {
   value?: string
+  showLabel?: boolean
   onSelect: (colorName: string) => void
 }
 
-export function ColorPicker({ value, onSelect }: ColorPickerProps) {
+export function ColorPicker({ value, showLabel = true, onSelect }: ColorPickerProps) {
   const [open, setOpen] = useState(false)
 
-  const selectedColor = COLOR_THEME.find((c) => c.name === value)
+  const selectedColor = findColorThemeByName(value)
 
   const handleColorSelect = (colorName: string) => {
     onSelect(colorName)
@@ -27,10 +29,10 @@ export function ColorPicker({ value, onSelect }: ColorPickerProps) {
         <Button
           type="button"
           variant="outline"
-          className="h-10 w-16 p-0 relative overflow-hidden"
+          className={cn("h-10 p-0 relative overflow-hidden", showLabel ? "w-24 justify-center" : "w-10")}
         >
           <div
-            className={`absolute inset-0 ${selectedColor?.class ?? 'bg-linear-to-br from-gray-300 to-gray-400'}`}
+            className={`absolute inset-0 ${selectedColor?.bgClass ?? 'bg-linear-to-br from-gray-300 to-gray-400'}`}
           />
           <span className="relative z-10 text-white font-medium text-xs drop-shadow">
             {selectedColor?.label ?? 'Color'}
@@ -53,15 +55,17 @@ export function ColorPicker({ value, onSelect }: ColorPickerProps) {
                 className="relative group"
               >
                 <div
-                  className={`h-16 rounded-lg ${color.class} transition-transform group-hover:scale-105 flex items-center justify-center`}
+                  className={`h-16 rounded-lg ${color.bgClass} transition-transform group-hover:scale-105 flex items-center justify-center`}
                 >
                   {value === color.name && (
                     <Check className="h-5 w-5 text-white drop-shadow" />
                   )}
                 </div>
-                <p className="text-xs text-center mt-1 text-muted-700">
-                  {color.label}
-                </p>
+                {showLabel && (
+                  <p className="text-xs text-center mt-1 text-muted-700">
+                    {color.label}
+                  </p>
+                )}
               </button>
             ))}
           </div>

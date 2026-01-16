@@ -56,3 +56,12 @@ export function assertNonNull<T, K extends keyof T>(value: T | null | undefined,
     }
   });
 }
+
+export function getInitials(name?: string, maxLength: number = 2): string {
+  if (!name) return ''
+  const words = name.trim().split(' ')
+  // Strip common prefixes/suffixes
+  const filteredWords = words.filter(word => !['the', 'a', 'an', 'of', 'and', 'jr', 'sr', 'ii', 'iii', 'iv'].includes(word.toLowerCase()))
+  const initials = filteredWords.map(word => word.charAt(0).toUpperCase()).slice(0, maxLength).join('')
+  return initials;
+}

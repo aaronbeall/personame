@@ -9,7 +9,7 @@ import { EmojiPicker } from '@/components/ui/emoji-picker'
 import { ColorPicker } from '@/components/ui/color-picker'
 import { X, Palette, Save } from 'lucide-react'
 import { COLOR_THEME, getColorTheme } from '@/lib/colors'
-import { getTempId } from '@/lib/utils'
+import { getInitials, getTempId } from '@/lib/utils'
 import { MetricTargetEditor } from './metric-target-editor'
 import { MetricTooltip } from './metric-tooltip'
 
@@ -28,7 +28,7 @@ export function ArchetypeEditor({
 }: ArchetypeEditorProps) {
   const [name, setName] = useState(archetype.name)
   const [description, setDescription] = useState(archetype.description ?? '')
-  const [emoji, setEmoji] = useState(archetype.emoji ?? '')
+  const [emoji, setEmoji] = useState(archetype.emoji)
   const [color, setColor] = useState(archetype.color ?? COLOR_THEME[0].name)
   const [metricTargets, setMetricTargets] = useState<ArchetypeMetric[]>(
     archetype.metrics.length > 0
@@ -73,8 +73,8 @@ export function ArchetypeEditor({
       {/* Header with Profile */}
       <div className="flex items-start gap-6">
         <div className="flex flex-col items-center flex-shrink-0">
-          <div className={`h-24 w-24 rounded-full ${colorInfo.bgClass} flex items-center justify-center text-white text-4xl shadow-lg`}>
-            {emoji || '✨'}
+          <div className={`h-24 w-24 rounded-full ${colorInfo.bgClass} flex items-center justify-center ${colorInfo.textClass} text-4xl shadow-lg`}>
+            {emoji ?? getInitials(name)}
           </div>
           <div className="mt-2">
             {!showStyleOptions ? (

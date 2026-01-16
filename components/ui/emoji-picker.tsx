@@ -9,8 +9,8 @@ import { SearchInput } from './search-input'
 import { cn } from '@/lib/utils'
 
 interface EmojiPickerProps {
-  value?: string
-  onSelect: (emoji: string) => void
+  value?: string | null
+  onSelect: (emoji: string | null) => void
   placeholder?: string
 }
 
@@ -107,7 +107,7 @@ export function EmojiPicker({ value, onSelect }: EmojiPickerProps) {
     }
   }
 
-  const handleEmojiSelect = (emoji: string) => {
+  const handleEmojiSelect = (emoji: string | null) => {
     onSelect(emoji)
     toggle(false);
   }
@@ -148,7 +148,7 @@ export function EmojiPicker({ value, onSelect }: EmojiPickerProps) {
                 <span className="text-2xl">{value}</span>
                 <button
                   type="button"
-                  onClick={() => handleEmojiSelect('')}
+                  onClick={() => handleEmojiSelect(null)}
                   className="text-xs text-muted-600 hover:text-destructive-600 flex items-center gap-1 px-2 py-1 rounded hover:bg-muted-100"
                   title="Remove emoji"
                 >

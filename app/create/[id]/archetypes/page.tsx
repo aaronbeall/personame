@@ -143,7 +143,7 @@ export default function ArchetypesPage({ params }: { params: Promise<{ id: strin
                     <button
                       className={
                         cn("px-3 py-1.5 rounded-lg border border-opacity-20 text-xs font-medium text-white cursor-help transition-opacity hover:opacity-90",
-                          getColorTheme(metric.color).class
+                          getColorTheme(metric.color).bgClass
                         )
                       }
                     >

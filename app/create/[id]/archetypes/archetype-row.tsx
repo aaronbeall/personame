@@ -7,6 +7,7 @@ import { Edit2, Trash2 } from 'lucide-react'
 import { getColorTheme } from '@/lib/colors'
 import { Tooltip } from '@/components/ui/tooltip'
 import { ArchetypeEditor } from './archetype-editor'
+import { getInitials } from '@/lib/utils'
 
 interface ArchetypeRowProps {
   archetype: Archetype & { metrics: ArchetypeMetric[] }
@@ -43,8 +44,8 @@ export function ArchetypeRow({
       {/* Header with badge and actions */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-4">
-          <div className={`h-20 w-20 rounded-full ${colorInfo.bgClass ?? 'bg-primary-500'} flex items-center justify-center text-white text-4xl shadow-md`}>
-            {archetype.emoji || '✨'}
+          <div className={`h-20 w-20 rounded-full ${colorInfo.bgClass} flex items-center justify-center ${colorInfo.textClass} text-4xl shadow-md`}>
+            {archetype.emoji ?? getInitials(archetype.name)}
           </div>
           <div>
             <h3 className="text-2xl font-bold text-primary-900">{archetype.name}</h3>
