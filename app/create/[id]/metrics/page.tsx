@@ -1,20 +1,19 @@
 'use client'
 
-import { useState, useEffect, use } from 'react'
-import { useRouter } from 'next/navigation'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useProtectedPage } from '@/hooks/use-protected-page'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Plus, Trash2, ArrowRight, ArrowLeft, Lightbulb, Tag, FileText, ArrowDown, ArrowUp, Palette } from 'lucide-react'
-import Link from 'next/link'
-import { getColorThemeClassByIndex, getColorThemeByIndex, COLOR_THEME, getColorTheme } from '@/lib/colors'
-import { ErrorBanner } from '@/components/ui/error-banner'
-import { EmojiPicker } from '@/components/ui/emoji-picker'
-import { ColorPicker } from '@/components/ui/color-picker'
 import { AppLayoutBackground } from '@/components/app-layout-background'
-import { StepProgress } from '@/components/step-progress'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { ColorPicker } from '@/components/ui/color-picker'
+import { EmojiPicker } from '@/components/ui/emoji-picker'
+import { ErrorBanner } from '@/components/ui/error-banner'
+import { Input } from '@/components/ui/input'
+import { useProtectedPage } from '@/hooks/use-protected-page'
+import { getColorTheme, getColorThemeByIndex } from '@/lib/colors'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, FileText, Lightbulb, Palette, Plus, Tag, Trash2 } from 'lucide-react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { use, useEffect, useState } from 'react'
 
 interface Metric {
   id: string
@@ -141,8 +140,8 @@ export default function MetricsPage({ params }: { params: Promise<{ id: string }
           <CardContent className="space-y-6">
             <ErrorBanner error={saveMetricsMutation.error} />
             {metrics.map((metric, index) => {
-              const colorInfo = getColorTheme(metric.color);
-              const colorClass = colorInfo?.class ?? getColorThemeClassByIndex(index)
+              const colorInfo = getColorTheme(metric.color, index);
+              const colorClass = colorInfo.class
               const name = metric.name || `Metric ${index + 1}`
               const description = metric.description || 'Personality dimension'
               const min = metric.minLabel || 'Min'

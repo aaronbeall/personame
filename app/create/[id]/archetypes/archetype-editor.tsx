@@ -73,7 +73,7 @@ export function ArchetypeEditor({
       {/* Header with Profile */}
       <div className="flex items-start gap-6">
         <div className="flex flex-col items-center flex-shrink-0">
-          <div className={`h-24 w-24 rounded-full ${colorInfo.class} flex items-center justify-center text-white text-4xl shadow-lg`}>
+          <div className={`h-24 w-24 rounded-full ${colorInfo.bgClass} flex items-center justify-center text-white text-4xl shadow-lg`}>
             {emoji || '✨'}
           </div>
           <div className="mt-2">

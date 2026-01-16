@@ -43,7 +43,7 @@ export function ArchetypeRow({
       {/* Header with badge and actions */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-4">
-          <div className={`h-20 w-20 rounded-full ${colorInfo?.class ?? 'bg-primary-500'} flex items-center justify-center text-white text-4xl shadow-md`}>
+          <div className={`h-20 w-20 rounded-full ${colorInfo.bgClass ?? 'bg-primary-500'} flex items-center justify-center text-white text-4xl shadow-md`}>
             {archetype.emoji || '✨'}
           </div>
           <div>
@@ -101,7 +101,7 @@ export function ArchetypeRow({
                       <Tooltip content={<span>{Math.round(relevance * 100)}% importance</span>} side="top">
                         <div className="relative w-12 h-2 bg-muted-200 rounded-full overflow-hidden cursor-help">
                           <div
-                            className={colorInfo.class + " absolute left-0 top-0 h-full rounded-full transition-all"}
+                            className={colorInfo.bgClass + " absolute left-0 top-0 h-full rounded-full transition-all"}
                             style={{ width: `${Math.round(relevance * 100)}%`, opacity: 0.7 }}
                           />
                         </div>
@@ -110,7 +110,7 @@ export function ArchetypeRow({
                   </div>
                   <div className="w-full h-2 bg-muted-200 rounded-full overflow-hidden">
                     <div
-                      className={colorInfo.class + " h-full transition-all"}
+                      className={colorInfo.bgClass + " h-full transition-all"}
                       style={{ width: `${targetValue}%`, opacity: importanceOpacity }}
                     />
                   </div>
