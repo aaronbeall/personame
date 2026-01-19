@@ -54,3 +54,9 @@ export const getColorThemeHex = (name: ColorThemeName) =>
 
 export const getColorThemeByIndex = (index: number) =>
   COLOR_THEME[index % COLOR_THEME.length];
+
+export const getUnusedColorTheme = (usedColors: (string | null | undefined)[]) => {
+  const usedSet = new Set(usedColors);
+  const unused = COLOR_THEME.find(c => !usedSet.has(c.name));
+  return unused ?? COLOR_THEME[0];
+}

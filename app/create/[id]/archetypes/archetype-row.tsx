@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Metric, ArchetypeMetric, Archetype } from '@prisma/client'
-import { Edit2, Trash2 } from 'lucide-react'
+import { CircleDashed, Edit2, Trash2 } from 'lucide-react'
 import { getColorTheme } from '@/lib/colors'
 import { Tooltip } from '@/components/ui/tooltip'
 import { ArchetypeEditor } from './archetype-editor'
@@ -34,7 +34,13 @@ export function ArchetypeRow({
           onSave(updated)
           setIsEditing(false)
         }}
-        onCancel={() => setIsEditing(false)}
+        onCancel={() => {
+          if (!archetype.name) {
+            onDelete()
+          } else {
+            setIsEditing(false)
+          }
+        }}
       />
     )
   }

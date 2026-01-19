@@ -16,7 +16,7 @@ import { Metric, Archetype, ArchetypeMetric } from '@prisma/client'
 import { ArchetypeEditor } from './archetype-editor'
 import { cn, getTempId } from '@/lib/utils'
 import { Tooltip } from '@/components/ui/tooltip'
-import { getColorTheme } from '@/lib/colors'
+import { COLOR_THEME, getColorTheme, getUnusedColorTheme } from '@/lib/colors'
 import { MetricTooltip } from './metric-tooltip'
 
 type ArchetypeWithMetrics = Archetype & { metrics: ArchetypeMetric[] }
@@ -76,12 +76,13 @@ export default function ArchetypesPage({ params }: { params: Promise<{ id: strin
 
   const handleAddArchetype = () => {
     const archetypeId = getTempId()
+    const color = getUnusedColorTheme(archetypes.map(a => a.color)).name;
     const newArchetype: ArchetypeWithMetrics = {
       id: archetypeId,
       name: '',
       description: null,
       emoji: null,
-      color: null,
+      color,
       imageUrl: null,
       order: archetypes.length,
       style: null,

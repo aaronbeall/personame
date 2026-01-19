@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Metric, ArchetypeMetric, Archetype } from '@prisma/client'
 import { EmojiPicker } from '@/components/ui/emoji-picker'
 import { ColorPicker } from '@/components/ui/color-picker'
-import { X, Palette, Save } from 'lucide-react'
+import { X, Palette, Save, CircleDashed } from 'lucide-react'
 import { COLOR_THEME, getColorTheme } from '@/lib/colors'
 import { getInitials, getTempId } from '@/lib/utils'
 import { MetricTargetEditor } from './metric-target-editor'
@@ -74,7 +74,7 @@ export function ArchetypeEditor({
       <div className="flex items-start gap-6">
         <div className="flex flex-col items-center flex-shrink-0">
           <div className={`h-24 w-24 rounded-full ${colorInfo.bgClass} flex items-center justify-center ${colorInfo.textClass} text-4xl shadow-lg`}>
-            {emoji ?? getInitials(name)}
+            {(emoji ?? getInitials(name)) || <CircleDashed className="h-10 w-10" />}
           </div>
           <div className="mt-2">
             {!showStyleOptions ? (
