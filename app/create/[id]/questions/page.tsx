@@ -254,6 +254,56 @@ export default function QuestionsPage({ params }: { params: Promise<{ id: string
       return handleAddQuestion()
     }
 
+    // Create min/max answers for slider
+    const minAnswerId = getTempId()
+    const maxAnswerId = getTempId()
+
+    const answers: (Answer & { weights: AnswerWeight[] })[] =
+      type === 'SLIDER'
+        ? [
+          {
+            id: minAnswerId,
+            text: 'Min',
+            order: 0,
+            emoji: null,
+            color: null,
+            style: null,
+            icon: null,
+            questionId: getTempId(), // Will be set when question is created
+            weights: metricsQuery.data?.map(m => ({
+              id: getTempId(),
+              metricId: m.id,
+              value: 0,
+              answerId: minAnswerId,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            })) || [],
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+          {
+            id: maxAnswerId,
+            text: 'Max',
+            order: 1,
+            emoji: null,
+            color: null,
+            style: null,
+            icon: null,
+            questionId: getTempId(), // Will be set when question is created
+            weights: metricsQuery.data?.map(m => ({
+              id: getTempId(),
+              metricId: m.id,
+              value: 0,
+              answerId: maxAnswerId,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            })) || [],
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        ]
+        : []
+
     const newQuestion: Question & { answers: (Answer & { weights: AnswerWeight[] })[] } = {
       id: getTempId(),
       text: type === 'SLIDER' ? 'New slider question' : 'New scale question',
@@ -265,10 +315,16 @@ export default function QuestionsPage({ params }: { params: Promise<{ id: string
       style: null,
       icon: null,
       pageId: currentPage.id,
-      answers: [],
+      answers,
       createdAt: new Date(),
       updatedAt: new Date(),
     }
+
+    // Update answer questionIds now that we have the question id
+    newQuestion.answers = newQuestion.answers.map(a => ({
+      ...a,
+      questionId: newQuestion.id,
+    }))
 
     const updatedPage = {
       ...currentPage,

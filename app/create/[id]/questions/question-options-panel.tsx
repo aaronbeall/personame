@@ -211,11 +211,52 @@ export function QuestionOptionsPanel({ question, metrics, onUpdate, onClose }: Q
         )}
 
         {(question.type === 'SLIDER' || question.type === 'SCALE') && (
-          <div className="p-3 bg-muted-50 rounded-lg border border-muted-200">
-            <p className="text-xs text-muted-600">
-              {question.type === 'SLIDER' && 'Slider questions allow users to select a value on a continuous scale.'}
-              {question.type === 'SCALE' && 'Scale questions let users rate from 1 to 5.'}
-            </p>
+          <div>
+            <label className="text-sm font-medium text-muted-700 mb-2 block">
+              {question.type === 'SLIDER' ? 'Slider Range' : 'Scale Options'}
+            </label>
+
+            {question.type === 'SLIDER' && (
+              <div className="space-y-3">
+                <div className="text-xs text-muted-600 mb-3">
+                  Define the minimum and maximum values for this slider. Users will select a value between these endpoints.
+                </div>
+                {question.answers.map((answer, idx) => {
+                  const isMin = idx === 0
+                  const label = isMin ? 'Min' : 'Max'
+                  return (
+                    <div key={answer.id} className="border border-muted-200 rounded-lg p-3 space-y-2">
+                      <div className="flex items-start gap-2">
+                        <div className="flex-1">
+                          <label className="text-xs font-semibold text-muted-600 mb-1 block">
+                            {label} Label
+                          </label>
+                          <Input
+                            value={answer.text}
+                            onChange={(e) => handleUpdateAnswer(answer.id, { text: e.target.value })}
+                            placeholder={`Enter ${label.toLowerCase()} label`}
+                          />
+                        </div>
+                      </div>
+
+                      <AnswerWeightsEditor
+                        answer={answer}
+                        metrics={metrics}
+                        onUpdateWeight={handleUpdateWeight}
+                      />
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+
+            {question.type === 'SCALE' && (
+              <div className="p-3 bg-muted-50 rounded-lg border border-muted-200">
+                <p className="text-xs text-muted-600">
+                  Scale questions let users rate from 1 to 5.
+                </p>
+              </div>
+            )}
           </div>
         )}
       </CardContent>
