@@ -98,6 +98,19 @@ export function EmojiPicker({ value, onSelect }: EmojiPickerProps) {
     return filtered
   }, [emojiGroups, search])
 
+  const filteredVariants = useMemo(() => {
+    if (!variants) return []
+    const term = variantSearch.trim().toLowerCase()
+    return [
+      { emoji: variants.base, name: variants.baseName || 'Default' },
+      ...variants.variants
+    ].filter((v) =>
+      !term ||
+      v.name.toLowerCase().includes(term) ||
+      v.emoji.includes(term)
+    )
+  }, [variants, variantSearch])
+
   const handleEmojiClick = (group: EmojiGroup) => {
     if (group.variants.length > 0) {
       setVariants(group)
@@ -210,36 +223,23 @@ export function EmojiPicker({ value, onSelect }: EmojiPickerProps) {
                   Variants for {variants.baseName}
                 </h3>
               </div>
-              <div className="space-y-1 overflow-y-auto flex-1">
-                {/* Filter variants by variantSearch */}
-                {[
-                  { emoji: variants.base, name: variants.baseName },
-                  ...variants.variants
-                ].filter(v =>
-                  !variantSearch.trim() ||
-                  v.name.toLowerCase().includes(variantSearch.toLowerCase()) ||
-                  v.emoji.includes(variantSearch)
-                ).map((variant, index) => (
-                  <button
-                    key={`${variant.emoji}-${index}`}
-                    type="button"
-                    onClick={() => handleEmojiSelect(variant.emoji)}
-                    className="w-full flex items-center gap-2 p-1.5 rounded hover:bg-primary-50 transition-colors text-left text-sm"
-                  >
-                    <span className="text-lg min-w-fit">{variant.emoji}</span>
-                    <span className="text-muted-700 text-xs truncate">{variant.name}</span>
-                  </button>
-                ))}
-                {/* If no variants match search */}
-                {[
-                  { emoji: variants.base, name: 'Default' },
-                  ...variants.variants
-                ].filter(v =>
-                  v.name.toLowerCase().includes(variantSearch.toLowerCase()) ||
-                  v.emoji.includes(variantSearch)
-                ).length === 0 && (
-                    <div className="text-center text-muted-500 py-4 text-xs">No variants found</div>
-                  )}
+              <div className="overflow-y-auto flex-1">
+                <div className="grid grid-cols-8 gap-1">
+                  {filteredVariants.map((variant, index) => (
+                    <button
+                      key={`${variant.emoji}-${index}`}
+                      type="button"
+                      onClick={() => handleEmojiSelect(variant.emoji)}
+                      className="h-8 w-8 flex items-center justify-center text-xl rounded hover:bg-primary-50 transition-colors text-center"
+                      title={variant.name}
+                    >
+                      {variant.emoji}
+                    </button>
+                  ))}
+                </div>
+                {filteredVariants.length === 0 && (
+                  <div className="text-center text-muted-500 py-4 text-xs">No variants found</div>
+                )}
               </div>
             </div>
           )}

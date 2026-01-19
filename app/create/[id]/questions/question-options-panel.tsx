@@ -5,9 +5,11 @@ import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { EmojiPicker } from '@/components/ui/emoji-picker'
-import { X, Plus, Trash2, CheckSquare, Sliders, BarChart3 } from 'lucide-react'
+import { Slider } from '@/components/ui/slider'
+import { X, Plus, Trash2, CheckSquare, Sliders, BarChart3, ChevronDown } from 'lucide-react'
 import { getTempId, cn } from '@/lib/utils'
 import { getColorTheme } from '@/lib/colors'
+import { useState } from 'react'
 
 interface QuestionOptionsPanelProps {
   question: Question & {
@@ -28,8 +30,9 @@ const QUESTION_TYPES = [
 
 export function QuestionOptionsPanel({ question, metrics, onUpdate, onClose }: QuestionOptionsPanelProps) {
   const handleAddAnswer = () => {
+    const answerId = getTempId()
     const newAnswer: Answer & { weights: AnswerWeight[] } = {
-      id: getTempId(),
+      id: answerId,
       text: `Option ${question.answers.length + 1}`,
       order: question.answers.length,
       emoji: null,
@@ -41,7 +44,7 @@ export function QuestionOptionsPanel({ question, metrics, onUpdate, onClose }: Q
         id: getTempId(),
         metricId: m.id,
         value: 0,
-        answerId: getTempId(),
+        answerId,
         createdAt: new Date(),
         updatedAt: new Date(),
       })),
@@ -168,6 +171,10 @@ export function QuestionOptionsPanel({ question, metrics, onUpdate, onClose }: Q
               {question.answers.map((answer) => (
                 <div key={answer.id} className="border border-muted-200 rounded-lg p-3 space-y-2">
                   <div className="flex items-start gap-2">
+                    <EmojiPicker
+                      value={answer.emoji || ''}
+                      onSelect={(emoji) => handleUpdateAnswer(answer.id, { emoji })}
+                    />
                     <Input
                       value={answer.text}
                       onChange={(e) => handleUpdateAnswer(answer.id, { text: e.target.value })}
@@ -185,34 +192,20 @@ export function QuestionOptionsPanel({ question, metrics, onUpdate, onClose }: Q
                     </Button>
                   </div>
 
-                  <div className="text-xs font-semibold text-muted-600 mb-1">Metric Weights</div>
-                  <div className="space-y-1">
-                    {metrics.map((metric) => {
-                      const weight = answer.weights.find(w => w.metricId === metric.id)
-                      return (
-                        <div key={metric.id} className="flex items-center gap-2">
-                          <div
-                            className={cn(
-                              "w-2 h-2 rounded-full",
-                              getColorTheme(metric.color).bgClass
-                            )}
-                          />
-                          <span className="text-xs flex-1 truncate">{metric.name}</span>
-                          <input
-                            type="number"
-                            value={weight?.value || 0}
-                            onChange={(e) => handleUpdateWeight(answer.id, metric.id, parseFloat(e.target.value) || 0)}
-                            className="w-16 px-2 py-1 text-xs border border-muted-300 rounded"
-                            step="1"
-                            min="-100"
-                            max="100"
-                          />
-                        </div>
-                      )
-                    })}
-                  </div>
+                  <AnswerWeightsEditor
+                    answer={answer}
+                    metrics={metrics}
+                    onUpdateWeight={handleUpdateWeight}
+                  />
                 </div>
               ))}
+              <button
+                type="button"
+                onClick={handleAddAnswer}
+                className="w-full mt-2 border-2 border-dashed border-muted-200 rounded-lg p-3 flex items-center justify-center text-muted-600 hover:border-primary-300 hover:text-primary-600"
+              >
+                <Plus className="h-4 w-4 mr-1" /> Add option
+              </button>
             </div>
           </div>
         )}
@@ -227,5 +220,100 @@ export function QuestionOptionsPanel({ question, metrics, onUpdate, onClose }: Q
         )}
       </CardContent>
     </Card>
+  )
+}
+
+
+const AnswerWeightsEditor = ({
+  answer,
+  metrics,
+  onUpdateWeight,
+}: {
+  answer: Answer & { weights: AnswerWeight[] }
+  metrics: Metric[]
+  onUpdateWeight: (answerId: string, metricId: string, value: number) => void
+}) => {
+  const [expanded, setExpanded] = useState(true)
+
+  return (
+    <fieldset className="rounded-lg border border-muted-200 bg-white/70 shadow-sm">
+      <legend className="px-2 text-[11px] font-semibold uppercase tracking-wide text-muted-600">
+        <button className='hover:text-primary-600' onClick={() => setExpanded(prev => !prev)}><ChevronDown className={cn("inline-block mr-1 h-4 w-4 transition-transform", expanded ? "rotate-0" : "-rotate-90")} /> Metric Weights</button>
+      </legend>
+      {expanded ? (
+        <div className="divide-y divide-muted-100">
+          {metrics.map((metric) => {
+            const weight = answer.weights.find(w => w.metricId === metric.id)
+            const weightValue = weight?.value ?? 0
+            return (
+              <div
+                key={metric.id}
+                className={cn(
+                  "flex items-center gap-2 px-2 py-2",
+                  weightValue === 0 ? "opacity-60" : ""
+                )}
+              >
+                <div
+                  className={cn(
+                    "w-2 h-2 rounded-full",
+                    getColorTheme(metric.color).bgClass
+                  )}
+                />
+                <span className="text-xs w-28 truncate">{metric.name}</span>
+                <Slider
+                  color={metric.color ?? undefined}
+                  center={0}
+                  min={-100}
+                  max={100}
+                  step={1}
+                  value={[weightValue]}
+                  onValueChange={(vals) => onUpdateWeight(answer.id, metric.id, (vals?.[0] ?? 0))}
+                  className="flex-1"
+                />
+                <Input
+                  type="number"
+                  value={weightValue}
+                  onChange={(e) => onUpdateWeight(answer.id, metric.id, parseFloat(e.target.value) || 0)}
+                  min={-100}
+                  max={100}
+                  step={1}
+                  className="w-16 h-8 px-1.5 py-1 text-xs"
+                />
+              </div>
+            )
+          })}
+        </div>
+      ) : (
+        <div className="px-2 py-2 flex flex-wrap gap-2">
+          {(() => {
+            const nonZeroWeights = answer.weights.filter(w => w.value !== 0)
+            const maxAbsValue = Math.max(...nonZeroWeights.map(w => Math.abs(w.value)), 1)
+            return nonZeroWeights.map(w => {
+              const metric = metrics.find(m => m.id === w.metricId)
+              if (!metric) return null
+              const { bgClass, bgLightClass, hex } = getColorTheme(metric.color)
+              const scale = Math.max(0.85, Math.abs(w.value) / maxAbsValue) // Min scale 0.85
+              return (
+                <div key={w.metricId} className={cn(
+                  "inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium transition-transform origin-left",
+                  bgLightClass
+                )} style={{ color: hex, transform: `scale(${scale})` }}>
+                  <div
+                    className={cn(
+                      "w-1.5 h-1.5 rounded-full",
+                      bgClass
+                    )}
+                  />
+                  <span className="whitespace-nowrap">{metric.name} {w.value >= 0 ? '+' : ''}{w.value}</span>
+                </div>
+              )
+            })
+          })()}
+          {answer.weights.every(w => w.value === 0) && (
+            <span className="text-xs text-muted-400 italic">No weights set</span>
+          )}
+        </div>
+      )}
+    </fieldset>
   )
 }
