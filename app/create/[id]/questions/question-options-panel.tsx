@@ -258,17 +258,20 @@ export function QuestionOptionsPanel({ question, metrics, onUpdate, onClose }: Q
                   const label = isMin ? 'Min' : 'Max'
                   return (
                     <div key={answer.id} className="border border-muted-200 rounded-lg p-3 space-y-2">
-                      <div className="flex items-start gap-2">
-                        <div className="flex-1">
-                          <label className="text-xs font-semibold text-muted-600 mb-1 block">
-                            {label} Label
-                          </label>
-                          <Input
-                            value={answer.text}
-                            onChange={(e) => handleUpdateAnswer(answer.id, { text: e.target.value })}
-                            placeholder={`Enter ${label.toLowerCase()} label`}
-                          />
-                        </div>
+                      <label className="text-xs font-semibold text-muted-600 block">
+                        {label} Label
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <EmojiPicker
+                          value={answer.emoji || ''}
+                          onSelect={(emoji) => handleUpdateAnswer(answer.id, { emoji })}
+                        />
+                        <Input
+                          value={answer.text}
+                          onChange={(e) => handleUpdateAnswer(answer.id, { text: e.target.value })}
+                          placeholder={`Enter ${label.toLowerCase()} label`}
+                          className="flex-1"
+                        />
                       </div>
 
                       <AnswerWeightsEditor
@@ -505,18 +508,25 @@ function ScaleEditor({ question, metrics, onUpdateAnswer, onUpdateWeight, onUpda
     <div className="space-y-4">
       <div className="space-y-2">
         <label className="text-xs font-semibold text-muted-600">Endpoints</label>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-3">
           {question.answers.slice(0, 2).map((answer, idx) => {
             const isMin = idx === 0
             const label = isMin ? 'Min' : 'Max'
             return (
-              <div key={answer.id}>
-                <label className="text-xs text-muted-600 mb-1 block">{label}</label>
-                <Input
-                  value={answer.text}
-                  onChange={(e) => onUpdateAnswer(answer.id, { text: e.target.value })}
-                  placeholder={`${label} label`}
-                />
+              <div key={answer.id} className="space-y-1.5">
+                <label className="text-xs font-semibold text-muted-600 block">{label}</label>
+                <div className="flex items-center gap-2">
+                  <EmojiPicker
+                    value={answer.emoji || ''}
+                    onSelect={(emoji) => onUpdateAnswer(answer.id, { emoji })}
+                  />
+                  <Input
+                    value={answer.text}
+                    onChange={(e) => onUpdateAnswer(answer.id, { text: e.target.value })}
+                    placeholder={`${label} label`}
+                    className="flex-1"
+                  />
+                </div>
               </div>
             )
           })}
