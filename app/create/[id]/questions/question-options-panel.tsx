@@ -10,6 +10,7 @@ import { X, Plus, Trash2, CheckSquare, Sliders, BarChart3, ChevronDown } from 'l
 import { getTempId, cn } from '@/lib/utils'
 import { getColorTheme } from '@/lib/colors'
 import { useState } from 'react'
+import { createDefaultAnswers } from './question-defaults'
 
 interface QuestionOptionsPanelProps {
   question: Question & {
@@ -29,6 +30,11 @@ const QUESTION_TYPES = [
 ] as const
 
 export function QuestionOptionsPanel({ question, metrics, onUpdate, onClose }: QuestionOptionsPanelProps) {
+  // Store answers by question type to restore when switching back
+  const [rememberedAnswers, setRememberedAnswers] = useState<Record<string, (Answer & { weights: AnswerWeight[] })[]>>({
+    [question.type]: question.answers,
+  })
+
   const handleAddAnswer = () => {
     const answerId = getTempId()
     const newAnswer: Answer & { weights: AnswerWeight[] } = {
@@ -129,7 +135,33 @@ export function QuestionOptionsPanel({ question, metrics, onUpdate, onClose }: Q
             {QUESTION_TYPES.map((type) => (
               <button
                 key={type.value}
-                onClick={() => onUpdate({ ...question, type: type.value })}
+                onClick={() => {
+                  if (type.value !== question.type) {
+                    // Store current answers for current type
+                    setRememberedAnswers(prev => ({
+                      ...prev,
+                      [question.type]: question.answers,
+                    }))
+
+                    // Check if we have remembered answers for the new type
+                    let newAnswers: (Answer & { weights: AnswerWeight[] })[]
+                    if (rememberedAnswers[type.value]) {
+                      // Restore previously saved answers
+                      newAnswers = rememberedAnswers[type.value]
+                    } else {
+                      // Generate default answers for the new type
+                      const defaultAnswers = createDefaultAnswers(type.value, metrics)
+                      newAnswers = defaultAnswers.map(a => ({
+                        ...a,
+                        questionId: question.id,
+                      }))
+                    }
+
+                    // Update question with new type and answers
+                    const updatedQuestion = { ...question, type: type.value, answers: newAnswers }
+                    onUpdate(updatedQuestion)
+                  }
+                }}
                 className={cn(
                   "p-3 rounded-lg border-2 text-center transition-all",
                   question.type === type.value
@@ -386,9 +418,10 @@ const SCALE_PRESETS = [
   { name: 'Positivity', values: ['Very negative', 'Negative', 'Neutral', 'Positive', 'Very positive'] },
   { name: 'Emojis 😀', values: ['😞', '😐', '😊', '😀', '😍'] },
   { name: '1-5 Hearts ❤️', values: ['❤️', '❤️❤️', '❤️❤️❤️', '❤️❤️❤️❤️', '❤️❤️❤️❤️❤️'] },
-  { name: 'Sunshine 🌦️', values: ['🌧️', '🌦️', '🌤️', '☀️', '🌈'] },
   { name: 'Naughtiness 😈', values: ['😈', '😏', '😑', '🙂', '😇'] },
-  { name: 'Reactions 👍', values: ['🤬', '👎', '🤷', '👍', '🥳'] }
+  { name: 'Reactions 👍', values: ['🤬', '👎', '🤷', '👍', '🥳'] },
+  { name: 'Sunshine 🌦️', values: ['🌧️', '🌦️', '🌤️', '☀️', '🌈'] },
+  { name: 'Sassiness 😼', values: ['🙄', '🤨', '😐', '😉', '😜'] },
 ]
 
 
