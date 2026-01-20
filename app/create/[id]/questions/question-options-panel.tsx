@@ -251,11 +251,13 @@ export function QuestionOptionsPanel({ question, metrics, onUpdate, onClose }: Q
             )}
 
             {question.type === 'SCALE' && (
-              <div className="p-3 bg-muted-50 rounded-lg border border-muted-200">
-                <p className="text-xs text-muted-600">
-                  Scale questions let users rate from 1 to 5.
-                </p>
-              </div>
+              <ScaleEditor
+                question={question}
+                metrics={metrics}
+                onUpdateAnswer={handleUpdateAnswer}
+                onUpdateWeight={handleUpdateWeight}
+                onUpdateAnswers={(answers) => onUpdate({ ...question, answers })}
+              />
             )}
           </div>
         )}
@@ -266,10 +268,12 @@ export function QuestionOptionsPanel({ question, metrics, onUpdate, onClose }: Q
 
 
 const AnswerWeightsEditor = ({
+  label = 'Metric Weights',
   answer,
   metrics,
   onUpdateWeight,
 }: {
+  label?: string
   answer: Answer & { weights: AnswerWeight[] }
   metrics: Metric[]
   onUpdateWeight: (answerId: string, metricId: string, value: number) => void
@@ -279,7 +283,7 @@ const AnswerWeightsEditor = ({
   return (
     <fieldset className="rounded-lg border border-muted-200 bg-white/70 shadow-sm">
       <legend className="px-2 text-[11px] font-semibold uppercase tracking-wide text-muted-600">
-        <button className='hover:text-primary-600' onClick={() => setExpanded(prev => !prev)}><ChevronDown className={cn("inline-block mr-1 h-4 w-4 transition-transform", expanded ? "rotate-0" : "-rotate-90")} /> Metric Weights</button>
+        <button className='hover:text-primary-600' onClick={() => setExpanded(prev => !prev)}><ChevronDown className={cn("inline-block mr-1 h-4 w-4 transition-transform", expanded ? "rotate-0" : "-rotate-90")} /> {label}</button>
       </legend>
       {expanded ? (
         <div className="divide-y divide-muted-100">
@@ -356,5 +360,209 @@ const AnswerWeightsEditor = ({
         </div>
       )}
     </fieldset>
+  )
+}
+
+interface ScaleEditorProps {
+  question: Question & {
+    answers: (Answer & {
+      weights: AnswerWeight[]
+    })[]
+  }
+  metrics: Metric[]
+  onUpdateAnswer: (answerId: string, updates: Partial<Answer>) => void
+  onUpdateWeight: (answerId: string, metricId: string, value: number) => void
+  onUpdateAnswers: (answers: (Answer & { weights: AnswerWeight[] })[]) => void
+}
+
+const SCALE_PRESETS = [
+  { name: '1-5', values: ['1', '2', '3', '4', '5'] },
+  { name: '1-5 Stars ⭐', values: ['⭐', '⭐⭐', '⭐⭐⭐', '⭐⭐⭐⭐', '⭐⭐⭐⭐⭐'] },
+  { name: 'Importance', values: ['Not important', 'Slightly important', 'Important', 'Very important', 'Critical'] },
+  { name: 'Agreement', values: ['Strongly disagree', 'Disagree', 'Neutral', 'Agree', 'Strongly agree'] },
+  { name: 'Frequency', values: ['Never', 'Rarely', 'Sometimes', 'Often', 'Always'] },
+  { name: 'Quality', values: ['Poor', 'Fair', 'Good', 'Very good', 'Excellent'] },
+  { name: 'Likelihood', values: ['Very unlikely', 'Unlikely', 'Neutral', 'Likely', 'Very likely'] },
+  { name: 'Positivity', values: ['Very negative', 'Negative', 'Neutral', 'Positive', 'Very positive'] },
+  { name: 'Emojis 😀', values: ['😞', '😐', '😊', '😀', '😍'] },
+  { name: '1-5 Hearts ❤️', values: ['❤️', '❤️❤️', '❤️❤️❤️', '❤️❤️❤️❤️', '❤️❤️❤️❤️❤️'] },
+  { name: 'Sunshine 🌦️', values: ['🌧️', '🌦️', '🌤️', '☀️', '🌈'] },
+  { name: 'Naughtiness 😈', values: ['😈', '😏', '😑', '🙂', '😇'] },
+  { name: 'Reactions 👍', values: ['🤬', '👎', '🤷', '👍', '🥳'] }
+]
+
+
+function ScaleEditor({ question, metrics, onUpdateAnswer, onUpdateWeight, onUpdateAnswers }: ScaleEditorProps) {
+  const [showPresets, setShowPresets] = useState(false)
+  const scalePointAnswers = question.answers.slice(2)
+
+  const handleApplyPreset = (preset: typeof SCALE_PRESETS[0]) => {
+    const endpointAnswers = question.answers.slice(0, 2)
+    const newScalePointAnswers = preset.values.map((label, idx) => {
+      const existingAnswer = question.answers[2 + idx]
+      if (existingAnswer) {
+        return { ...existingAnswer, text: label }
+      }
+      const newAnswerId = getTempId()
+      return {
+        id: newAnswerId,
+        text: label,
+        order: 2 + idx,
+        emoji: null,
+        color: null,
+        style: null,
+        icon: null,
+        questionId: question.id,
+        weights: metrics.map(m => ({
+          id: getTempId(),
+          metricId: m.id,
+          value: 0,
+          answerId: newAnswerId,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+    })
+    onUpdateAnswers([...endpointAnswers, ...newScalePointAnswers])
+    setShowPresets(false)
+  }
+
+  const handleAddLabel = () => {
+    const newAnswerId = getTempId()
+    const newAnswer: Answer & { weights: AnswerWeight[] } = {
+      id: newAnswerId,
+      text: `${scalePointAnswers.length + 1}`,
+      order: question.answers.length,
+      emoji: null,
+      color: null,
+      style: null,
+      icon: null,
+      questionId: question.id,
+      weights: metrics.map(m => ({
+        id: getTempId(),
+        metricId: m.id,
+        value: 0,
+        answerId: newAnswerId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+    onUpdateAnswers([...question.answers, newAnswer])
+  }
+
+  const handleDeleteLabel = (idx: number) => {
+    const updatedAnswers = question.answers.filter((_, i) => i !== 2 + idx)
+    onUpdateAnswers(updatedAnswers)
+  }
+
+  const handleUpdateLabel = (idx: number, value: string) => {
+    const scalePointAnswer = question.answers[2 + idx]
+    if (scalePointAnswer) {
+      onUpdateAnswer(scalePointAnswer.id, { text: value })
+    }
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <label className="text-xs font-semibold text-muted-600">Endpoints</label>
+        <div className="grid grid-cols-2 gap-2">
+          {question.answers.slice(0, 2).map((answer, idx) => {
+            const isMin = idx === 0
+            const label = isMin ? 'Min' : 'Max'
+            return (
+              <div key={answer.id}>
+                <label className="text-xs text-muted-600 mb-1 block">{label}</label>
+                <Input
+                  value={answer.text}
+                  onChange={(e) => onUpdateAnswer(answer.id, { text: e.target.value })}
+                  placeholder={`${label} label`}
+                />
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <AnswerWeightsEditor
+          label='Min Endpoint Weights'
+          answer={question.answers[0]}
+          metrics={metrics}
+          onUpdateWeight={onUpdateWeight}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <AnswerWeightsEditor
+          label='Max Endpoint Weights'
+          answer={question.answers[1]}
+          metrics={metrics}
+          onUpdateWeight={onUpdateWeight}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <label className="text-xs font-semibold text-muted-600">Scale Point Labels</label>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowPresets(!showPresets)}
+          >
+            Presets
+          </Button>
+        </div>
+
+        {showPresets && (
+          <div className="grid grid-cols-2 gap-2 p-2 bg-muted-50 rounded-lg border border-muted-200 mb-2">
+            {SCALE_PRESETS.map((preset) => (
+              <button
+                key={preset.name}
+                onClick={() => handleApplyPreset(preset)}
+                className="text-left px-2 py-1.5 rounded border border-muted-200 hover:bg-primary-50 hover:border-primary-300 text-xs font-medium transition-colors"
+              >
+                {preset.name}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <div className="space-y-1.5">
+          {scalePointAnswers.map((answer, idx) => (
+            <div key={answer.id} className="flex items-center gap-2">
+              <span className="text-xs font-medium text-muted-600 w-6 text-center">{idx + 1}</span>
+              <Input
+                value={answer.text}
+                onChange={(e) => handleUpdateLabel(idx, e.target.value)}
+                placeholder={`Scale point ${idx + 1}`}
+                className="flex-1"
+              />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleDeleteLabel(idx)}
+                className="text-red-500 hover:text-red-700"
+                disabled={scalePointAnswers.length <= 2}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          ))}
+
+          <button
+            type="button"
+            onClick={handleAddLabel}
+            className="w-full mt-2 border-2 border-dashed border-muted-200 rounded-lg p-2 flex items-center justify-center text-muted-600 hover:border-primary-300 hover:text-primary-600 text-sm"
+          >
+            <Plus className="h-4 w-4 mr-1" /> Add scale point
+          </button>
+        </div>
+      </div>
+    </div>
   )
 }
