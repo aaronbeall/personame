@@ -3,45 +3,54 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import * as Popover from '@radix-ui/react-popover'
-import { COLOR_THEME, findColorThemeByName } from '@/lib/colors'
+import { COLOR_THEME, getColorTheme, getColorSurface } from '@/lib/colors'
 import { Check, Palette } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface ColorPickerProps {
   value?: string
   showLabel?: boolean
-  onSelect: (colorName: string) => void
+  onSelect: (hex: string) => void
 }
 
-export function ColorPicker({ value, showLabel = true, onSelect }: ColorPickerProps) {
+export function ColorPicker({
+  value,
+  showLabel = true,
+  onSelect,
+}: ColorPickerProps) {
   const [open, setOpen] = useState(false)
-
-  const selectedColor = findColorThemeByName(value)
-
-  const handleColorSelect = (colorName: string) => {
-    onSelect(colorName)
-    setOpen(false)
-  }
-
+  const selected = getColorTheme(value)
+  const surface = getColorSurface(value ? selected.hex : '#e5e7eb')
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
       <Popover.Trigger asChild>
         <Button
           type="button"
-          aria-label={`Choose color${selectedColor ? `: ${selectedColor.label}` : ''}`}
+          aria-label={`Choose color${value ? `: ${selected.label}` : ''}`}
           title="Choose color"
           variant="outline"
-          className={cn("h-10 p-0 relative overflow-hidden", showLabel ? "w-24 justify-center" : "w-10")}
+          className={cn(
+            'h-10 px-2 relative overflow-hidden',
+            showLabel ? 'min-w-24 justify-center' : 'w-10',
+          )}
+          style={{
+            background: surface.background,
+            color: surface.textColor,
+          }}
         >
-          <div
-            className={`absolute inset-0 ${selectedColor?.bgClass ?? 'bg-linear-to-br from-gray-300 to-gray-400'}`}
-          />
-          <span className="relative z-10 text-white font-medium text-xs drop-shadow">
-            {showLabel ? selectedColor?.label ?? 'Color' : <Palette aria-hidden="true" className="h-4 w-4" />}
+          <span className="relative z-10 font-medium text-xs">
+            {showLabel ? (
+              value ? (
+                selected.label
+              ) : (
+                'Color'
+              )
+            ) : (
+              <Palette aria-hidden="true" className="h-4 w-4" />
+            )}
           </span>
         </Button>
       </Popover.Trigger>
-
       <Popover.Portal>
         <Popover.Content
           className="z-[90] w-64 rounded-lg border border-border bg-white shadow-lg p-3"
@@ -51,18 +60,25 @@ export function ColorPicker({ value, showLabel = true, onSelect }: ColorPickerPr
           <div className="grid grid-cols-3 gap-2">
             {COLOR_THEME.map((color) => (
               <button
-                key={color.name}
+                key={color.hex}
                 type="button"
                 aria-label={color.label}
-                aria-pressed={value === color.name}
-                onClick={() => handleColorSelect(color.name)}
+                aria-pressed={value?.toLowerCase() === color.hex}
+                onClick={() => {
+                  onSelect(color.hex)
+                  setOpen(false)
+                }}
                 className="relative group"
               >
                 <div
-                  className={`h-16 rounded-lg ${color.bgClass} transition-transform group-hover:scale-105 flex items-center justify-center`}
+                  className="h-16 rounded-lg transition-transform group-hover:scale-105 flex items-center justify-center"
+                  style={{
+                    background: getColorSurface(color.hex).background,
+                    color: getColorSurface(color.hex).textColor,
+                  }}
                 >
-                  {value === color.name && (
-                    <Check className="h-5 w-5 text-white drop-shadow" />
+                  {value?.toLowerCase() === color.hex && (
+                    <Check className="h-5 w-5" />
                   )}
                 </div>
                 {showLabel && (
@@ -73,6 +89,16 @@ export function ColorPicker({ value, showLabel = true, onSelect }: ColorPickerPr
               </button>
             ))}
           </div>
+          <label className="flex items-center justify-between gap-3 mt-3 pt-3 border-t border-border text-xs text-muted-700">
+            Custom color
+            <input
+              type="color"
+              aria-label="Custom color"
+              value={selected.hex}
+              onChange={(event) => onSelect(event.target.value)}
+              className="w-9 h-8 cursor-pointer"
+            />
+          </label>
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>

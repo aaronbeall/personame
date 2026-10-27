@@ -1,6 +1,6 @@
 'use client'
 
-import { useId } from 'react'
+import { useId, type CSSProperties } from 'react'
 import { DimensionDisplayScale } from '@prisma/client'
 
 const options = [
@@ -24,9 +24,11 @@ const options = [
 /** Saved presentation preference only; does not transform dimension values. */
 export function DimensionDisplayScaleSelector({
   value,
+  color,
   onChange,
 }: {
   value: DimensionDisplayScale
+  color: string
   onChange: (value: DimensionDisplayScale) => void
 }) {
   const groupId = useId()
@@ -35,7 +37,7 @@ export function DimensionDisplayScaleSelector({
       <legend className="text-sm font-medium text-slate-700">
         Scale display
       </legend>
-      <div className="scale-choice-bar">
+      <div className="scale-choice-bar" style={{ '--dimension-color': color } as CSSProperties}>
         {options.map((option) => (
           <label key={option.value} className="scale-choice">
             <input

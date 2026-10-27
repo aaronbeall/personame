@@ -81,3 +81,8 @@ The API workflow uses `/api/personames/:id/dimensions`, `dimensions`, `dimension
 With `PERSONAME_TEST_URL` set, `npm test` also replays the migration history in a disposable local PostgreSQL schema. It populates the old tables, runs the in-place rename, and verifies IDs, endpoint emoji, display-scale enums, target/relevance values, weights, scores, relationships, index/constraint names, and ordered historical snapshots. Empty/null snapshots and unrelated snapshot fields are preserved. The schema is created and removed inside one transaction; any failure rolls it back. Historical migration files retain their original names and SQL.
 
 Deploy the current source and run `npx prisma migrate deploy` against the deployment database together, then restart the app. The new Prisma client and API require the renamed schema. Scoring formulas and stored numerical values are unchanged.
+
+
+## Hex colors and contrast
+
+Color tests cover canonical `#rrggbb` storage, null/short/mixed-case hex, rejection of named or transparent colors, palette display names, custom hex retention, and library-based contrast decisions. The color migration test uses disposable tables to verify all authored color fields and saved archetype artwork. The custom-color browser test picks a native custom color, saves, and reloads it. Palette names are UI metadata only; existing historical palettes are converted by migration.

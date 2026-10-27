@@ -133,7 +133,7 @@ test('Name saves style without advancing, resets drafts, and remains in every bu
   const id = page.url().split('/')[4]
   const saved = await db.persona.findUniqueOrThrow({ where: { id } })
   expect(saved.emoji).toBe('🧠')
-  expect(saved.color).toBe('teal')
+  expect(saved.color).toBe('#14b8a6')
   await expect(
     page.getByRole('button', { name: 'Save', exact: true }),
   ).toBeDisabled()
@@ -265,7 +265,7 @@ test('New quiz starts fresh and unsaved navigation can be cancelled or discarded
         title: 'Stale browser draft',
         description: 'Old description',
         emoji: '🦖',
-        color: 'rose',
+        color: '#f43f5e',
       }),
     ),
   )
@@ -441,4 +441,99 @@ test('Done retains local edits, Cancel restores the item, and Delete only appear
   await expect(
     page.getByRole('button', { name: 'Save', exact: true }),
   ).toBeDisabled()
+})
+
+test('Custom hex colors save and reload without becoming a palette default', async ({
+  page,
+  seedQuiz,
+  db,
+}) => {
+  const { id } = await seedQuiz()
+  await page.goto(`/create/${id}/name`)
+  await page.getByRole('button', { name: 'Edit style', exact: true }).click()
+  await page.getByRole('button', { name: /^Choose color/ }).click()
+  await page.getByLabel('Custom color', { exact: true }).fill('#123456')
+  await page.keyboard.press('Escape')
+  await expect(
+    page.getByRole('button', { name: 'Choose color: #123456', exact: true }),
+  ).toBeVisible()
+  await page.keyboard.press('Escape')
+  await page.getByRole('button', { name: 'Save', exact: true }).click()
+  await expect(
+    page.getByText('Saved. Your changes are in the draft.', { exact: true }),
+  ).toBeVisible()
+  expect((await db.persona.findUniqueOrThrow({ where: { id } })).color).toBe(
+    '#123456',
+  )
+  await page.reload()
+  await page.getByRole('button', { name: 'Edit style', exact: true }).click()
+  await expect(
+    page.getByRole('button', { name: 'Choose color: #123456', exact: true }),
+  ).toBeVisible()
+})
+
+test('Editor footers explain required fields and clear feedback as fields are completed', async ({
+  page,
+  seedQuiz,
+}) => {
+  const { id } = await seedQuiz()
+  await test.step('Name explains why saving is unavailable', async () => {
+    await page.goto(`/create/${id}/name`)
+    const title = page.getByLabel('Quiz title', { exact: true })
+    const original = await title.inputValue()
+    await title.fill('   ')
+    await expect(
+      page.getByText('Enter a quiz name to continue.', { exact: true }),
+    ).toBeVisible()
+    await expect(
+      page.getByRole('button', { name: 'Save & continue', exact: true }),
+    ).toBeDisabled()
+    await title.fill(original)
+    await expect(
+      page.getByText('Enter a quiz name to continue.', { exact: true }),
+    ).toHaveCount(0)
+  })
+  await test.step('Dimension lists only the endpoints still missing', async () => {
+    await page.goto(`/create/${id}/dimensions`)
+    await page
+      .getByRole('button', { name: 'Add Dimension', exact: false })
+      .click()
+    const record = page.locator('.dimension-record').last()
+    await expect(record.getByRole('status')).toHaveText(
+      'Enter a name, a low end label, and a high end label.',
+    )
+    await record.getByPlaceholder('e.g., Extraversion').fill('Curiosity')
+    await expect(record.getByRole('status')).toHaveText(
+      'Enter a low end label and a high end label.',
+    )
+    await record.getByPlaceholder('e.g., Introverted').fill('Familiar')
+    await expect(record.getByRole('status')).toHaveText(
+      'Enter a high end label.',
+    )
+    await record.getByPlaceholder('e.g., Extraverted').fill('New')
+    await expect(record.getByRole('status')).toHaveCount(0)
+    await expect(
+      record.getByRole('button', { name: 'Done Curiosity', exact: true }),
+    ).toBeEnabled()
+    await record
+      .getByRole('button', { name: 'Cancel Curiosity', exact: true })
+      .click()
+  })
+  await test.step('Archetype explains its missing name', async () => {
+    await page.goto(`/create/${id}/archetypes`)
+    await page
+      .getByRole('button', { name: 'Add Archetype', exact: false })
+      .click()
+    const editor = page.locator('.archetype-editor')
+    await expect(editor.getByRole('status')).toHaveText('Enter a name.')
+    await expect(
+      editor.getByRole('button', { name: 'Done', exact: true }),
+    ).toBeDisabled()
+    await editor.getByPlaceholder('e.g., The Explorer').fill('Explorer')
+    await expect(editor.getByRole('status')).toHaveCount(0)
+    await expect(
+      editor.getByRole('button', { name: 'Done', exact: true }),
+    ).toBeEnabled()
+    await editor.getByRole('button', { name: 'Cancel', exact: true }).click()
+  })
 })

@@ -1,5 +1,10 @@
 import type { CSSProperties } from 'react'
-import { getColorTheme, COLOR_THEME } from '@/lib/colors'
+import {
+  getColorTheme,
+  COLOR_THEME,
+  getColorSurface,
+  getBadgeTextColor,
+} from '@/lib/colors'
 import { getInitials } from '@/lib/utils'
 
 type Identity = { name: string; emoji?: string | null; color?: string | null }
@@ -15,13 +20,6 @@ export function getArchetypeTheme(
     ) % COLOR_THEME.length
   return getColorTheme(color, index)
 }
-function dimensionInk(color: string) {
-  return ['amber', 'orange', 'green', 'teal', 'cyan', 'pink', 'rose'].includes(
-    color,
-  )
-    ? '#241a35'
-    : '#ffffff'
-}
 export function DimensionSymbol({
   name,
   emoji,
@@ -32,13 +30,15 @@ export function DimensionSymbol({
   color?: string | null
 }) {
   const theme = getColorTheme(color)
+  const surface = getColorSurface(theme.hex)
   return (
     <span
       className="dimension-symbol"
       style={
         {
           '--dimension-color': theme.hex,
-          color: dimensionInk(theme.name),
+          '--dimension-surface': surface.background,
+          color: surface.textColor,
         } as CSSProperties
       }
       aria-hidden="true"
@@ -49,10 +49,11 @@ export function DimensionSymbol({
 }
 export function DimensionTag({ name, emoji, color }: Identity) {
   const theme = getColorTheme(color)
+  const surface = getColorSurface(theme.hex)
   return (
     <span
       className="dimension-tag"
-      style={{ background: theme.hex, color: dimensionInk(theme.name) }}
+      style={{ background: surface.background, color: surface.textColor }}
     >
       {emoji && <span aria-hidden="true">{emoji}</span>}
       {name}
@@ -73,6 +74,7 @@ export function ArchetypeBadge({
       style={
         {
           '--badge-color': theme.hex,
+          '--badge-ink': getBadgeTextColor(theme.hex),
           '--badge-size': `${size}px`,
         } as CSSProperties
       }

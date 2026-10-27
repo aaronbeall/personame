@@ -73,16 +73,16 @@ test(
         title: 'Workflow Test Quiz',
         description: 'A test-only quiz.',
         emoji: '🧠',
-        color: 'purple',
+        color: '#8b5cf6',
       })
       assert.equal(created.status, 200)
       assert.equal(created.data.emoji, '🧠')
-      assert.equal(created.data.color, 'purple')
+      assert.equal(created.data.color, '#8b5cf6')
       const id = created.data.id,
         path = `/api/personames/${id}`
       assert.equal((await call(path, 'GET', undefined, null)).status, 401)
       assert.equal(
-        (await call(path, 'PATCH', { color: 'teal' }, otherToken)).status,
+        (await call(path, 'PATCH', { color: '#14b8a6' }, otherToken)).status,
         404,
       )
       assert.equal(
@@ -93,12 +93,12 @@ test(
         (
           await call(path, 'PATCH', {
             title: '  Updated quiz  ',
-            color: 'teal',
+            color: '#14b8a6',
           })
         ).data.title,
         'Updated quiz',
       )
-      assert.equal((await call(path)).data.color, 'teal')
+      assert.equal((await call(path)).data.color, '#14b8a6')
       for (const section of ['dimensions', 'archetypes', 'questions'])
         assert.equal(
           (await call(`${path}/${section}`, 'GET', undefined, otherToken))

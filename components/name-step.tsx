@@ -29,7 +29,7 @@ const empty: Details = {
   title: '',
   description: '',
   emoji: null,
-  color: 'purple',
+  color: '#8b5cf6',
 }
 const starterEmojis = [
   '✨',
@@ -65,7 +65,7 @@ export function NameStep({ quizId }: { quizId?: string }) {
         title: q.title,
         description: q.description || '',
         emoji: q.emoji || null,
-        color: getColorTheme(q.color || 'purple').name,
+        color: getColorTheme(q.color || '#8b5cf6').hex,
       }
     },
   })
@@ -74,7 +74,7 @@ export function NameStep({ quizId }: { quizId?: string }) {
     const initial: Details = {
       ...empty,
       emoji: starterEmojis[Math.floor(Math.random() * starterEmojis.length)],
-      color: COLOR_THEME[Math.floor(Math.random() * COLOR_THEME.length)].name,
+      color: COLOR_THEME[Math.floor(Math.random() * COLOR_THEME.length)].hex,
     }
     // Discard the former autosaved naming draft. New means new; saved quizzes live in the dashboard.
     try {
@@ -115,7 +115,7 @@ export function NameStep({ quizId }: { quizId?: string }) {
         title: saved.title,
         description: saved.description || '',
         emoji: saved.emoji || null,
-        color: getColorTheme(saved.color).name,
+        color: getColorTheme(saved.color).hex,
       }
       draft.accept(canonical)
       cache.setQueryData(['quiz-details', saved.id], canonical)
@@ -138,7 +138,7 @@ export function NameStep({ quizId }: { quizId?: string }) {
       draft.accept({
         ...empty,
         emoji: local?.emoji ?? null,
-        color: local?.color ?? 'purple',
+        color: local?.color ?? '#8b5cf6',
       })
     setMessage('')
     setError(null)
@@ -228,7 +228,8 @@ export function NameStep({ quizId }: { quizId?: string }) {
           <div className="quiz-setup-footer name-step-footer">
             <p role="status">
               <Check size={15} />
-              {message || 'Next: Dimensions. You can change these details later.'}
+              {message ||
+                'Next: Dimensions. You can change these details later.'}
             </p>
             <BuilderSaveActions
               dirty={
@@ -236,6 +237,11 @@ export function NameStep({ quizId }: { quizId?: string }) {
                 (!quizId && (!!values.title || !!values.description))
               }
               valid={draft.ready && !!values.title.trim()}
+              validationMessages={
+                draft.ready && !values.title.trim()
+                  ? ['Enter a quiz name to continue.']
+                  : []
+              }
               busy={busy}
               busyAction={savingAdvance ? 'continue' : 'save'}
               onReset={reset}
@@ -259,7 +265,9 @@ export function NameStep({ quizId }: { quizId?: string }) {
                     {i < 3 && (
                       <EntityIcon
                         kind={
-                          (['quiz', 'dimension', 'archetype'] as EntityKind[])[i]
+                          (['quiz', 'dimension', 'archetype'] as EntityKind[])[
+                            i
+                          ]
                         }
                         size={13}
                       />

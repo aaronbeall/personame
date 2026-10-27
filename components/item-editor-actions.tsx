@@ -1,22 +1,31 @@
 'use client'
+import { useId } from 'react'
+import { EditorValidationFeedback } from './editor-validation-feedback'
 import { Check, Trash2 } from 'lucide-react'
 import { Button } from './ui/button'
 
 export function ItemEditorActions({
   name,
   valid,
+  validationMessages,
   onDone,
   onCancel,
   onDelete,
 }: {
   name?: string
   valid: boolean
+  validationMessages?: string[]
   onDone: () => void
   onCancel: () => void
   onDelete: () => void
 }) {
+  const feedbackId = useId()
+  const messages = valid
+    ? []
+    : (validationMessages ?? ['Complete the required fields to continue.'])
   return (
     <div className="item-editor-actions">
+      <EditorValidationFeedback messages={messages} id={feedbackId} />
       <Button
         type="button"
         variant="ghost"
@@ -44,6 +53,7 @@ export function ItemEditorActions({
           size="sm"
           aria-label={name ? `Done ${name}` : undefined}
           onClick={onDone}
+          aria-describedby={messages.length ? feedbackId : undefined}
           disabled={!valid}
         >
           <Check size={14} />

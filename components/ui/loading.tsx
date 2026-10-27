@@ -40,17 +40,12 @@ export function LoadingState({
       aria-label={label}
       aria-busy="true"
     >
-      <div className="loading-caption">
-        <LoadingIndicator decorative />
-        {label}
-      </div>
-      {variant === 'editor' && (
-        <div className="loading-intro" aria-hidden="true">
-          <Skeleton className="skeleton-text skeleton-short" />
-          <Skeleton className="skeleton-title" />
-          <Skeleton className="skeleton-text" />
+      <div className="loading-intro">
+        <div className="loading-caption">
+          <LoadingIndicator decorative />
+          <span>{label}</span>
         </div>
-      )}
+      </div>
       <div
         className={variant === 'cards' ? 'quiz-grid' : 'loading-panels'}
         aria-hidden="true"

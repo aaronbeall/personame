@@ -1,10 +1,11 @@
 import { z } from 'zod'
+import { storedColorSchema } from './colors'
 import { DimensionDisplayScale } from '@prisma/client'
 const text = z.string().trim().min(1).max(1000)
 const meta = {
   id: z.string().optional(),
   emoji: z.string().nullable().optional(),
-  color: z.string().nullable().optional(),
+  color: storedColorSchema,
   style: z.string().nullable().optional(),
   icon: z.string().nullable().optional(),
 }
@@ -53,7 +54,10 @@ const answerInput = z.object({
   order: z.number().int(),
   weights: z
     .array(
-      z.object({ dimensionId: z.string(), value: z.number().min(-100).max(100) }),
+      z.object({
+        dimensionId: z.string(),
+        value: z.number().min(-100).max(100),
+      }),
     )
     .max(30),
 })

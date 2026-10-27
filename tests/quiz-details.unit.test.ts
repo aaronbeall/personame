@@ -7,9 +7,9 @@ test('quiz details trim names and preserve optional style values', () => {
     quizDetailsSchema.parse({
       title: '  A little curiosity  ',
       emoji: '🧠',
-      color: 'purple',
+      color: '#8b5cf6',
     }),
-    { title: 'A little curiosity', emoji: '🧠', color: 'purple' },
+    { title: 'A little curiosity', emoji: '🧠', color: '#8b5cf6' },
   )
   assert.equal(quizDetailsSchema.parse({ title: 'Minimal' }).title, 'Minimal')
 })

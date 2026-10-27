@@ -84,7 +84,9 @@ test('Create, grade, preview, publish, and complete a quiz through the UI', asyn
       where: { personaId: quizId },
     })
     expect(styledDimension.emoji).toBe('🧠')
-    expect(styledDimension.color).toBe('purple')
+    expect(styledDimension.color).toBe('#8b5cf6')
+    await expect(page.locator('.dimension-tag').filter({ hasText: 'Curiosity' }).first()).toHaveCSS('background-image', /linear-gradient/)
+    await expect(page.locator('.dimension-tag').filter({ hasText: 'Curiosity' }).first()).toHaveCSS('color', 'rgb(255, 255, 255)')
     expect(styledDimension.minEmoji).toBe('🌱')
     expect(styledDimension.maxEmoji).toBe('🚀')
   })

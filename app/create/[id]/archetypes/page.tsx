@@ -1,4 +1,5 @@
 'use client'
+import { archetypeValidationMessages } from '@/lib/builder-validation'
 import { LoadingState } from '@/components/ui/loading'
 
 import { useItemEditor } from '@/hooks/use-item-editor'
@@ -101,7 +102,7 @@ export default function ArchetypesPage({
 
   const handleAddArchetype = () => {
     const archetypeId = getTempId()
-    const color = getUnusedColorTheme(archetypes.map((a) => a.color)).name
+    const color = getUnusedColorTheme(archetypes.map((a) => a.color)).hex
     const newArchetype: ArchetypeWithDimensions = {
       id: archetypeId,
       name: '',
@@ -153,8 +154,14 @@ export default function ArchetypesPage({
     saveArchetypesMutation.mutate({ items: archetypes, advance })
   }
 
-  const isValid =
-    archetypes.length >= 1 && archetypes.every((a) => a.name.trim())
+  const validationMessages = archetypes.length
+    ? archetypes.flatMap((archetype, index) =>
+        archetypeValidationMessages(archetype).map(
+          (message) => `Archetype ${index + 1}: ${message}`,
+        ),
+      )
+    : ['Add an archetype to continue.']
+  const isValid = validationMessages.length === 0
 
   if (
     (!draft.ready || dimensionsQuery.isPending) &&
@@ -271,6 +278,7 @@ export default function ArchetypesPage({
             <BuilderSaveActions
               dirty={draft.dirty}
               valid={draft.ready && isValid}
+              validationMessages={draft.ready ? validationMessages : []}
               busy={saveArchetypesMutation.isPending}
               busyAction={
                 saveArchetypesMutation.variables?.advance ? 'continue' : 'save'

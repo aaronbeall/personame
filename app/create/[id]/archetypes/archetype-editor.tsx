@@ -1,5 +1,6 @@
 'use client'
 
+import { archetypeValidationMessages } from '@/lib/builder-validation'
 import { ItemEditorActions } from '@/components/item-editor-actions'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -12,7 +13,9 @@ import { DimensionTargetEditor } from './dimension-target-editor'
 interface ArchetypeEditorProps {
   archetype: Archetype & { dimensions: ArchetypeDimension[] }
   dimensions: Dimension[]
-  onChange: (archetype: Archetype & { dimensions: ArchetypeDimension[] }) => void
+  onChange: (
+    archetype: Archetype & { dimensions: ArchetypeDimension[] },
+  ) => void
   onClose: () => void
   onCancel: () => void
   onDelete: () => void
@@ -34,7 +37,10 @@ export function ArchetypeEditor({
   const setDescription = (description: string) => update({ description })
   const setEmoji = (emoji: string | null) => update({ emoji })
   const setColor = (color: string) => update({ color })
-  const updateTarget = (dimensionId: string, patch: Partial<ArchetypeDimension>) => {
+  const updateTarget = (
+    dimensionId: string,
+    patch: Partial<ArchetypeDimension>,
+  ) => {
     const existing = dimensionTargets.find((t) => t.dimensionId === dimensionId)
     const target = existing ?? {
       id: getTempId(),
@@ -114,10 +120,14 @@ export function ArchetypeEditor({
 
       {/* Dimension Targets */}
       <div className="border-t border-muted-300 pt-6 space-y-4">
-        <h3 className="font-semibold text-slate-900 text-sm">Dimension Targets</h3>
+        <h3 className="font-semibold text-slate-900 text-sm">
+          Dimension Targets
+        </h3>
         <div className="space-y-6">
           {dimensions.map((dimension) => {
-            const target = dimensionTargets.find((t) => t.dimensionId === dimension.id)
+            const target = dimensionTargets.find(
+              (t) => t.dimensionId === dimension.id,
+            )
             const targetValue = target?.targetValue ?? 50
             const relevance = target?.relevance ?? 0.8
 
@@ -140,7 +150,8 @@ export function ArchetypeEditor({
       </div>
 
       <ItemEditorActions
-        valid={!!name.trim()}
+        valid={archetypeValidationMessages(archetype).length === 0}
+        validationMessages={archetypeValidationMessages(archetype)}
         onDone={onClose}
         onCancel={onCancel}
         onDelete={onDelete}

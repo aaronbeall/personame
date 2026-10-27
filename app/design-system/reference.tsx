@@ -314,8 +314,8 @@ export function DesignReference() {
                 an editorial label. The container for dimensions and archetypes.
               </p>
               <div className="flex items-center gap-6 mt-6">
-                <QuizCoverMark emoji="✨" color="purple" />
-                <QuizCoverMark emoji="🌊" color="teal" size="sm" />
+                <QuizCoverMark emoji="✨" color="#8b5cf6" />
+                <QuizCoverMark emoji="🌊" color="#14b8a6" size="sm" />
               </div>
             </article>
             <article className="surface">
@@ -328,9 +328,9 @@ export function DesignReference() {
                 sleek tags, and diamond value markers on crisp scales.
               </p>
               <div className="flex items-center gap-4 mt-6">
-                <DimensionSymbol name="Curiosity" emoji="🧠" color="purple" />
-                <DimensionTag name="Curiosity" color="purple" />
-                <DimensionTag name="Adventure" color="teal" />
+                <DimensionSymbol name="Curiosity" emoji="🧠" color="#8b5cf6" />
+                <DimensionTag name="Curiosity" color="#8b5cf6" />
+                <DimensionTag name="Adventure" color="#14b8a6" />
               </div>
             </article>
             <article className="surface">
@@ -346,13 +346,13 @@ export function DesignReference() {
                 <ArchetypeBadge
                   name="The Explorer"
                   emoji="🦊"
-                  color="orange"
+                  color="#f97316"
                   size={80}
                 />
                 <ArchetypeBadge
                   name="The Dreamer"
                   emoji="🪐"
-                  color="purple"
+                  color="#8b5cf6"
                   size={80}
                 />
               </div>

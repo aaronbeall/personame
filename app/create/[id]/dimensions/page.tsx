@@ -1,4 +1,5 @@
 'use client'
+import { dimensionValidationMessages } from '@/lib/builder-validation'
 import { LoadingState } from '@/components/ui/loading'
 
 import { BuilderFooter } from '@/components/builder-footer'
@@ -19,6 +20,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { StyleEditors } from '@/components/style-editors'
 import { ErrorBanner } from '@/components/ui/error-banner'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { useProtectedPage } from '@/hooks/use-protected-page'
 import { getColorTheme, getColorThemeByIndex } from '@/lib/colors'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -135,7 +137,7 @@ export default function DimensionsPage({
       order: dimensions.length,
       displayScale: DimensionDisplayScale.PERCENT_ASCENDING,
       emoji: '',
-      color: getColorThemeByIndex(dimensions.length).name,
+      color: getColorThemeByIndex(dimensions.length).hex,
     }
     setDimensions([...dimensions, newDimension])
     itemEditor.startNew(newDimension.id)
@@ -146,7 +148,9 @@ export default function DimensionsPage({
     field: K,
     value: Dimension[K],
   ) => {
-    setDimensions(dimensions.map((m) => (m.id === id ? { ...m, [field]: value } : m)))
+    setDimensions(
+      dimensions.map((m) => (m.id === id ? { ...m, [field]: value } : m)),
+    )
   }
 
   const removeDimension = (id: string) => {
@@ -173,11 +177,15 @@ export default function DimensionsPage({
     saveDimensionsMutation.mutate({ items: dimensions, advance })
   }
 
-  const isValid =
-    dimensions.length >= 1 &&
-    dimensions.every(
-      (m) => m.name.trim() && m.minLabel.trim() && m.maxLabel.trim(),
-    )
+  const validationMessages = dimensions.length
+    ? dimensions.flatMap((dimension, index) =>
+        dimensionValidationMessages(dimension).map(
+          (message) =>
+            `${dimension.name.trim() || `Dimension ${index + 1}`}: ${message}`,
+        ),
+      )
+    : ['Add a dimension to continue.']
+  const isValid = validationMessages.length === 0
 
   if (!draft.ready && !loadError)
     return (
@@ -210,8 +218,6 @@ export default function DimensionsPage({
                   index,
                 )
                 const name = dimension.name || `Dimension ${index + 1}`
-                const description =
-                  dimension.description || 'Personality dimension'
                 const min = dimension.minLabel || 'Min'
                 const max = dimension.maxLabel || 'Max'
 
@@ -227,7 +233,11 @@ export default function DimensionsPage({
                             emoji={dimension.emoji}
                             color={dimension.color}
                             onEmojiChange={(emoji) =>
-                              updateDimension(dimension.id, 'emoji', emoji ?? '')
+                              updateDimension(
+                                dimension.id,
+                                'emoji',
+                                emoji ?? '',
+                              )
                             }
                             onColorChange={(color) =>
                               updateDimension(dimension.id, 'color', color)
@@ -240,14 +250,20 @@ export default function DimensionsPage({
                             />
                           </StyleEditors>
                         </div>
-                        <div className="min-w-0">
-                          <h3 className="font-semibold text-primary-900 truncate">
-                            {name}
-                          </h3>
-                          <p className="text-xs text-muted-500 truncate">
-                            {description}
-                          </p>
-                        </div>
+                        {(dimension.name || dimension.description) && (
+                          <div className="min-w-0">
+                            {dimension.name && (
+                              <h3 className="font-semibold text-primary-900 truncate">
+                                {dimension.name}
+                              </h3>
+                            )}
+                            {dimension.description && (
+                              <p className="text-xs text-muted-500 whitespace-pre-wrap break-words">
+                                {dimension.description}
+                              </p>
+                            )}
+                          </div>
+                        )}
                       </div>
                       {!editing.includes(dimension.id) && (
                         <Button
@@ -277,7 +293,7 @@ export default function DimensionsPage({
                         disabled={saveDimensionsMutation.isPending}
                         className="space-y-4"
                       >
-                        <div className="grid md:grid-cols-2 gap-4">
+                        <div className="space-y-4">
                           <div>
                             <label
                               htmlFor={`dimension-name-${dimension.id}`}
@@ -291,7 +307,11 @@ export default function DimensionsPage({
                               placeholder="e.g., Extraversion"
                               value={dimension.name}
                               onChange={(e) =>
-                                updateDimension(dimension.id, 'name', e.target.value)
+                                updateDimension(
+                                  dimension.id,
+                                  'name',
+                                  e.target.value,
+                                )
                               }
                             />
                           </div>
@@ -304,7 +324,8 @@ export default function DimensionsPage({
                               Description{' '}
                               <span className="field-optional">(optional)</span>
                             </label>
-                            <Input
+                            <Textarea
+                              rows={3}
                               id={`dimension-description-${dimension.id}`}
                               placeholder="What this measures..."
                               value={dimension.description}
@@ -326,7 +347,11 @@ export default function DimensionsPage({
                                 emoji={dimension.minEmoji}
                                 end="low"
                                 onChange={(emoji) =>
-                                  updateDimension(dimension.id, 'minEmoji', emoji)
+                                  updateDimension(
+                                    dimension.id,
+                                    'minEmoji',
+                                    emoji,
+                                  )
                                 }
                               />
                               <label
@@ -357,7 +382,11 @@ export default function DimensionsPage({
                                 emoji={dimension.maxEmoji}
                                 end="high"
                                 onChange={(emoji) =>
-                                  updateDimension(dimension.id, 'maxEmoji', emoji)
+                                  updateDimension(
+                                    dimension.id,
+                                    'maxEmoji',
+                                    emoji,
+                                  )
                                 }
                               />
                               <label
@@ -384,6 +413,7 @@ export default function DimensionsPage({
                           </div>
                         </div>
                         <DimensionDisplayScaleSelector
+                          color={colorInfo.hex}
                           value={dimension.displayScale}
                           onChange={(value) =>
                             updateDimension(dimension.id, 'displayScale', value)
@@ -392,10 +422,11 @@ export default function DimensionsPage({
                         <ItemEditorActions
                           name={name}
                           valid={
-                            !!dimension.name.trim() &&
-                            !!dimension.minLabel.trim() &&
-                            !!dimension.maxLabel.trim()
+                            dimensionValidationMessages(dimension).length === 0
                           }
+                          validationMessages={dimensionValidationMessages(
+                            dimension,
+                          )}
                           onDone={() => itemEditor.done(dimension.id)}
                           onCancel={() => itemEditor.cancel(dimension.id)}
                           onDelete={() => {
@@ -440,6 +471,7 @@ export default function DimensionsPage({
             <BuilderSaveActions
               dirty={draft.dirty}
               valid={draft.ready && isValid}
+              validationMessages={draft.ready ? validationMessages : []}
               busy={saveDimensionsMutation.isPending}
               busyAction={
                 saveDimensionsMutation.variables?.advance ? 'continue' : 'save'

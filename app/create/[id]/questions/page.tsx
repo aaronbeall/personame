@@ -226,7 +226,10 @@ export default function QuestionsPage({
       style: null,
       icon: null,
       pageId: currentPage.id,
-      answers: createDefaultAnswers('MULTIPLE_CHOICE', dimensionsQuery.data || []),
+      answers: createDefaultAnswers(
+        'MULTIPLE_CHOICE',
+        dimensionsQuery.data || [],
+      ),
       createdAt: new Date(),
       updatedAt: new Date(),
     }
@@ -485,7 +488,11 @@ export default function QuestionsPage({
         </div>
 
         <BuilderFooter
-          note="Save your questions, then try the complete quiz before publishing."
+          note={
+            pages.length < 2
+              ? 'Add at least two pages to continue.'
+              : 'Save your questions, then try the complete quiz before publishing.'
+          }
           back={
             <Button
               variant="outline"

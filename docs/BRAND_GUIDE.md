@@ -64,7 +64,7 @@ Semantic values live in `app/design-tokens.css`, built on the existing Tailwind 
 
 ## Three distinct visual languages
 
-Quizzes are **authored collections**: a cover/booklet, colored spine, paper edge, and small editorial label. Dimensions are **instruments**: soft diamonds, facets, sleek tags, solid vibrant fills, crisp scales, and restrained typography. Archetypes are **characters**: large circular portraits, bold names, decorative frames, tactile textures, and individual accent colors. Preserve these distinct silhouettes wherever they appear together. Color alone must never be the only distinction.
+Quizzes are **authored collections**: a cover/booklet, colored spine, paper edge, and small editorial label. Dimensions are **instruments**: soft diamonds, facets, sleek tags, vibrant fills with subtle shading, crisp scales, and restrained typography. Archetypes are **characters**: large circular portraits, bold names, decorative frames, tactile textures, and individual accent colors. Preserve these distinct silhouettes wherever they appear together. Color alone must never be the only distinction.
 
 | Element | Quizzes | Dimensions | Archetypes |
 | --- | --- | --- | --- |

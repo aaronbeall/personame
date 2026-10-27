@@ -11,7 +11,7 @@ export function QuizCoverMark({
   color?: string | null
   size?: 'sm' | 'md'
 }) {
-  const theme = getColorTheme(color || 'purple')
+  const theme = getColorTheme(color || '#8b5cf6')
   return (
     <span
       className={`quiz-cover-mark quiz-cover-mark-${size}`}
