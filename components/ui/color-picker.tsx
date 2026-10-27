@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import * as Popover from '@radix-ui/react-popover'
-import { COLOR_THEME, findColorThemeByName, getColorTheme } from '@/lib/colors'
-import { Check } from 'lucide-react'
+import { COLOR_THEME, findColorThemeByName } from '@/lib/colors'
+import { Check, Palette } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface ColorPickerProps {
@@ -28,6 +28,8 @@ export function ColorPicker({ value, showLabel = true, onSelect }: ColorPickerPr
       <Popover.Trigger asChild>
         <Button
           type="button"
+          aria-label={`Choose color${selectedColor ? `: ${selectedColor.label}` : ''}`}
+          title="Choose color"
           variant="outline"
           className={cn("h-10 p-0 relative overflow-hidden", showLabel ? "w-24 justify-center" : "w-10")}
         >
@@ -35,14 +37,14 @@ export function ColorPicker({ value, showLabel = true, onSelect }: ColorPickerPr
             className={`absolute inset-0 ${selectedColor?.bgClass ?? 'bg-linear-to-br from-gray-300 to-gray-400'}`}
           />
           <span className="relative z-10 text-white font-medium text-xs drop-shadow">
-            {selectedColor?.label ?? 'Color'}
+            {showLabel ? selectedColor?.label ?? 'Color' : <Palette aria-hidden="true" className="h-4 w-4" />}
           </span>
         </Button>
       </Popover.Trigger>
 
       <Popover.Portal>
         <Popover.Content
-          className="z-50 w-64 rounded-lg border border-border bg-white shadow-lg p-3"
+          className="z-[90] w-64 rounded-lg border border-border bg-white shadow-lg p-3"
           sideOffset={5}
           align="start"
         >
@@ -51,6 +53,8 @@ export function ColorPicker({ value, showLabel = true, onSelect }: ColorPickerPr
               <button
                 key={color.name}
                 type="button"
+                aria-label={color.label}
+                aria-pressed={value === color.name}
                 onClick={() => handleColorSelect(color.name)}
                 className="relative group"
               >

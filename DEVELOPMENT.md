@@ -260,9 +260,9 @@ npm run db:seed
 This populates the database with:
 - **Test user**: `test@personame.dev` (no password, use OAuth or Prisma Studio)
 - **Sample quiz**: Complete personality assessment with all components
-- **Metrics**: 4 personality dimensions (Extraversion, Intuition, Thinking, Structure)
+- **Dimensions**: 4 personality dimensions (Extraversion, Intuition, Thinking, Structure)
 - **Archetypes**: 4 personality types (Advocate, Logistician, Entertainer, Architect)
-- **Questions**: 4 questions with multiple choice answers and metric weights
+- **Questions**: 4 questions with multiple choice answers and dimension weights
 - **Results**: 2 sample results for testing analytics and comparisons
 
 Great for:
@@ -315,7 +315,7 @@ Use only in development.
   ```typescript
   const personame = await prisma.personame.findUnique({
     where: { id },
-    include: { metrics: true, archetypes: true }
+    include: { dimensions: true, archetypes: true }
   });
   ```
 

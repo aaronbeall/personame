@@ -1,114 +1,92 @@
 'use client'
 
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
+import { ItemEditorActions } from '@/components/item-editor-actions'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { Metric, ArchetypeMetric, Archetype } from '@prisma/client'
-import { EmojiPicker } from '@/components/ui/emoji-picker'
-import { ColorPicker } from '@/components/ui/color-picker'
-import { X, Palette, Save, CircleDashed } from 'lucide-react'
-import { COLOR_THEME, getColorTheme } from '@/lib/colors'
-import { getInitials, getTempId } from '@/lib/utils'
-import { MetricTargetEditor } from './metric-target-editor'
-import { MetricTooltip } from './metric-tooltip'
+import { Dimension, ArchetypeDimension, Archetype } from '@prisma/client'
+import { StyleEditors } from '@/components/style-editors'
+import { getTempId } from '@/lib/utils'
+import { ArchetypeBadge } from '@/components/entity-identity'
+import { DimensionTargetEditor } from './dimension-target-editor'
 
 interface ArchetypeEditorProps {
-  archetype: Archetype & { metrics: ArchetypeMetric[] }
-  metrics: Metric[]
-  onSave: (archetype: Archetype & { metrics: ArchetypeMetric[] }) => void
+  archetype: Archetype & { dimensions: ArchetypeDimension[] }
+  dimensions: Dimension[]
+  onChange: (archetype: Archetype & { dimensions: ArchetypeDimension[] }) => void
+  onClose: () => void
   onCancel: () => void
+  onDelete: () => void
 }
 
 export function ArchetypeEditor({
   archetype,
-  metrics,
-  onSave,
+  dimensions,
+  onChange,
+  onClose,
   onCancel,
+  onDelete,
 }: ArchetypeEditorProps) {
-  const [name, setName] = useState(archetype.name)
-  const [description, setDescription] = useState(archetype.description ?? '')
-  const [emoji, setEmoji] = useState(archetype.emoji)
-  const [color, setColor] = useState(archetype.color ?? COLOR_THEME[0].name)
-  const [metricTargets, setMetricTargets] = useState<ArchetypeMetric[]>(
-    archetype.metrics.length > 0
-      ? archetype.metrics
-      : metrics.map(m => ({
-        id: getTempId(),
-        archetypeId: archetype.id,
-        metricId: m.id,
-        targetValue: 50,
-        relevance: 0.8,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }))
-  )
-  const [showStyleOptions, setShowStyleOptions] = useState(false)
-
-  const handleTargetValueChange = (metricId: string, value: number) => {
-    setMetricTargets(metricTargets.map(t => t.metricId === metricId ? { ...t, targetValue: value } : t))
-  }
-
-  const handleRelevanceChange = (metricId: string, value: number) => {
-    setMetricTargets(metricTargets.map(t => t.metricId === metricId ? { ...t, relevance: value } : t))
-  }
-
-  const handleSave = () => {
-    if (!name.trim()) return
-
-    onSave({
-      ...archetype,
-      name: name.trim(),
-      description: description.trim() || null,
-      emoji: emoji || null,
-      color: color || null,
-      metrics: metricTargets,
+  const { name, description, emoji, color } = archetype
+  const dimensionTargets = archetype.dimensions
+  const update = (patch: Partial<typeof archetype>) =>
+    onChange({ ...archetype, ...patch })
+  const setName = (name: string) => update({ name })
+  const setDescription = (description: string) => update({ description })
+  const setEmoji = (emoji: string | null) => update({ emoji })
+  const setColor = (color: string) => update({ color })
+  const updateTarget = (dimensionId: string, patch: Partial<ArchetypeDimension>) => {
+    const existing = dimensionTargets.find((t) => t.dimensionId === dimensionId)
+    const target = existing ?? {
+      id: getTempId(),
+      archetypeId: archetype.id,
+      dimensionId,
+      targetValue: 50,
+      relevance: 0.8,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+    update({
+      dimensions: [
+        ...dimensionTargets.filter((t) => t.dimensionId !== dimensionId),
+        { ...target, ...patch },
+      ],
     })
   }
-
-  const colorInfo = getColorTheme(color)
+  const handleTargetValueChange = (dimensionId: string, targetValue: number) =>
+    updateTarget(dimensionId, { targetValue })
+  const handleRelevanceChange = (dimensionId: string, relevance: number) =>
+    updateTarget(dimensionId, { relevance })
 
   return (
-    <div className="space-y-6 p-6 bg-gradient-to-br from-white to-muted-50 rounded-2xl border-2 border-primary-200 shadow-lg">
+    <div className="archetype-editor space-y-6">
       {/* Header with Profile */}
-      <div className="flex items-start gap-6">
+      <div className="archetype-editor-header flex items-start gap-5">
         <div className="flex flex-col items-center flex-shrink-0">
-          <div className={`h-24 w-24 rounded-full ${colorInfo.bgClass} flex items-center justify-center ${colorInfo.textClass} text-4xl shadow-lg`}>
-            {(emoji ?? getInitials(name)) || <CircleDashed className="h-10 w-10" />}
-          </div>
-          <div className="mt-2">
-            {!showStyleOptions ? (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowStyleOptions(true)}
-                className="text-primary-700 hover:bg-primary-50"
-              >
-                <Palette className="h-4 w-4 mr-1" />
-                Style
-              </Button>
-            ) : (
-              <div className="flex flex-col items-center mt-1 gap-2">
-                <div className="flex gap-2">
-                  <EmojiPicker value={emoji} onSelect={setEmoji} />
-                  <ColorPicker value={color} onSelect={setColor} />
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowStyleOptions(false)}
-                  className="text-muted-700"
-                >
-                  Done
-                </Button>
-              </div>
-            )}
-          </div>
+          <StyleEditors
+            emoji={emoji}
+            color={color}
+            onEmojiChange={setEmoji}
+            onColorChange={setColor}
+          >
+            <ArchetypeBadge
+              name={name}
+              emoji={emoji}
+              color={color}
+              size={80}
+              label={false}
+            />
+          </StyleEditors>
         </div>
         <div className="flex-1">
           <div className="mb-4">
-            <label className="block text-sm font-medium text-slate-700 mb-1">Name *</label>
+            <label
+              htmlFor={`archetype-name-${archetype.id}`}
+              className="block text-sm font-medium text-slate-700 mb-1"
+            >
+              Name
+            </label>
             <Input
+              id={`archetype-name-${archetype.id}`}
               placeholder="e.g., The Explorer"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -116,10 +94,16 @@ export function ArchetypeEditor({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+            <label
+              htmlFor={`archetype-description-${archetype.id}`}
+              className="block text-sm font-medium text-slate-700 mb-1"
+            >
+              Description <span className="field-optional">(optional)</span>
+            </label>
             <Textarea
+              id={`archetype-description-${archetype.id}`}
               placeholder="Describe this archetype..."
-              value={description}
+              value={description ?? ''}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
               className="text-sm"
@@ -128,48 +112,39 @@ export function ArchetypeEditor({
         </div>
       </div>
 
-      {/* Metric Targets */}
+      {/* Dimension Targets */}
       <div className="border-t border-muted-300 pt-6 space-y-4">
-        <h3 className="font-semibold text-slate-900 text-sm">Metric Targets</h3>
+        <h3 className="font-semibold text-slate-900 text-sm">Dimension Targets</h3>
         <div className="space-y-6">
-          {metrics.map(metric => {
-            const target = metricTargets.find(t => t.metricId === metric.id)
+          {dimensions.map((dimension) => {
+            const target = dimensionTargets.find((t) => t.dimensionId === dimension.id)
             const targetValue = target?.targetValue ?? 50
             const relevance = target?.relevance ?? 0.8
 
             return (
-              <MetricTargetEditor
-                key={metric.id}
-                metric={metric}
+              <DimensionTargetEditor
+                key={dimension.id}
+                dimension={dimension}
                 targetValue={targetValue}
                 relevance={relevance}
-                onTargetChange={(val) => handleTargetValueChange(metric.id, val)}
-                onRelevanceChange={(val) => handleRelevanceChange(metric.id, val)}
+                onTargetChange={(val) =>
+                  handleTargetValueChange(dimension.id, val)
+                }
+                onRelevanceChange={(val) =>
+                  handleRelevanceChange(dimension.id, val)
+                }
               />
             )
           })}
         </div>
       </div>
 
-      {/* Actions */}
-      <div className="flex justify-end gap-3 pt-4 border-t border-muted-200">
-        <Button
-          variant="outline"
-          onClick={onCancel}
-          className="text-muted-700"
-        >
-          <X className="h-4 w-4 mr-2" />
-          Cancel
-        </Button>
-        <Button
-          onClick={handleSave}
-          disabled={!name.trim()}
-          className="bg-gradient-to-r from-primary to-secondary hover:from-primary-600 hover:to-secondary-600 text-white"
-        >
-          <Save className="h-4 w-4 mr-2" />
-          Save Archetype
-        </Button>
-      </div>
+      <ItemEditorActions
+        valid={!!name.trim()}
+        onDone={onClose}
+        onCancel={onCancel}
+        onDelete={onDelete}
+      />
     </div>
   )
 }

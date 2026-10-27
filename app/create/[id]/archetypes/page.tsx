@@ -1,39 +1,50 @@
 'use client'
+import { LoadingState } from '@/components/ui/loading'
 
-import { useState, useEffect, use } from 'react'
+import { useItemEditor } from '@/hooks/use-item-editor'
+import { useBuilderDraft } from '@/hooks/use-builder-draft'
+import { BuilderSaveActions } from '@/components/builder-save-actions'
+import { useState, use } from 'react'
 import { useRouter } from 'next/navigation'
-import { useQuery, useMutation } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useProtectedPage } from '@/hooks/use-protected-page'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Plus, ArrowRight, ArrowLeft } from 'lucide-react'
+import { Card, CardContent } from '@/components/ui/card'
+import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { ErrorBanner } from '@/components/ui/error-banner'
 import { AppLayoutBackground } from '@/components/app-layout-background'
+import { BuilderFooter } from '@/components/builder-footer'
+import { AddItemButton } from '@/components/add-item-button'
 import { StepProgress } from '@/components/step-progress'
 import { ArchetypeRow } from './archetype-row'
-import { Metric, Archetype, ArchetypeMetric } from '@prisma/client'
-import { ArchetypeEditor } from './archetype-editor'
-import { cn, getTempId } from '@/lib/utils'
-import { Tooltip } from '@/components/ui/tooltip'
-import { COLOR_THEME, getColorTheme, getUnusedColorTheme } from '@/lib/colors'
-import { MetricTooltip } from './metric-tooltip'
+import { Dimension, Archetype, ArchetypeDimension } from '@prisma/client'
+import { getTempId } from '@/lib/utils'
+import { getUnusedColorTheme } from '@/lib/colors'
+import { EntityIcon } from '@/components/entity-icon'
+import { DimensionTag } from '@/components/entity-identity'
+import { DimensionTooltip } from './dimension-tooltip'
 
-type ArchetypeWithMetrics = Archetype & { metrics: ArchetypeMetric[] }
+type ArchetypeWithDimensions = Archetype & { dimensions: ArchetypeDimension[] }
 
-export default function ArchetypesPage({ params }: { params: Promise<{ id: string }> }) {
+export default function ArchetypesPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
   const router = useRouter()
+  const queryClient = useQueryClient()
   useProtectedPage()
   const { id } = use(params)
-  const [archetypes, setArchetypes] = useState<ArchetypeWithMetrics[]>([])
+  const [message, setMessage] = useState('')
 
-  // Fetch metrics
-  const metricsQuery = useQuery({
-    queryKey: ['metrics', id],
+  // Fetch dimensions
+  const dimensionsQuery = useQuery({
+    queryKey: ['dimensions', id],
     queryFn: async () => {
-      const res = await fetch(`/api/personames/${id}/metrics`)
-      if (!res.ok) throw new Error('Failed to fetch metrics')
-      return res.json() as Promise<Metric[]>
+      const res = await fetch(`/api/personames/${id}/dimensions`)
+      if (!res.ok) throw new Error('Failed to fetch dimensions')
+      return res.json() as Promise<Dimension[]>
     },
   })
 
@@ -43,20 +54,28 @@ export default function ArchetypesPage({ params }: { params: Promise<{ id: strin
     queryFn: async () => {
       const res = await fetch(`/api/personames/${id}/archetypes`)
       if (!res.ok) throw new Error('Failed to fetch archetypes')
-      return res.json() as Promise<ArchetypeWithMetrics[]>
+      return res.json() as Promise<ArchetypeWithDimensions[]>
     },
   })
 
-  // Mirror only archetypes to local state for optimistic updates
-  useEffect(() => {
-    if (archetypesQuery.data) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setArchetypes(archetypesQuery.data)
-    }
-  }, [archetypesQuery.data])
+  const draft = useBuilderDraft(archetypesQuery.data, id)
+  const archetypes = draft.value ?? []
+  const setArchetypes = (items: ArchetypeWithDimensions[]) => {
+    draft.update(items)
+    setMessage('')
+  }
+
+  const itemEditor = useItemEditor(archetypes, setArchetypes)
+  const { editing } = itemEditor
 
   const saveArchetypesMutation = useMutation({
-    mutationFn: async (archetypesToSave: ArchetypeWithMetrics[]) => {
+    mutationFn: async ({
+      items: archetypesToSave,
+      advance,
+    }: {
+      items: ArchetypeWithDimensions[]
+      advance: boolean
+    }) => {
       const res = await fetch(`/api/personames/${id}/archetypes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -64,20 +83,26 @@ export default function ArchetypesPage({ params }: { params: Promise<{ id: strin
       })
 
       if (!res.ok) {
-        throw new Error('Failed to save archetypes')
+        throw new Error((await res.json()).error ?? 'Failed to save archetypes')
       }
 
-      return res.json()
+      return { data: (await res.json()) as ArchetypeWithDimensions[], advance }
     },
-    onSuccess: () => {
-      router.push(`/create/${id}/questions`)
+    onSuccess: ({ data, advance }) => {
+      draft.accept(data)
+      itemEditor.closeAll()
+      setMessage('Changes saved.')
+      queryClient.setQueryData(['archetypes', id], data)
+      queryClient.invalidateQueries({ queryKey: ['review', id] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+      if (advance) router.push(`/create/${id}/questions`)
     },
   })
 
   const handleAddArchetype = () => {
     const archetypeId = getTempId()
-    const color = getUnusedColorTheme(archetypes.map(a => a.color)).name;
-    const newArchetype: ArchetypeWithMetrics = {
+    const color = getUnusedColorTheme(archetypes.map((a) => a.color)).name
+    const newArchetype: ArchetypeWithDimensions = {
       id: archetypeId,
       name: '',
       description: null,
@@ -90,10 +115,10 @@ export default function ArchetypesPage({ params }: { params: Promise<{ id: strin
       personaId: id,
       createdAt: new Date(),
       updatedAt: new Date(),
-      metrics: (metricsQuery.data ?? []).map(m => ({
+      dimensions: (dimensionsQuery.data ?? []).map((m) => ({
         id: getTempId(),
         archetypeId: archetypeId,
-        metricId: m.id,
+        dimensionId: m.id,
         targetValue: 50,
         relevance: 0.8,
         createdAt: new Date(),
@@ -101,125 +126,165 @@ export default function ArchetypesPage({ params }: { params: Promise<{ id: strin
       })),
     }
     setArchetypes([...archetypes, newArchetype])
+    itemEditor.startNew(archetypeId)
   }
 
-  const handleSaveArchetype = (updatedArchetype: ArchetypeWithMetrics) => {
-    setArchetypes(archetypes.map(a => a.id === updatedArchetype.id ? updatedArchetype : a))
+  const handleSaveArchetype = (updatedArchetype: ArchetypeWithDimensions) => {
+    setArchetypes(
+      archetypes.map((a) =>
+        a.id === updatedArchetype.id ? updatedArchetype : a,
+      ),
+    )
   }
 
   const handleDeleteArchetype = (id: string) => {
-    setArchetypes(archetypes.filter(a => a.id !== id))
+    setArchetypes(archetypes.filter((a) => a.id !== id))
   }
 
-  const saveArchetypes = () => {
+  const saveArchetypes = (advance: boolean) => {
     if (archetypes.length === 0) {
       return
     }
 
-    saveArchetypesMutation.mutate(archetypes)
+    if (!draft.dirty) {
+      if (advance) router.push(`/create/${id}/questions`)
+      return
+    }
+    saveArchetypesMutation.mutate({ items: archetypes, advance })
   }
 
-  const isValid = archetypes.length >= 1 && archetypes.every(a => a.name.trim())
+  const isValid =
+    archetypes.length >= 1 && archetypes.every((a) => a.name.trim())
+
+  if (
+    (!draft.ready || dimensionsQuery.isPending) &&
+    !archetypesQuery.error &&
+    !dimensionsQuery.error
+  )
+    return (
+      <AppLayoutBackground>
+        <div className="max-w-4xl mx-auto">
+          <LoadingState label="Loading your archetypes…" />
+        </div>
+      </AppLayoutBackground>
+    )
 
   return (
     <AppLayoutBackground>
       <div className="max-w-4xl mx-auto">
         <StepProgress
           steps={[
-            { number: 1, label: 'Metrics', completed: true },
+            { number: 1, label: 'Dimensions', completed: true },
             { number: 2, label: 'Archetypes', active: true },
             { number: 3, label: 'Questions' },
           ]}
-          title="Define Your Archetypes"
-          description="Create personality types that quiz takers will match against (minimum 2, suggested 3-5)"
+          title="Define your archetypes"
+          description="Create the personality profiles your answers will point to. Give each one a distinct mix of your dimensions."
         />
 
-        {metricsQuery.data && metricsQuery.data.length > 0 && (
-          <Card className="mb-6 border-muted-200 bg-muted-50">
+        {dimensionsQuery.data && dimensionsQuery.data.length > 0 && (
+          <Card className="builder-context mb-5">
             <CardContent className="pt-4">
-              <p className="text-xs font-semibold text-muted-600 mb-3 uppercase">Your Metrics</p>
+              <p className="entity-heading text-xs font-semibold text-muted-600 mb-3 uppercase">
+                <EntityIcon kind="dimension" size={13} />
+                Your Dimensions
+              </p>
               <div className="flex flex-wrap gap-2">
-                {metricsQuery.data.map(metric => (
-                  <MetricTooltip key={metric.id} metric={metric}>
-                    <button
-                      className={
-                        cn("px-3 py-1.5 rounded-lg border border-opacity-20 text-xs font-medium text-white cursor-help transition-opacity hover:opacity-90",
-                          getColorTheme(metric.color).bgClass
-                        )
-                      }
-                    >
-                      {metric.emoji && <span className="mr-1">{metric.emoji}</span>}
-                      {metric.name}
+                {dimensionsQuery.data.map((dimension) => (
+                  <DimensionTooltip key={dimension.id} dimension={dimension}>
+                    <button className="dimension-tag-trigger" type="button">
+                      <DimensionTag
+                        name={dimension.name}
+                        emoji={dimension.emoji}
+                        color={dimension.color}
+                      />
                     </button>
-                  </MetricTooltip>
+                  </DimensionTooltip>
                 ))}
               </div>
             </CardContent>
           </Card>
         )}
 
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Personality Archetypes</CardTitle>
-            <CardDescription>
-              Archetypes are personality types that describe different combinations of your metrics.
-              For example: "The Leader", "The Creator", "The Analytical Mind"
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <ErrorBanner error={saveArchetypesMutation.error} />
-
-            <div className="space-y-6">
-              {archetypes.map(archetype => (
-                <div key={archetype.id}>
-                  <ArchetypeRow
-                    archetype={archetype}
-                    metrics={metricsQuery.data ?? []}
-                    onSave={handleSaveArchetype}
-                    onDelete={() => handleDeleteArchetype(archetype.id)}
-                  />
-                </div>
-              ))}
-            </div>
-
-            <button
-              onClick={handleAddArchetype}
-              className="w-full cursor-pointer border-2 border-dashed border-muted-300 rounded-xl p-8 bg-white/50 hover:bg-white hover:border-primary-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed group"
+        <Card className="builder-panel">
+          <CardContent className="builder-panel-body">
+            <fieldset
+              disabled={saveArchetypesMutation.isPending}
+              className="space-y-5 min-w-0"
             >
-              <div className="flex flex-col items-center gap-3 text-muted-600 group-hover:text-primary-700">
-                <div className="h-12 w-12 rounded-lg border-2 border-muted-300 group-hover:border-primary-400 flex items-center justify-center transition-colors">
-                  <Plus className="h-6 w-6" />
-                </div>
-                <span className="font-medium">Add Archetype</span>
-                <span className="text-xs text-muted-500">Click to create a new personality type</span>
+              <ErrorBanner
+                error={
+                  saveArchetypesMutation.error ||
+                  archetypesQuery.error ||
+                  dimensionsQuery.error
+                }
+              />
+
+              <div className="space-y-6">
+                {archetypes.map((archetype) => (
+                  <div key={archetype.id}>
+                    <ArchetypeRow
+                      isEditing={editing.includes(archetype.id)}
+                      onEdit={() => itemEditor.edit(archetype)}
+                      onDone={() => itemEditor.done(archetype.id)}
+                      onCancel={() => itemEditor.cancel(archetype.id)}
+                      archetype={archetype}
+                      dimensions={dimensionsQuery.data ?? []}
+                      onChange={handleSaveArchetype}
+                      onDelete={() => {
+                        handleDeleteArchetype(archetype.id)
+                        itemEditor.done(archetype.id)
+                      }}
+                    />
+                  </div>
+                ))}
               </div>
-            </button>
+
+              <AddItemButton
+                entity="archetype"
+                label="Add Archetype"
+                description="Create another personality profile."
+                onClick={handleAddArchetype}
+                disabled={
+                  !draft.ready ||
+                  saveArchetypesMutation.isPending ||
+                  dimensionsQuery.isPending
+                }
+              />
+            </fieldset>
           </CardContent>
-        </Card>
 
-        <div className="mb-6 bg-primary-50 border border-primary-200 rounded-lg p-4">
-          <p className="text-sm text-primary-800">
-            💡 Tip: Each archetype should represent a unique personality profile. Define target values
-            for each metric and mark which metrics are most important (high relevance).
-          </p>
-        </div>
-
-        <div className="flex justify-between">
-          <Link href={`/create/${id}/metrics`}>
-            <Button variant="outline">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back
-            </Button>
-          </Link>
-          <Button
-            onClick={saveArchetypes}
-            disabled={!isValid || saveArchetypesMutation.isPending}
-            className="bg-gradient-to-r from-primary to-secondary hover:from-primary-600 hover:to-secondary-600 text-white shadow-md"
+          <BuilderFooter
+            note={
+              message ||
+              'Give each archetype a distinct profile. At least two are needed to publish.'
+            }
+            back={
+              <Link href={`/create/${id}/dimensions`}>
+                <Button variant="outline">
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Back
+                </Button>
+              </Link>
+            }
           >
-            {saveArchetypesMutation.isPending ? 'Saving...' : 'Continue to Questions'}
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-        </div>
+            <BuilderSaveActions
+              dirty={draft.dirty}
+              valid={draft.ready && isValid}
+              busy={saveArchetypesMutation.isPending}
+              busyAction={
+                saveArchetypesMutation.variables?.advance ? 'continue' : 'save'
+              }
+              onReset={() => {
+                draft.reset()
+                itemEditor.closeAll()
+                setMessage('')
+                saveArchetypesMutation.reset()
+              }}
+              onSave={saveArchetypes}
+            />
+          </BuilderFooter>
+        </Card>
       </div>
     </AppLayoutBackground>
   )

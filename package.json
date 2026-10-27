@@ -13,7 +13,20 @@
     "db:update": "prisma db push && prisma generate",
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
-    "setup": "./setup.sh"
+    "setup": "./setup.sh",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "test:unit": "node --import tsx --test tests/*.unit.test.ts tests/scoring.test.ts",
+    "test:coverage": "node --import tsx --experimental-test-coverage --test-coverage-include=\"lib/quiz-*.ts\" --test-coverage-lines=95 --test-coverage-branches=90 --test-coverage-functions=90 --test tests/*.unit.test.ts tests/scoring.test.ts",
+    "test:e2e": "npm run test:e2e:prepare && playwright test",
+    "test:e2e:ui": "npm run test:e2e:prepare && playwright test --ui",
+    "test:e2e:headed": "npm run test:e2e:prepare && playwright test --headed",
+    "test:e2e:debug": "npm run test:e2e:prepare && playwright test --debug",
+    "test:e2e:report": "playwright show-report",
+    "test:e2e:trace": "playwright show-trace",
+    "catalog:validate": "node --import tsx scripts/validate-catalog.ts",
+    "catalog:seed": "node --import tsx scripts/seed-catalog.ts",
+    "test:e2e:prepare": "PERSONAME_E2E=1 next build"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -44,6 +57,7 @@
     "zod": "^4.3.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.1",
     "@tailwindcss/postcss": "^4.1.18",
     "@types/node": "^20",
     "@types/react": "^19",

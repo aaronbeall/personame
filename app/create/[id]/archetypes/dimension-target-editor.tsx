@@ -1,28 +1,32 @@
+import { DimensionEndpointLabel } from '@/components/dimension-endpoint-label'
 import { useEffect, useState } from 'react'
-import { Metric } from '@prisma/client'
+import { DimensionTag } from '@/components/entity-identity'
+import { Dimension } from '@prisma/client'
 import { Slider } from '@/components/ui/slider'
 import { Input } from '@/components/ui/input'
-import { MetricTooltip } from './metric-tooltip'
+import { DimensionTooltip } from './dimension-tooltip'
 import { CircleQuestionMark, Info } from 'lucide-react'
 import { Tooltip } from '@/components/ui/tooltip'
 
-interface MetricTargetEditorProps {
-  metric: Metric
+interface DimensionTargetEditorProps {
+  dimension: Dimension
   targetValue: number
   relevance: number
   onTargetChange: (value: number) => void
   onRelevanceChange: (value: number) => void
 }
 
-export function MetricTargetEditor({
-  metric,
+export function DimensionTargetEditor({
+  dimension,
   targetValue,
   relevance,
   onTargetChange,
   onRelevanceChange,
-}: MetricTargetEditorProps) {
+}: DimensionTargetEditorProps) {
   const [targetInput, setTargetInput] = useState(String(targetValue))
-  const [relevanceInput, setRelevanceInput] = useState(String((relevance * 100).toFixed(0)))
+  const [relevanceInput, setRelevanceInput] = useState(
+    String((relevance * 100).toFixed(0)),
+  )
 
   // Sync local inputs when parent updates
   useEffect(() => {
@@ -34,13 +38,27 @@ export function MetricTargetEditor({
   }, [relevance])
 
   const handleTargetBlur = () => {
-    const value = Math.min(100, Math.max(0, parseInt(targetInput) || 50))
+    const value = Math.min(
+      100,
+      Math.max(
+        0,
+        Number.isFinite(parseInt(targetInput)) ? parseInt(targetInput) : 50,
+      ),
+    )
     onTargetChange(value)
     setTargetInput(String(value))
   }
 
   const handleRelevanceBlur = () => {
-    const value = Math.min(100, Math.max(0, parseInt(relevanceInput) || 50))
+    const value = Math.min(
+      100,
+      Math.max(
+        0,
+        Number.isFinite(parseInt(relevanceInput))
+          ? parseInt(relevanceInput)
+          : 50,
+      ),
+    )
     onRelevanceChange(value / 100)
     setRelevanceInput(String(value))
   }
@@ -50,10 +68,14 @@ export function MetricTargetEditor({
       <div className="grid gap-4 md:grid-cols-[2fr_1fr]">
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <label className="text-sm font-medium text-slate-700">{metric.name}</label>
-            <MetricTooltip metric={metric}>
+            <DimensionTag
+              name={dimension.name}
+              emoji={dimension.emoji}
+              color={dimension.color}
+            />
+            <DimensionTooltip dimension={dimension}>
               <Info className="w-3.5 h-3.5 text-muted-500 hover:text-muted-600 transition-colors cursor-help" />
-            </MetricTooltip>
+            </DimensionTooltip>
           </div>
 
           {/* Slider and input aligned */}
@@ -61,8 +83,16 @@ export function MetricTargetEditor({
             <div className="flex-1 space-y-1">
               {/* Min/Max labels anchored to slider */}
               <div className="flex items-center justify-between text-[11px] text-muted-600 px-0.5">
-                <span>{metric.minLabel}</span>
-                <span>{metric.maxLabel}</span>
+                <DimensionEndpointLabel
+                  label={dimension.minLabel || '0'}
+                  emoji={dimension.minEmoji}
+                  end="low"
+                />
+                <DimensionEndpointLabel
+                  label={dimension.maxLabel || '100'}
+                  emoji={dimension.maxEmoji}
+                  end="high"
+                />
               </div>
               <Slider
                 min={0}
@@ -73,13 +103,14 @@ export function MetricTargetEditor({
                   onTargetChange(value)
                   setTargetInput(String(value))
                 }}
-                color={metric.color ?? undefined}
+                color={dimension.color ?? undefined}
               />
             </div>
             <Input
               type="number"
               min="0"
               max="100"
+              aria-label={`${dimension.name} target`}
               value={targetInput}
               onChange={(e) => setTargetInput(e.target.value)}
               onBlur={handleTargetBlur}
@@ -91,9 +122,15 @@ export function MetricTargetEditor({
         <div className="space-y-2">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-slate-700">Importance</label>
+              <label className="text-sm font-medium text-slate-700">
+                Importance
+              </label>
               <Tooltip
-                content={<p className="text-xs">How important is this metric for this archetype?</p>}
+                content={
+                  <p className="text-xs">
+                    How important is this dimension for this archetype?
+                  </p>
+                }
               >
                 <CircleQuestionMark className="w-3.5 h-3.5 text-muted-400 hover:text-muted-600 transition-colors cursor-help" />
               </Tooltip>
@@ -116,6 +153,7 @@ export function MetricTargetEditor({
                 type="number"
                 min="0"
                 max="100"
+                aria-label={`${dimension.name} importance`}
                 value={relevanceInput}
                 onChange={(e) => setRelevanceInput(e.target.value)}
                 onBlur={handleRelevanceBlur}

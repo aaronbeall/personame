@@ -1,0 +1,1 @@
+ALTER TABLE "Metric" ADD COLUMN "minEmoji" TEXT, ADD COLUMN "maxEmoji" TEXT;

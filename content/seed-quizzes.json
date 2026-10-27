@@ -1,0 +1,1701 @@
+{
+  "version": 1,
+  "quizzes": [
+    {
+      "slug": "weekend-wanderer",
+      "title": "What kind of weekend wanderer are you?",
+      "description": "A tiny adventure, a scenic detour, or a very good nap. Find your preferred way to get away. For fun and reflection; not a validated assessment.",
+      "emoji": "🧭",
+      "dimensions": [
+        {
+          "key": "novelty",
+          "name": "Adventure",
+          "minLabel": "Familiar favorites",
+          "maxLabel": "Uncharted territory"
+        },
+        {
+          "key": "company",
+          "name": "Company",
+          "minLabel": "Solo sanctuary",
+          "maxLabel": "The whole crew"
+        }
+      ],
+      "archetypes": [
+        {
+          "name": "The Hideaway",
+          "description": "A familiar corner, a quiet morning, and nobody asking for the itinerary.",
+          "emoji": "🌿",
+          "targets": {
+            "novelty": 15,
+            "company": 15
+          }
+        },
+        {
+          "name": "The Trailblazer",
+          "description": "You follow your curiosity, even when nobody else can find the path.",
+          "emoji": "🥾",
+          "targets": {
+            "novelty": 85,
+            "company": 15
+          }
+        },
+        {
+          "name": "The Reunion Planner",
+          "description": "The best destination is wherever your favorite people gather.",
+          "emoji": "🧺",
+          "targets": {
+            "novelty": 15,
+            "company": 85
+          }
+        },
+        {
+          "name": "The Detour Captain",
+          "description": "You bring the crew and turn a wrong turn into the main attraction.",
+          "emoji": "🚐",
+          "targets": {
+            "novelty": 85,
+            "company": 85
+          }
+        }
+      ],
+      "questions": [
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "The weekend suddenly opens up. Your first thought?",
+          "answers": [
+            {
+              "text": "Return to my favorite spot.",
+              "weights": {
+                "novelty": -12
+              }
+            },
+            {
+              "text": "See what sounds good tomorrow.",
+              "weights": {
+                "novelty": 0
+              }
+            },
+            {
+              "text": "Pick somewhere I have never been.",
+              "weights": {
+                "novelty": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "You spot an unmarked path beside the main trail.",
+          "answers": [
+            {
+              "text": "Stay with the route I know.",
+              "weights": {
+                "novelty": -12
+              }
+            },
+            {
+              "text": "Look it up before deciding.",
+              "weights": {
+                "novelty": 0
+              }
+            },
+            {
+              "text": "Let us see where it goes.",
+              "weights": {
+                "novelty": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "Who gets an invitation?",
+          "answers": [
+            {
+              "text": "Nobody; this one is for me.",
+              "weights": {
+                "company": -12
+              }
+            },
+            {
+              "text": "One or two easygoing companions.",
+              "weights": {
+                "company": 0
+              }
+            },
+            {
+              "text": "The group chat is already buzzing.",
+              "weights": {
+                "company": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "The ideal evening ends with…",
+          "answers": [
+            {
+              "text": "A book and my own thoughts.",
+              "weights": {
+                "company": -12
+              }
+            },
+            {
+              "text": "A conversation with a close friend.",
+              "weights": {
+                "company": 0
+              }
+            },
+            {
+              "text": "A table full of stories.",
+              "weights": {
+                "company": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "SLIDER",
+          "text": "How far from your usual routine would you like to go?",
+          "answers": [
+            {
+              "text": "Keep it familiar",
+              "weights": {
+                "novelty": -16
+              }
+            },
+            {
+              "text": "Surprise me",
+              "weights": {
+                "novelty": 16
+              }
+            }
+          ]
+        },
+        {
+          "type": "SCALE",
+          "text": "How much company makes a getaway better?",
+          "answers": [
+            {
+              "text": "Solo sanctuary",
+              "weights": {
+                "company": -16
+              }
+            },
+            {
+              "text": "The whole crew",
+              "weights": {
+                "company": 16
+              }
+            },
+            {
+              "text": "Just me",
+              "weights": {}
+            },
+            {
+              "text": "A little",
+              "weights": {}
+            },
+            {
+              "text": "A mix",
+              "weights": {}
+            },
+            {
+              "text": "A lively group",
+              "weights": {}
+            },
+            {
+              "text": "Everyone",
+              "weights": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "creative-sidekick",
+      "title": "Which creative sidekick are you?",
+      "description": "Meet the part of you that helps an idea escape the notebook. For fun and reflection; not a validated assessment.",
+      "emoji": "🎨",
+      "dimensions": [
+        {
+          "key": "experimentation",
+          "name": "Experimentation",
+          "minLabel": "Refine what works",
+          "maxLabel": "Try the strange idea"
+        },
+        {
+          "key": "visibility",
+          "name": "Visibility",
+          "minLabel": "Behind the scenes",
+          "maxLabel": "Center stage"
+        }
+      ],
+      "archetypes": [
+        {
+          "name": "The Quiet Craftsperson",
+          "description": "You make the small details sing without needing to announce the performance.",
+          "emoji": "🪡",
+          "targets": {
+            "experimentation": 15,
+            "visibility": 15
+          }
+        },
+        {
+          "name": "The Secret Inventor",
+          "description": "Your private experiments have a habit of becoming everyone’s favorite discovery.",
+          "emoji": "🧪",
+          "targets": {
+            "experimentation": 85,
+            "visibility": 15
+          }
+        },
+        {
+          "name": "The Polished Performer",
+          "description": "You know your craft and enjoy giving it a proper spotlight.",
+          "emoji": "🎭",
+          "targets": {
+            "experimentation": 15,
+            "visibility": 85
+          }
+        },
+        {
+          "name": "The Spark Launcher",
+          "description": "You try the wild thing and invite the room to see what happens.",
+          "emoji": "🎆",
+          "targets": {
+            "experimentation": 85,
+            "visibility": 85
+          }
+        }
+      ],
+      "questions": [
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "A blank page is staring back. What helps?",
+          "answers": [
+            {
+              "text": "Use a technique I trust.",
+              "weights": {
+                "experimentation": -12
+              }
+            },
+            {
+              "text": "Start with a familiar idea and twist it.",
+              "weights": {
+                "experimentation": 0
+              }
+            },
+            {
+              "text": "Try a medium I barely understand.",
+              "weights": {
+                "experimentation": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "A first draft is almost working. You…",
+          "answers": [
+            {
+              "text": "Refine the strongest part.",
+              "weights": {
+                "experimentation": -12
+              }
+            },
+            {
+              "text": "Test a modest variation.",
+              "weights": {
+                "experimentation": 0
+              }
+            },
+            {
+              "text": "Make a radically different version.",
+              "weights": {
+                "experimentation": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "Your project is ready. The satisfying part is…",
+          "answers": [
+            {
+              "text": "Knowing I made it well.",
+              "weights": {
+                "visibility": -12
+              }
+            },
+            {
+              "text": "Showing a trusted friend.",
+              "weights": {
+                "visibility": 0
+              }
+            },
+            {
+              "text": "Sharing it with a crowd.",
+              "weights": {
+                "visibility": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "A collaboration needs someone to present. You…",
+          "answers": [
+            {
+              "text": "Help prepare the material.",
+              "weights": {
+                "visibility": -12
+              }
+            },
+            {
+              "text": "Share the presentation.",
+              "weights": {
+                "visibility": 0
+              }
+            },
+            {
+              "text": "Volunteer for the spotlight.",
+              "weights": {
+                "visibility": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "SLIDER",
+          "text": "How experimental is your next project?",
+          "answers": [
+            {
+              "text": "Tried and true",
+              "weights": {
+                "experimentation": -16
+              }
+            },
+            {
+              "text": "Beautifully odd",
+              "weights": {
+                "experimentation": 16
+              }
+            }
+          ]
+        },
+        {
+          "type": "SCALE",
+          "text": "How visible do you want your creative work to be?",
+          "answers": [
+            {
+              "text": "Behind the scenes",
+              "weights": {
+                "visibility": -16
+              }
+            },
+            {
+              "text": "Center stage",
+              "weights": {
+                "visibility": 16
+              }
+            },
+            {
+              "text": "Private",
+              "weights": {}
+            },
+            {
+              "text": "A trusted few",
+              "weights": {}
+            },
+            {
+              "text": "A small circle",
+              "weights": {}
+            },
+            {
+              "text": "Public",
+              "weights": {}
+            },
+            {
+              "text": "On the big screen",
+              "weights": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "dinner-party",
+      "title": "What is your dinner-party superpower?",
+      "description": "There is more than one way to keep a table happy. Find the role you naturally bring. For fun and reflection; not a validated assessment.",
+      "emoji": "🍝",
+      "dimensions": [
+        {
+          "key": "improvisation",
+          "name": "Improvisation",
+          "minLabel": "The trusted recipe",
+          "maxLabel": "A delicious experiment"
+        },
+        {
+          "key": "hosting",
+          "name": "Hosting energy",
+          "minLabel": "A cozy few",
+          "maxLabel": "A lively crowd"
+        }
+      ],
+      "archetypes": [
+        {
+          "name": "The Comfort Cook",
+          "description": "You make a small table feel like everyone has come home.",
+          "emoji": "🥘",
+          "targets": {
+            "improvisation": 15,
+            "hosting": 15
+          }
+        },
+        {
+          "name": "The Kitchen Alchemist",
+          "description": "Your intimate dinners double as delicious experiments.",
+          "emoji": "🌶️",
+          "targets": {
+            "improvisation": 85,
+            "hosting": 15
+          }
+        },
+        {
+          "name": "The Feast Steward",
+          "description": "You make a big gathering feel effortless with dependable favorites.",
+          "emoji": "🍞",
+          "targets": {
+            "improvisation": 15,
+            "hosting": 85
+          }
+        },
+        {
+          "name": "The Supper Ringmaster",
+          "description": "You mix surprising flavors and personalities into a memorable evening.",
+          "emoji": "🎪",
+          "targets": {
+            "improvisation": 85,
+            "hosting": 85
+          }
+        }
+      ],
+      "questions": [
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "The menu begins with…",
+          "answers": [
+            {
+              "text": "A recipe I have made a dozen times.",
+              "weights": {
+                "improvisation": -12
+              }
+            },
+            {
+              "text": "A favorite with one new dish.",
+              "weights": {
+                "improvisation": 0
+              }
+            },
+            {
+              "text": "An ingredient I have never cooked.",
+              "weights": {
+                "improvisation": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "The market is out of your main ingredient. You…",
+          "answers": [
+            {
+              "text": "Find the closest substitute.",
+              "weights": {
+                "improvisation": -12
+              }
+            },
+            {
+              "text": "Adjust the recipe a little.",
+              "weights": {
+                "improvisation": 0
+              }
+            },
+            {
+              "text": "Invent a new menu.",
+              "weights": {
+                "improvisation": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "Your dream table has room for…",
+          "answers": [
+            {
+              "text": "Two people and a long conversation.",
+              "weights": {
+                "hosting": -12
+              }
+            },
+            {
+              "text": "A handful of friends.",
+              "weights": {
+                "hosting": 0
+              }
+            },
+            {
+              "text": "Anyone who wants to pull up a chair.",
+              "weights": {
+                "hosting": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "After dinner, the mood is…",
+          "answers": [
+            {
+              "text": "Quiet and unhurried.",
+              "weights": {
+                "hosting": -12
+              }
+            },
+            {
+              "text": "Warm conversation.",
+              "weights": {
+                "hosting": 0
+              }
+            },
+            {
+              "text": "Music, games, and another round of stories.",
+              "weights": {
+                "hosting": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "SLIDER",
+          "text": "How much culinary improvisation sounds fun?",
+          "answers": [
+            {
+              "text": "Follow the recipe",
+              "weights": {
+                "improvisation": -16
+              }
+            },
+            {
+              "text": "Cook by instinct",
+              "weights": {
+                "improvisation": 16
+              }
+            }
+          ]
+        },
+        {
+          "type": "SCALE",
+          "text": "How big is your ideal gathering?",
+          "answers": [
+            {
+              "text": "A cozy few",
+              "weights": {
+                "hosting": -16
+              }
+            },
+            {
+              "text": "A lively crowd",
+              "weights": {
+                "hosting": 16
+              }
+            },
+            {
+              "text": "Two",
+              "weights": {}
+            },
+            {
+              "text": "Four",
+              "weights": {}
+            },
+            {
+              "text": "Six",
+              "weights": {}
+            },
+            {
+              "text": "Ten",
+              "weights": {}
+            },
+            {
+              "text": "The neighborhood",
+              "weights": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "fantasy-tavern",
+      "title": "Who are you at the fantasy tavern?",
+      "description": "Your quest can wait five minutes. There is a mysterious noticeboard and suspiciously good soup. For fun and reflection; not a validated assessment.",
+      "emoji": "🐉",
+      "dimensions": [
+        {
+          "key": "risk",
+          "name": "Risk appetite",
+          "minLabel": "Keep my boots dry",
+          "maxLabel": "Enter the dragon cave"
+        },
+        {
+          "key": "sociability",
+          "name": "Sociability",
+          "minLabel": "A quiet corner",
+          "maxLabel": "Work the whole room"
+        }
+      ],
+      "archetypes": [
+        {
+          "name": "The Hearthkeeper",
+          "description": "You know the safe roads and the value of a peaceful corner.",
+          "emoji": "🕯️",
+          "targets": {
+            "risk": 15,
+            "sociability": 15
+          }
+        },
+        {
+          "name": "The Lone Ranger",
+          "description": "You travel light and accept the quests with questionable maps.",
+          "emoji": "🏹",
+          "targets": {
+            "risk": 85,
+            "sociability": 15
+          }
+        },
+        {
+          "name": "The Guild Organizer",
+          "description": "You turn a tavern full of strangers into a reliable party.",
+          "emoji": "🛡️",
+          "targets": {
+            "risk": 15,
+            "sociability": 85
+          }
+        },
+        {
+          "name": "The Chaos Bard",
+          "description": "You charm the room, accept the quest, and probably name the dragon.",
+          "emoji": "🪕",
+          "targets": {
+            "risk": 85,
+            "sociability": 85
+          }
+        }
+      ],
+      "questions": [
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "The noticeboard offers a job. You pick…",
+          "answers": [
+            {
+              "text": "A well-paid delivery on a safe road.",
+              "weights": {
+                "risk": -12
+              }
+            },
+            {
+              "text": "A scouting trip with a decent map.",
+              "weights": {
+                "risk": 0
+              }
+            },
+            {
+              "text": "A ruin that rearranges itself at midnight.",
+              "weights": {
+                "risk": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "A glowing potion is offered for free. You…",
+          "answers": [
+            {
+              "text": "Politely decline.",
+              "weights": {
+                "risk": -12
+              }
+            },
+            {
+              "text": "Ask the alchemist for details.",
+              "weights": {
+                "risk": 0
+              }
+            },
+            {
+              "text": "Ask what happens if I drink two.",
+              "weights": {
+                "risk": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "You enter the tavern and head toward…",
+          "answers": [
+            {
+              "text": "An empty corner booth.",
+              "weights": {
+                "sociability": -12
+              }
+            },
+            {
+              "text": "A friendly-looking small table.",
+              "weights": {
+                "sociability": 0
+              }
+            },
+            {
+              "text": "The loudest group in the room.",
+              "weights": {
+                "sociability": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "The party needs a spokesperson. You…",
+          "answers": [
+            {
+              "text": "Let someone else do the talking.",
+              "weights": {
+                "sociability": -12
+              }
+            },
+            {
+              "text": "Help when my knowledge is useful.",
+              "weights": {
+                "sociability": 0
+              }
+            },
+            {
+              "text": "Introduce everyone before they ask.",
+              "weights": {
+                "sociability": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "SLIDER",
+          "text": "How dangerous should the next quest be?",
+          "answers": [
+            {
+              "text": "A sensible errand",
+              "weights": {
+                "risk": -16
+              }
+            },
+            {
+              "text": "A legend in the making",
+              "weights": {
+                "risk": 16
+              }
+            }
+          ]
+        },
+        {
+          "type": "SCALE",
+          "text": "How many companions should join the quest?",
+          "answers": [
+            {
+              "text": "A quiet corner",
+              "weights": {
+                "sociability": -16
+              }
+            },
+            {
+              "text": "Work the whole room",
+              "weights": {
+                "sociability": 16
+              }
+            },
+            {
+              "text": "None",
+              "weights": {}
+            },
+            {
+              "text": "One",
+              "weights": {}
+            },
+            {
+              "text": "A small party",
+              "weights": {}
+            },
+            {
+              "text": "A guild",
+              "weights": {}
+            },
+            {
+              "text": "A parade",
+              "weights": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "city-after-dark",
+      "title": "What kind of city explorer are you?",
+      "description": "Side streets, bright lights, and the place that only serves one excellent thing. For fun and reflection; not a validated assessment.",
+      "emoji": "🌃",
+      "dimensions": [
+        {
+          "key": "discovery",
+          "name": "Discovery",
+          "minLabel": "The usual places",
+          "maxLabel": "The hidden entrance"
+        },
+        {
+          "key": "pace",
+          "name": "Pace",
+          "minLabel": "One lovely stop",
+          "maxLabel": "Keep the night moving"
+        }
+      ],
+      "archetypes": [
+        {
+          "name": "The Neighborhood Regular",
+          "description": "You savor a familiar place until it becomes part of your story.",
+          "emoji": "☕",
+          "targets": {
+            "discovery": 15,
+            "pace": 15
+          }
+        },
+        {
+          "name": "The Hidden-Gem Hunter",
+          "description": "You take your time finding the little places that reward curiosity.",
+          "emoji": "🗝️",
+          "targets": {
+            "discovery": 85,
+            "pace": 15
+          }
+        },
+        {
+          "name": "The Circuit Keeper",
+          "description": "You keep the night lively with a reliable lineup of favorites.",
+          "emoji": "🚋",
+          "targets": {
+            "discovery": 15,
+            "pace": 85
+          }
+        },
+        {
+          "name": "The Neon Nomad",
+          "description": "You follow the city’s surprises and rarely stay in one place for long.",
+          "emoji": "🌆",
+          "targets": {
+            "discovery": 85,
+            "pace": 85
+          }
+        }
+      ],
+      "questions": [
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "Where does the evening start?",
+          "answers": [
+            {
+              "text": "My dependable favorite.",
+              "weights": {
+                "discovery": -12
+              }
+            },
+            {
+              "text": "A place a friend recommended.",
+              "weights": {
+                "discovery": 0
+              }
+            },
+            {
+              "text": "An intriguing doorway I just noticed.",
+              "weights": {
+                "discovery": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "A menu has one dish you cannot identify. You…",
+          "answers": [
+            {
+              "text": "Order what I already love.",
+              "weights": {
+                "discovery": -12
+              }
+            },
+            {
+              "text": "Ask the server about it.",
+              "weights": {
+                "discovery": 0
+              }
+            },
+            {
+              "text": "Give the mystery dish its moment.",
+              "weights": {
+                "discovery": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "At the first stop, you prefer to…",
+          "answers": [
+            {
+              "text": "Settle in for the evening.",
+              "weights": {
+                "pace": -12
+              }
+            },
+            {
+              "text": "See how the mood develops.",
+              "weights": {
+                "pace": 0
+              }
+            },
+            {
+              "text": "Enjoy it, then find the next place.",
+              "weights": {
+                "pace": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "An hour remains before the last train. You…",
+          "answers": [
+            {
+              "text": "Stay somewhere comfortable.",
+              "weights": {
+                "pace": -12
+              }
+            },
+            {
+              "text": "Fit in one more easy stop.",
+              "weights": {
+                "pace": 0
+              }
+            },
+            {
+              "text": "Make a miniature adventure of it.",
+              "weights": {
+                "pace": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "SLIDER",
+          "text": "How unfamiliar should tonight feel?",
+          "answers": [
+            {
+              "text": "Comfortably known",
+              "weights": {
+                "discovery": -16
+              }
+            },
+            {
+              "text": "Entirely new",
+              "weights": {
+                "discovery": 16
+              }
+            }
+          ]
+        },
+        {
+          "type": "SCALE",
+          "text": "What pace feels right?",
+          "answers": [
+            {
+              "text": "One lovely stop",
+              "weights": {
+                "pace": -16
+              }
+            },
+            {
+              "text": "Keep the night moving",
+              "weights": {
+                "pace": 16
+              }
+            },
+            {
+              "text": "Lingering",
+              "weights": {}
+            },
+            {
+              "text": "Unhurried",
+              "weights": {}
+            },
+            {
+              "text": "Flexible",
+              "weights": {}
+            },
+            {
+              "text": "Lively",
+              "weights": {}
+            },
+            {
+              "text": "Always moving",
+              "weights": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "space-crew",
+      "title": "What is your space-crew assignment?",
+      "description": "The ship is held together by good intentions. Luckily, you have a useful kind of weird. For fun and reflection; not a validated assessment.",
+      "emoji": "🚀",
+      "dimensions": [
+        {
+          "key": "adaptation",
+          "name": "Adaptation",
+          "minLabel": "Follow the checklist",
+          "maxLabel": "Invent a workaround"
+        },
+        {
+          "key": "outreach",
+          "name": "Outreach",
+          "minLabel": "Study the instruments",
+          "maxLabel": "Hail the unknown ship"
+        }
+      ],
+      "archetypes": [
+        {
+          "name": "The Systems Keeper",
+          "description": "You keep the ship steady through patient attention and trusted procedures.",
+          "emoji": "⚙️",
+          "targets": {
+            "adaptation": 15,
+            "outreach": 15
+          }
+        },
+        {
+          "name": "The Deep-Space Tinkerer",
+          "description": "You solve quiet emergencies with unlikely parts and original thinking.",
+          "emoji": "🔧",
+          "targets": {
+            "adaptation": 85,
+            "outreach": 15
+          }
+        },
+        {
+          "name": "The Mission Diplomat",
+          "description": "You pair a dependable plan with a talent for bringing people aboard.",
+          "emoji": "🛰️",
+          "targets": {
+            "adaptation": 15,
+            "outreach": 85
+          }
+        },
+        {
+          "name": "The First-Contact Improviser",
+          "description": "You greet the unknown with an open channel and a gloriously unfinished plan.",
+          "emoji": "👽",
+          "targets": {
+            "adaptation": 85,
+            "outreach": 85
+          }
+        }
+      ],
+      "questions": [
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "An alarm sounds on the bridge. Your first move?",
+          "answers": [
+            {
+              "text": "Open the emergency checklist.",
+              "weights": {
+                "adaptation": -12
+              }
+            },
+            {
+              "text": "Check the readings, then adapt.",
+              "weights": {
+                "adaptation": 0
+              }
+            },
+            {
+              "text": "Build a workaround on the fly.",
+              "weights": {
+                "adaptation": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "The mission plan hits an unexpected obstacle. You…",
+          "answers": [
+            {
+              "text": "Find the documented fallback.",
+              "weights": {
+                "adaptation": -12
+              }
+            },
+            {
+              "text": "Modify the original plan.",
+              "weights": {
+                "adaptation": 0
+              }
+            },
+            {
+              "text": "Sketch an entirely new approach.",
+              "weights": {
+                "adaptation": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "An unknown signal arrives. You want to…",
+          "answers": [
+            {
+              "text": "Study the pattern in peace.",
+              "weights": {
+                "outreach": -12
+              }
+            },
+            {
+              "text": "Discuss it with the science team.",
+              "weights": {
+                "outreach": 0
+              }
+            },
+            {
+              "text": "Open a channel and say hello.",
+              "weights": {
+                "outreach": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "During downtime, you gravitate toward…",
+          "answers": [
+            {
+              "text": "A personal project in the workshop.",
+              "weights": {
+                "outreach": -12
+              }
+            },
+            {
+              "text": "A small shared meal.",
+              "weights": {
+                "outreach": 0
+              }
+            },
+            {
+              "text": "Meeting everyone on the next station.",
+              "weights": {
+                "outreach": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "SLIDER",
+          "text": "How much improvisation belongs on the bridge?",
+          "answers": [
+            {
+              "text": "Checklist first",
+              "weights": {
+                "adaptation": -16
+              }
+            },
+            {
+              "text": "Whatever works",
+              "weights": {
+                "adaptation": 16
+              }
+            }
+          ]
+        },
+        {
+          "type": "SCALE",
+          "text": "How eager are you to make first contact?",
+          "answers": [
+            {
+              "text": "Study the instruments",
+              "weights": {
+                "outreach": -16
+              }
+            },
+            {
+              "text": "Hail the unknown ship",
+              "weights": {
+                "outreach": 16
+              }
+            },
+            {
+              "text": "Observe quietly",
+              "weights": {}
+            },
+            {
+              "text": "Listen first",
+              "weights": {}
+            },
+            {
+              "text": "Ask a question",
+              "weights": {}
+            },
+            {
+              "text": "Start a conversation",
+              "weights": {}
+            },
+            {
+              "text": "Broadcast a welcome",
+              "weights": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "team-project",
+      "title": "What do you bring to a team project?",
+      "description": "A playful look at your collaboration style, without turning your coworkers into a personality spreadsheet. For fun and reflection; not a validated assessment.",
+      "emoji": "🛠️",
+      "dimensions": [
+        {
+          "key": "structure",
+          "name": "Structure",
+          "minLabel": "Discover as we go",
+          "maxLabel": "Make a clear plan"
+        },
+        {
+          "key": "initiative",
+          "name": "Initiative",
+          "minLabel": "Strengthen the work",
+          "maxLabel": "Set the direction"
+        }
+      ],
+      "archetypes": [
+        {
+          "name": "The Responsive Ally",
+          "description": "You help the team adapt and make the work better where it needs you most.",
+          "emoji": "🌱",
+          "targets": {
+            "structure": 15,
+            "initiative": 15
+          }
+        },
+        {
+          "name": "The Reliable Finisher",
+          "description": "You turn a shared plan into something people can depend on.",
+          "emoji": "🧱",
+          "targets": {
+            "structure": 85,
+            "initiative": 15
+          }
+        },
+        {
+          "name": "The Possibility Scout",
+          "description": "You start movement by noticing a promising direction nobody has tried.",
+          "emoji": "🔭",
+          "targets": {
+            "structure": 15,
+            "initiative": 85
+          }
+        },
+        {
+          "name": "The Roadmap Maker",
+          "description": "You turn a big goal into a clear direction and help people move together.",
+          "emoji": "🗺️",
+          "targets": {
+            "structure": 85,
+            "initiative": 85
+          }
+        }
+      ],
+      "questions": [
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "A new project lands. You want to begin by…",
+          "answers": [
+            {
+              "text": "Trying a small experiment.",
+              "weights": {
+                "structure": -12
+              }
+            },
+            {
+              "text": "Agreeing on a loose outline.",
+              "weights": {
+                "structure": 0
+              }
+            },
+            {
+              "text": "Mapping milestones and responsibilities.",
+              "weights": {
+                "structure": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "A deadline shifts. You prefer to…",
+          "answers": [
+            {
+              "text": "Adjust as the new work takes shape.",
+              "weights": {
+                "structure": -12
+              }
+            },
+            {
+              "text": "Update the next few priorities.",
+              "weights": {
+                "structure": 0
+              }
+            },
+            {
+              "text": "Rebuild the schedule clearly.",
+              "weights": {
+                "structure": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "A meeting stalls. You naturally…",
+          "answers": [
+            {
+              "text": "Help clarify someone else’s idea.",
+              "weights": {
+                "initiative": -12
+              }
+            },
+            {
+              "text": "Offer a question to move things along.",
+              "weights": {
+                "initiative": 0
+              }
+            },
+            {
+              "text": "Propose a direction and a next step.",
+              "weights": {
+                "initiative": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "A promising opportunity appears. You…",
+          "answers": [
+            {
+              "text": "Offer support to whoever picks it up.",
+              "weights": {
+                "initiative": -12
+              }
+            },
+            {
+              "text": "Discuss whether it fits the team.",
+              "weights": {
+                "initiative": 0
+              }
+            },
+            {
+              "text": "Take the first step and invite others.",
+              "weights": {
+                "initiative": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "SLIDER",
+          "text": "How detailed should a project plan be?",
+          "answers": [
+            {
+              "text": "A rough direction",
+              "weights": {
+                "structure": -16
+              }
+            },
+            {
+              "text": "A clear roadmap",
+              "weights": {
+                "structure": 16
+              }
+            }
+          ]
+        },
+        {
+          "type": "SCALE",
+          "text": "How often do you like to initiate the next move?",
+          "answers": [
+            {
+              "text": "Strengthen the work",
+              "weights": {
+                "initiative": -16
+              }
+            },
+            {
+              "text": "Set the direction",
+              "weights": {
+                "initiative": 16
+              }
+            },
+            {
+              "text": "Rarely",
+              "weights": {}
+            },
+            {
+              "text": "Occasionally",
+              "weights": {}
+            },
+            {
+              "text": "Sometimes",
+              "weights": {}
+            },
+            {
+              "text": "Often",
+              "weights": {}
+            },
+            {
+              "text": "Usually",
+              "weights": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "rainy-day",
+      "title": "What is your rainy-day alter ego?",
+      "description": "The forecast says stay inside. Your ideal indoor world says a little more. For fun and reflection; not a validated assessment.",
+      "emoji": "🌧️",
+      "dimensions": [
+        {
+          "key": "stimulation",
+          "name": "Stimulation",
+          "minLabel": "Soft and quiet",
+          "maxLabel": "Lively and absorbing"
+        },
+        {
+          "key": "sharing",
+          "name": "Sharing",
+          "minLabel": "My own little world",
+          "maxLabel": "Bring people together"
+        }
+      ],
+      "archetypes": [
+        {
+          "name": "The Blanket Philosopher",
+          "description": "You create a quiet pocket of time for your own thoughts and comforts.",
+          "emoji": "📖",
+          "targets": {
+            "stimulation": 15,
+            "sharing": 15
+          }
+        },
+        {
+          "name": "The Solo Side-Quest",
+          "description": "You disappear into a game, a project, or a wonderfully consuming rabbit hole.",
+          "emoji": "🎮",
+          "targets": {
+            "stimulation": 85,
+            "sharing": 15
+          }
+        },
+        {
+          "name": "The Cozy Host",
+          "description": "You turn bad weather into an excuse for tea and good company.",
+          "emoji": "🫖",
+          "targets": {
+            "stimulation": 15,
+            "sharing": 85
+          }
+        },
+        {
+          "name": "The Living-Room Carnival",
+          "description": "You bring the people, the playlist, and the game with too many pieces.",
+          "emoji": "🎲",
+          "targets": {
+            "stimulation": 85,
+            "sharing": 85
+          }
+        }
+      ],
+      "questions": [
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "Rain cancels your plans. Your replacement is…",
+          "answers": [
+            {
+              "text": "A gentle book and a warm drink.",
+              "weights": {
+                "stimulation": -12
+              }
+            },
+            {
+              "text": "A film or a small creative project.",
+              "weights": {
+                "stimulation": 0
+              }
+            },
+            {
+              "text": "A game or project that takes all my attention.",
+              "weights": {
+                "stimulation": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "Your room’s soundtrack is…",
+          "answers": [
+            {
+              "text": "The rain itself.",
+              "weights": {
+                "stimulation": -12
+              }
+            },
+            {
+              "text": "A soft playlist.",
+              "weights": {
+                "stimulation": 0
+              }
+            },
+            {
+              "text": "Something with energy and momentum.",
+              "weights": {
+                "stimulation": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "Who belongs in your rainy-day plan?",
+          "answers": [
+            {
+              "text": "Just me.",
+              "weights": {
+                "sharing": -12
+              }
+            },
+            {
+              "text": "One close companion.",
+              "weights": {
+                "sharing": 0
+              }
+            },
+            {
+              "text": "A few friends looking for shelter.",
+              "weights": {
+                "sharing": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "MULTIPLE_CHOICE",
+          "text": "You make something delicious. You…",
+          "answers": [
+            {
+              "text": "Enjoy it in peace.",
+              "weights": {
+                "sharing": -12
+              }
+            },
+            {
+              "text": "Save some for someone I love.",
+              "weights": {
+                "sharing": 0
+              }
+            },
+            {
+              "text": "Invite people over while it is still warm.",
+              "weights": {
+                "sharing": 12
+              }
+            }
+          ]
+        },
+        {
+          "type": "SLIDER",
+          "text": "How much stimulation sounds good today?",
+          "answers": [
+            {
+              "text": "Peace and quiet",
+              "weights": {
+                "stimulation": -16
+              }
+            },
+            {
+              "text": "Something absorbing",
+              "weights": {
+                "stimulation": 16
+              }
+            }
+          ]
+        },
+        {
+          "type": "SCALE",
+          "text": "How much company feels right indoors?",
+          "answers": [
+            {
+              "text": "My own little world",
+              "weights": {
+                "sharing": -16
+              }
+            },
+            {
+              "text": "Bring people together",
+              "weights": {
+                "sharing": 16
+              }
+            },
+            {
+              "text": "Solo",
+              "weights": {}
+            },
+            {
+              "text": "One person",
+              "weights": {}
+            },
+            {
+              "text": "A few",
+              "weights": {}
+            },
+            {
+              "text": "A full sofa",
+              "weights": {}
+            },
+            {
+              "text": "Everyone fits somehow",
+              "weights": {}
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

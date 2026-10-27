@@ -11,7 +11,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "Personame - Create Custom Personality Quizzes",
-  description: "Design and share engaging personality assessments with custom metrics and archetypes",
+  description: "Design and share engaging personality assessments with custom dimensions and archetypes",
 };
 
 export default function RootLayout({

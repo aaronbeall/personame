@@ -6,11 +6,15 @@ import emojiData from 'full-emoji-list'
 import { ChevronDown, X, SmilePlus, ArrowLeft } from 'lucide-react'
 import { useCallback, useMemo, useState } from 'react'
 import { SearchInput } from './search-input'
+import type { ReactElement, ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 
 interface EmojiPickerProps {
   value?: string | null
   onSelect: (emoji: string | null) => void
+  trigger?: ReactElement
+  fallback?: ReactNode
+  ariaLabel?: string
   placeholder?: string
 }
 
@@ -20,7 +24,13 @@ interface EmojiGroup {
   variants: Array<{ emoji: string; name: string }>
 }
 
-export function EmojiPicker({ value, onSelect }: EmojiPickerProps) {
+export function EmojiPicker({
+  value,
+  onSelect,
+  fallback,
+  trigger,
+  ariaLabel = 'Choose icon',
+}: EmojiPickerProps) {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
   const [variants, setVariants] = useState<EmojiGroup | null>(null)
@@ -39,7 +49,10 @@ export function EmojiPicker({ value, onSelect }: EmojiPickerProps) {
     const emojiMap: Record<string, EmojiGroup> = {}
 
     emojiData
-      .filter((emoji) => emoji.Status === 'fully-qualified' && !!emoji.Emoji && !!emoji.Name)
+      .filter(
+        (emoji) =>
+          emoji.Status === 'fully-qualified' && !!emoji.Emoji && !!emoji.Name,
+      )
       .forEach((emoji) => {
         const category = emoji.Group || 'Other'
 
@@ -52,7 +65,7 @@ export function EmojiPicker({ value, onSelect }: EmojiPickerProps) {
           emojiMap[baseName] = {
             base: emoji.Emoji,
             baseName,
-            variants: []
+            variants: [],
           }
 
           if (!groups[category]) {
@@ -65,7 +78,7 @@ export function EmojiPicker({ value, onSelect }: EmojiPickerProps) {
         if (isVariant) {
           emojiMap[baseName].variants.push({
             emoji: emoji.Emoji,
-            name: emoji.Name.split(':')[1]?.trim() || emoji.Name
+            name: emoji.Name.split(':')[1]?.trim() || emoji.Name,
           })
         } else {
           // Use the base emoji
@@ -84,10 +97,13 @@ export function EmojiPicker({ value, onSelect }: EmojiPickerProps) {
     const filtered: Record<string, EmojiGroup[]> = {}
 
     Object.entries(emojiGroups).forEach(([category, emojiGroups]) => {
-      const matchingEmojis = emojiGroups.filter((group) =>
-        group.baseName.toLowerCase().includes(searchLower) ||
-        group.base.includes(search) ||
-        group.variants.some(v => v.name.toLowerCase().includes(searchLower))
+      const matchingEmojis = emojiGroups.filter(
+        (group) =>
+          group.baseName.toLowerCase().includes(searchLower) ||
+          group.base.includes(search) ||
+          group.variants.some((v) =>
+            v.name.toLowerCase().includes(searchLower),
+          ),
       )
 
       if (matchingEmojis.length > 0) {
@@ -103,11 +119,10 @@ export function EmojiPicker({ value, onSelect }: EmojiPickerProps) {
     const term = variantSearch.trim().toLowerCase()
     return [
       { emoji: variants.base, name: variants.baseName || 'Default' },
-      ...variants.variants
-    ].filter((v) =>
-      !term ||
-      v.name.toLowerCase().includes(term) ||
-      v.emoji.includes(term)
+      ...variants.variants,
+    ].filter(
+      (v) =>
+        !term || v.name.toLowerCase().includes(term) || v.emoji.includes(term),
     )
   }, [variants, variantSearch])
 
@@ -122,38 +137,46 @@ export function EmojiPicker({ value, onSelect }: EmojiPickerProps) {
 
   const handleEmojiSelect = (emoji: string | null) => {
     onSelect(emoji)
-    toggle(false);
+    toggle(false)
   }
 
   // Show emoji-plus icon if value is null/empty
   const showEmoji = value || ''
   const triggerContent = showEmoji
     ? showEmoji
-    : <SmilePlus className="w-6 h-6 text-muted-400" />
+    : (fallback ?? <SmilePlus className="w-6 h-6 text-muted-400" />)
 
   return (
     <Popover.Root open={open} onOpenChange={toggle}>
       <Popover.Trigger asChild>
-        <Button
-          type="button"
-          variant="outline"
-          className="h-10 w-10 p-0 text-2xl flex items-center justify-center"
-        >
-          {triggerContent}
-        </Button>
+        {trigger ?? (
+          <Button
+            type="button"
+            aria-label={ariaLabel}
+            title={ariaLabel}
+            variant="outline"
+            className="h-10 w-10 p-0 text-2xl flex items-center justify-center"
+          >
+            {triggerContent}
+          </Button>
+        )}
       </Popover.Trigger>
 
       <Popover.Portal>
         <Popover.Content
-          className="z-50 w-80 rounded-lg border border-border bg-white shadow-lg relative"
+          className="z-[90] w-80 rounded-lg border border-border bg-white shadow-lg relative"
           sideOffset={5}
           align="start"
         >
           <div className="p-3 border-b border-border">
             <SearchInput
-              placeholder={variants ? "Search variants..." : "Search emojis..."}
+              placeholder={variants ? 'Search variants...' : 'Search emojis...'}
               value={variants ? variantSearch : search}
-              onChange={(e) => variants ? setVariantSearch(e.target.value) : setSearch(e.target.value)}
+              onChange={(e) =>
+                variants
+                  ? setVariantSearch(e.target.value)
+                  : setSearch(e.target.value)
+              }
             />
             {/* Show current selection with remove button, styled inline */}
             {value && !variants && (
@@ -171,10 +194,12 @@ export function EmojiPicker({ value, onSelect }: EmojiPickerProps) {
             )}
           </div>
 
-          <div className={cn(
-            "max-h-80 overflow-y-auto p-3",
-            variants ? 'hidden' : 'block'
-          )}>
+          <div
+            className={cn(
+              'max-h-80 overflow-y-auto p-3',
+              variants ? 'hidden' : 'block',
+            )}
+          >
             {Object.entries(filteredGroups).map(([category, emojiGroups]) => (
               <div key={category} className="mb-4 last:mb-0">
                 <h3 className="text-xs font-semibold text-muted-600 uppercase mb-2">
@@ -238,7 +263,9 @@ export function EmojiPicker({ value, onSelect }: EmojiPickerProps) {
                   ))}
                 </div>
                 {filteredVariants.length === 0 && (
-                  <div className="text-center text-muted-500 py-4 text-xs">No variants found</div>
+                  <div className="text-center text-muted-500 py-4 text-xs">
+                    No variants found
+                  </div>
                 )}
               </div>
             </div>

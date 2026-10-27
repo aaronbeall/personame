@@ -1,7 +1,7 @@
 import { nonNull } from "./utils";
 
 /**
- * Color palette for metric badges and UI elements with human-friendly names.
+ * Color palette for dimension badges and UI elements with human-friendly names.
  * Uses Tailwind's default color palette for a vibrant, diverse spectrum.
  */
 export const COLOR_THEME = [

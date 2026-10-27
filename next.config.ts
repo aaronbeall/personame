@@ -1,7 +1,8 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  /* config options here */
-};
+  distDir: process.env.PERSONAME_E2E === '1' ? '.next-e2e' : '.next',
+  turbopack: { root: process.cwd() }
+}
 
-export default nextConfig;
+export default nextConfig
