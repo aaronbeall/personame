@@ -34,6 +34,20 @@ See [Core workflow and verification](docs/CORE_WORKFLOW.md) for scoring rules, m
 - [Run, watch, and replay the tests](docs/TESTING.md)
 - [Edit and import the starter quiz catalog (eight public samples and three private drafts)](docs/SEED_QUIZZES.md) — definitions in `content/seed-quizzes.yaml`.
 
+## Deployment
+
+See [Deployment and hosting costs](docs/DEPLOYMENT.md) for the recommended Vercel + Neon setup, launch budget, environment variables, and remaining deployment work.
+
+## Commercial planning
+
+Research and proposed plans, checked October 28, 2026; no commercial features or pricing are implemented by these documents.
+
+- [Competitive analysis](docs/business/COMPETITIVE_ANALYSIS.md): nine adjacent products, observed pricing, differentiation, and evidence gaps.
+- [Product thesis](docs/business/PRODUCT_THESIS.md): creative dimension models, diagnostics, collectible illustrated selves, and a core-first roadmap with optional business expansion.
+- [Monetization strategy](docs/business/MONETIZATION_STRATEGY.md): free social core, creator subscriptions, permissioned audience insight, pricing experiments, and economics.
+- [Implementation plan](docs/business/IMPLEMENTATION_PLAN.md): phased backlog, model/API changes, validation gates, and test coverage.
+- [Naming research](docs/business/NAMING_RESEARCH.md): existing uses of Personame, Personome, and Personica; domain screening and creative alternatives.
+
 ## Tech Stack
 
 - **Framework**: Next.js 16 with App Router
