@@ -255,3 +255,13 @@ Archetype target editors align target and importance controls on shared grid row
 ## Homepage creation walkthrough
 
 `QuizCreationWalkthrough` introduces the five builder stages with one space-themed example. Use the shared quiz cover, diamond dimension, and circular archetype badge identities in read-only miniature scenes, layered over the existing generated artwork. Let the artwork extend above and around the illustration frames at moderate opacity, with a soft fade at its lower edge; foreground miniatures stay crisp. Keep explanatory text outside the illustration. The ordered sequence uses five columns on desktop, three on intermediate widths, and compact illustration/text rows on mobile. Decorative previews are hidden from assistive technology and never impersonate interactive form controls.
+
+## Discovery shelves
+
+The homepage discovery section uses horizontal, scroll-snapping editorial shelves with large illustrated quiz covers. Reuse `QuizCoverMark` to preserve the quiz silhouette and authored colors. Each shelf has a title, brief description, and previous/next controls; native scrolling supports touch and keyboard browsing. Search returns a single unpadded shelf of matching quizzes. Keep loading, retry, and empty states. Until a recommendation service supplies shelf data, lightweight keyword groupings prioritize matching public quizzes and repeat presentation slots to fill eight cards per shelf. Never duplicate database records, invent activity counts, expose private drafts, or describe these shelves as personalized recommendations.
+
+## Closing invitation and site footer
+
+The homepage closing CTA uses a pale illustrated panel, deep ink typography, and a clear create action, with transparent party artwork breaking the frame. On mobile the illustration sits below the copy, with enough space to avoid overlapping the actions. `AppFooter` is the shared site footer: a brand lockup, short brand message, and grouped Create/Discover navigation, followed by a separate credits row. Link only to existing destinations; do not add placeholder policy or support links.
+
+Homepage content bands alternate warm white and pale lavender, including individual discovery shelves. Use fine boundary lines and low-opacity crops of the existing scene artwork as texture, alternating crop scale and fade direction. Backgrounds extend to the viewport edges while content stays on the shared centered width. Keep textures behind content and avoid horizontal document overflow.

@@ -1,3 +1,4 @@
+import { HomeClosingCta } from '@/components/home-closing-cta'
 import { DiscoverQuizzes } from '@/components/discover-quizzes'
 import { Button } from '@/components/ui/button'
 import { QuizCreationWalkthrough } from '@/components/quiz-creation-walkthrough'
@@ -7,7 +8,7 @@ import Link from 'next/link'
 
 export default async function Home() {
   return (
-    <div className="min-h-screen">
+    <div className="home-page min-h-screen">
       {/* Hero Section */}
       <div className="relative w-full overflow-hidden">
         <div className="relative h-[600px] w-full">
@@ -47,25 +48,14 @@ export default async function Home() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-16">
+      <div className="home-content container mx-auto px-4">
 
         <QuizCreationWalkthrough />
 
-        {/* Live published quizzes, in place of the old sample listings. */}
+        {/* Editorial shelves of published quizzes. */}
         <div className="mb-20"><DiscoverQuizzes /></div>
 
-        {/* CTA */}
-        <div className="text-center bg-linear-to-r from-primary-600 to-secondary-600 rounded-2xl p-12 text-white">
-          <h2 className="text-4xl font-bold mb-4">Ready to create your first Personame?</h2>
-          <p className="text-xl mb-8 opacity-90">
-            Turn your curiosity into a personality quiz worth sharing
-          </p>
-          <Link href="/create">
-            <Button size="lg" variant="secondary" className="rounded-full">
-              Get Started Free
-            </Button>
-          </Link>
-        </div>
+        <HomeClosingCta />
       </div>
     </div>
   )
