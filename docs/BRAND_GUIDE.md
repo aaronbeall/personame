@@ -100,10 +100,10 @@ The distinctive assets are hand-drawn, densely imaginative little worlds: expres
 | `public/images/scene2.png` | Shared atmospheric canvas and fine header texture |
 | `public/images/decor/creation.webp` | New quiz and question building |
 | `public/images/decor/science.webp` | Dimensions and quiz-taking |
-| `public/images/decor/tree-house.webp` | Dashboard and archetypes |
+| `public/images/decor/tree-house.webp` | Dashboard |
 | `public/images/decor/galaxy-expansion.webp` | Review and publishing |
 | `public/images/decor/party.webp` | Results and celebration |
-| `public/images/decor/islands.webp` | Welcome, sign-in, and quiz covers |
+| `public/images/decor/islands.webp` | Archetypes, welcome, sign-in, and quiz covers |
 
 Use the optimized transparent WebPs for illustration overlays. A header illustration can break above and slightly beyond the right edge of its card; retain the transparent silhouette. Keep its bottom clear of the next interactive panel. The smaller background pattern sits inside the card and fades left, leaving a quieter zone for the title.
 

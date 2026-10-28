@@ -23,7 +23,7 @@ export function StepProgress({
   const stages = [
     ['name', 'Name', 'creation'],
     ['dimensions', 'Dimensions', 'science'],
-    ['archetypes', 'Archetypes', 'tree-house'],
+    ['archetypes', 'Archetypes', 'islands'],
     ['questions', 'Questions', 'creation'],
     ['preview', 'Preview & publish', 'galaxy-expansion'],
   ]

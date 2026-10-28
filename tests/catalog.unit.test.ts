@@ -1,10 +1,11 @@
+import { parse as parseYaml } from 'yaml'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { parseCatalog, compileCatalogQuiz } from '../lib/quiz-catalog'
 import { scoreQuiz, type QuizResponses } from '../lib/quiz-scoring'
 import { readiness } from '../lib/quiz-validation'
-const raw = JSON.parse(readFileSync('content/seed-quizzes.json', 'utf8'))
+const raw = parseYaml(readFileSync('content/seed-quizzes.yaml', 'utf8'))
 const catalog = parseCatalog(raw)
 for (const definition of catalog.quizzes)
   test(`${definition.title}: valid, scores all question types, every archetype reachable`, () => {
@@ -134,4 +135,49 @@ test('editable catalog preserves curated theme lists on quizzes, dimensions and 
   assert.equal(quiz.color, value)
   assert.equal(quiz.dimensions[0].color, value)
   assert.equal(quiz.archetypes[0].color, value)
+})
+
+test('starter catalog includes themed identities, endpoint artwork and varied importance', () => {
+  for (const definition of catalog.quizzes) {
+    const quiz = compileCatalogQuiz(definition)
+    assert.ok(quiz.color?.includes(','))
+    for (const dimension of quiz.dimensions) {
+      assert.ok(dimension.emoji && dimension.minEmoji && dimension.maxEmoji)
+      assert.ok(dimension.description)
+      assert.match(dimension.color ?? '', /^#[0-9a-f]{6}$/)
+      assert.ok(dimension.displayScale)
+    }
+    for (const archetype of quiz.archetypes) {
+      assert.ok(archetype.color?.includes(','))
+      const weights = archetype.dimensions.map((d) => d.relevance)
+      assert.ok(weights.includes(1))
+      assert.ok(weights.some((weight) => weight > 0 && weight < 1))
+    }
+    assert.ok(quiz.pages[1].questions.every((q) => q.emoji))
+  }
+  const invalid = structuredClone(raw)
+  invalid.quizzes[0].archetypes[0].relevance = { typo: 0.5 }
+  assert.throws(
+    () => parseCatalog(invalid),
+    /unknown dimension in archetype relevance/,
+  )
+  invalid.quizzes[0].archetypes[0].relevance = { novelty: 0, company: 0 }
+  assert.throws(() => parseCatalog(invalid), /at least one relevant dimension/)
+})
+
+test('catalog varies dimension counts, archetype counts and question lengths', () => {
+  assert.deepEqual(
+    [...new Set(catalog.quizzes.map((q) => q.dimensions.length))].sort(),
+    [2, 3, 4, 5],
+  )
+  assert.deepEqual(
+    [...new Set(catalog.quizzes.map((q) => q.archetypes.length))].sort(),
+    [3, 4, 5, 6, 7],
+  )
+  assert.deepEqual(
+    [...new Set(catalog.quizzes.map((q) => q.questions.length))].sort(
+      (a, b) => a - b,
+    ),
+    [6, 9, 12, 15],
+  )
 })

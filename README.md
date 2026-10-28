@@ -32,7 +32,7 @@ See [Core workflow and verification](docs/CORE_WORKFLOW.md) for scoring rules, m
 ## Tests and starter quizzes
 
 - [Run, watch, and replay the tests](docs/TESTING.md)
-- [Edit and import the starter quiz catalog](docs/SEED_QUIZZES.md) — definitions in `content/seed-quizzes.json`.
+- [Edit and import the starter quiz catalog](docs/SEED_QUIZZES.md) — definitions in `content/seed-quizzes.yaml`.
 
 ## Tech Stack
 

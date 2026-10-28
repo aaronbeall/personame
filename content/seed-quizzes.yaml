@@ -1,0 +1,2088 @@
+# Editable starter quizzes. Validate with: npm run catalog:validate
+# Dimensions use solid hex colors; archetypes use distinct ordered hex themes.
+# Scores always remain 0–100.
+version: 1
+quizzes:
+  - slug: weekend-wanderer
+    title: What kind of weekend wanderer are you?
+    description: A tiny adventure, a scenic detour, or a very good nap. Find your preferred way to get
+      away. For fun and reflection; not a validated assessment.
+    emoji: 🧭
+    dimensions:
+      - key: novelty
+        name: Adventure
+        minLabel: Familiar
+        maxLabel: Adventurous
+        description: Your appetite for new places and unexpected detours.
+        emoji: 🧭
+        minEmoji: 🏡
+        maxEmoji: 🥾
+        color: "#14b8a6"
+        displayScale: PERCENT_ASCENDING
+      - key: company
+        name: Company
+        minLabel: Solitary
+        maxLabel: Sociable
+        description: How much company you enjoy on your days off.
+        emoji: 👥
+        minEmoji: 🧘
+        maxEmoji: 🎉
+        color: "#06b6d4"
+        displayScale: PERCENT_ASCENDING
+    archetypes:
+      - name: The Hideaway
+        description: A familiar corner, a quiet morning, and nobody asking for the itinerary.
+        emoji: 🌿
+        targets:
+          novelty: 15
+          company: 15
+        color: "#475569,#a5b4fc"
+        relevance:
+          novelty: 1
+          company: 0.8
+      - name: The Trailblazer
+        description: You follow your curiosity, even when nobody else can find the path.
+        emoji: 🥾
+        targets:
+          novelty: 85
+          company: 15
+        color: "#be185d,#fb7185"
+        relevance:
+          novelty: 0.8
+          company: 1
+      - name: The Reunion Planner
+        description: The best destination is wherever your favorite people gather.
+        emoji: 🧺
+        targets:
+          novelty: 15
+          company: 85
+        color: "#166534,#84cc16"
+        relevance:
+          novelty: 1
+          company: 0.8
+      - name: The Detour Captain
+        description: You bring the crew and turn a wrong turn into the main attraction.
+        emoji: 🚐
+        targets:
+          novelty: 85
+          company: 85
+        color: "#c2410c,#a855f7"
+        relevance:
+          novelty: 0.8
+          company: 1
+    questions:
+      - type: MULTIPLE_CHOICE
+        text: The weekend suddenly opens up. Your first thought?
+        answers:
+          - text: Return to my favorite spot.
+            weights:
+              novelty: -12
+            emoji: 🏡
+          - text: See what sounds good tomorrow.
+            weights:
+              novelty: 0
+            emoji: ⚖️
+          - text: Pick somewhere I have never been.
+            weights:
+              novelty: 12
+            emoji: 🥾
+        emoji: 🧭
+      - type: MULTIPLE_CHOICE
+        text: You spot an unmarked path beside the main trail.
+        answers:
+          - text: Stay with the route I know.
+            weights:
+              novelty: -12
+            emoji: 🏡
+          - text: Look it up before deciding.
+            weights:
+              novelty: 0
+            emoji: ⚖️
+          - text: Let us see where it goes.
+            weights:
+              novelty: 12
+            emoji: 🥾
+        emoji: 🧭
+      - type: MULTIPLE_CHOICE
+        text: Who gets an invitation?
+        answers:
+          - text: Nobody; this one is for me.
+            weights:
+              company: -12
+            emoji: 🧘
+          - text: One or two easygoing companions.
+            weights:
+              company: 0
+            emoji: ⚖️
+          - text: The group chat is already buzzing.
+            weights:
+              company: 12
+            emoji: 🎉
+        emoji: 👥
+      - type: MULTIPLE_CHOICE
+        text: The ideal evening ends with…
+        answers:
+          - text: A book and my own thoughts.
+            weights:
+              company: -12
+            emoji: 🧘
+          - text: A conversation with a close friend.
+            weights:
+              company: 0
+            emoji: ⚖️
+          - text: A table full of stories.
+            weights:
+              company: 12
+            emoji: 🎉
+        emoji: 👥
+      - type: SLIDER
+        text: How far from your usual routine would you like to go?
+        answers:
+          - text: Keep it familiar
+            weights:
+              novelty: -16
+            emoji: 🏡
+          - text: Surprise me
+            weights:
+              novelty: 16
+            emoji: 🥾
+        emoji: 🧭
+      - type: SCALE
+        text: How much company makes a getaway better?
+        answers:
+          - text: Solo sanctuary
+            weights:
+              company: -16
+          - text: The whole crew
+            weights:
+              company: 16
+          - text: Just me
+            weights: {}
+          - text: A little
+            weights: {}
+          - text: A mix
+            weights: {}
+          - text: A lively group
+            weights: {}
+          - text: Everyone
+            weights: {}
+        emoji: 👥
+    color: "#2563eb,#7c3aed"
+  - slug: creative-sidekick
+    title: Which creative sidekick are you?
+    description: Meet the part of you that helps an idea escape the notebook. For fun and reflection;
+      not a validated assessment.
+    emoji: 🎨
+    dimensions:
+      - key: experimentation
+        name: Experimentation
+        minLabel: Methodical
+        maxLabel: Experimental
+        description: Whether you polish a proven idea or test an unfamiliar one.
+        emoji: 🧪
+        minEmoji: 🛠️
+        maxEmoji: 💡
+        color: "#8b5cf6"
+        displayScale: PERCENT_ASCENDING
+      - key: visibility
+        name: Visibility
+        minLabel: Private
+        maxLabel: Expressive
+        description: How much you enjoy putting your creative work in the spotlight.
+        emoji: 🎭
+        minEmoji: 🎧
+        maxEmoji: 🎤
+        color: "#ec4899"
+        displayScale: BIPOLAR
+      - key: persistence
+        name: Persistence
+        description: How long you stay with an idea after its first spark.
+        emoji: 🧵
+        minLabel: Playful
+        maxLabel: Persistent
+        minEmoji: 🦋
+        maxEmoji: 🪡
+        color: "#f43f5e"
+        displayScale: PERCENT_ASCENDING
+    archetypes:
+      - name: The Quiet Craftsperson
+        description: You make the small details sing without needing to announce the performance.
+        emoji: 🪡
+        targets:
+          experimentation: 15
+          visibility: 15
+          persistence: 85
+        color: "#c2410c,#f59e0b"
+        relevance:
+          experimentation: 1
+          visibility: 0.8
+          persistence: 0.65
+      - name: The Secret Inventor
+        description: Your private experiments have a habit of becoming everyone’s favorite discovery.
+        emoji: 🧪
+        targets:
+          experimentation: 85
+          visibility: 15
+          persistence: 15
+        color: "#0f766e,#38bdf8"
+        relevance:
+          experimentation: 0.65
+          visibility: 1
+          persistence: 0.65
+      - name: The Polished Performer
+        description: You know your craft and enjoy giving it a proper spotlight.
+        emoji: 🎭
+        targets:
+          experimentation: 15
+          visibility: 85
+          persistence: 85
+        color: "#475569,#a5b4fc"
+        relevance:
+          experimentation: 0.65
+          visibility: 0.8
+          persistence: 1
+      - name: The Spark Launcher
+        description: You try the wild thing and invite the room to see what happens.
+        emoji: 🎆
+        targets:
+          experimentation: 85
+          visibility: 85
+          persistence: 15
+        color: "#be185d,#fb7185"
+        relevance:
+          experimentation: 1
+          visibility: 0.8
+          persistence: 0.65
+      - name: The Patient Showstopper
+        emoji: 🎻
+        description: You combine strange ideas, a welcoming spotlight, and the patience to make the final
+          note land.
+        targets:
+          experimentation: 85
+          visibility: 85
+          persistence: 85
+        relevance:
+          experimentation: 0.65
+          visibility: 1
+          persistence: 0.65
+        color: "#166534,#84cc16"
+    questions:
+      - type: MULTIPLE_CHOICE
+        text: A blank page is staring back. What helps?
+        answers:
+          - text: Use a technique I trust.
+            weights:
+              experimentation: -12
+            emoji: 🛠️
+          - text: Start with a familiar idea and twist it.
+            weights:
+              experimentation: 0
+            emoji: ⚖️
+          - text: Try a medium I barely understand.
+            weights:
+              experimentation: 12
+            emoji: 💡
+        emoji: 🧪
+      - type: MULTIPLE_CHOICE
+        text: A first draft is almost working. You…
+        answers:
+          - text: Refine the strongest part.
+            weights:
+              experimentation: -12
+            emoji: 🛠️
+          - text: Test a modest variation.
+            weights:
+              experimentation: 0
+            emoji: ⚖️
+          - text: Make a radically different version.
+            weights:
+              experimentation: 12
+            emoji: 💡
+        emoji: 🧪
+      - type: MULTIPLE_CHOICE
+        text: Your project is ready. The satisfying part is…
+        answers:
+          - text: Knowing I made it well.
+            weights:
+              visibility: -12
+            emoji: 🎧
+          - text: Showing a trusted friend.
+            weights:
+              visibility: 0
+            emoji: ⚖️
+          - text: Sharing it with a crowd.
+            weights:
+              visibility: 12
+            emoji: 🎤
+        emoji: 🎭
+      - type: MULTIPLE_CHOICE
+        text: A collaboration needs someone to present. You…
+        answers:
+          - text: Help prepare the material.
+            weights:
+              visibility: -12
+            emoji: 🎧
+          - text: Share the presentation.
+            weights:
+              visibility: 0
+            emoji: ⚖️
+          - text: Volunteer for the spotlight.
+            weights:
+              visibility: 12
+            emoji: 🎤
+        emoji: 🎭
+      - type: SLIDER
+        text: How experimental is your next project?
+        answers:
+          - text: Tried and true
+            weights:
+              experimentation: -16
+            emoji: 🛠️
+          - text: Beautifully odd
+            weights:
+              experimentation: 16
+            emoji: 💡
+        emoji: 🧪
+      - type: SCALE
+        text: How visible do you want your creative work to be?
+        answers:
+          - text: Behind the scenes
+            weights:
+              visibility: -16
+          - text: Center stage
+            weights:
+              visibility: 16
+          - text: Private
+            weights: {}
+          - text: A trusted few
+            weights: {}
+          - text: A small circle
+            weights: {}
+          - text: Public
+            weights: {}
+          - text: On the big screen
+            weights: {}
+        emoji: 🎭
+      - type: MULTIPLE_CHOICE
+        text: Your first attempt looks nothing like your idea. What next?
+        emoji: 🧵
+        answers:
+          - text: Follow a different spark.
+            emoji: 🦋
+            weights:
+              persistence: -12
+          - text: It depends on the moment.
+            emoji: ⚖️
+            weights:
+              persistence: 0
+          - text: Keep working until the idea comes through.
+            emoji: 🪡
+            weights:
+              persistence: 12
+      - type: SLIDER
+        text: A creative project has reached the fiddly finishing stage.
+        emoji: 🧵
+        answers:
+          - text: The discovery was the fun part.
+            emoji: 🦋
+            weights:
+              persistence: -12
+          - text: The finishing touches are where I settle in.
+            emoji: 🪡
+            weights:
+              persistence: 12
+      - type: SCALE
+        text: How much do you enjoy returning to the same piece over several sessions?
+        emoji: 🧵
+        answers:
+          - text: I prefer a fresh canvas.
+            emoji: 🦋
+            weights:
+              persistence: -16
+          - text: I enjoy seeing one piece through.
+            emoji: 🪡
+            weights:
+              persistence: 16
+          - text: Not at all
+            weights: {}
+          - text: A little
+            weights: {}
+          - text: Somewhat
+            weights: {}
+          - text: Quite a bit
+            weights: {}
+          - text: Very much
+            weights: {}
+    color: "#7c3aed,#db2777"
+  - slug: dinner-party
+    title: What is your dinner-party superpower?
+    description: There is more than one way to keep a table happy. Find the role you naturally bring.
+      For fun and reflection; not a validated assessment.
+    emoji: 🍝
+    dimensions:
+      - key: improvisation
+        name: Improvisation
+        minLabel: Traditional
+        maxLabel: Inventive
+        description: Your preference for trusted recipes or improvising in the kitchen.
+        emoji: 🍳
+        minEmoji: 📖
+        maxEmoji: 🌶️
+        color: "#f97316"
+        displayScale: PERCENT_ASCENDING
+      - key: hosting
+        name: Hosting energy
+        minLabel: Intimate
+        maxLabel: Outgoing
+        description: The size and energy of your ideal gathering.
+        emoji: 🥂
+        minEmoji: 🕯️
+        maxEmoji: 🎊
+        color: "#22c55e"
+        displayScale: PERCENT_ASCENDING
+      - key: presentation
+        name: Presentation
+        description: How much spectacle you like to bring to the table.
+        emoji: 🎨
+        minLabel: Understated
+        maxLabel: Theatrical
+        minEmoji: 🥣
+        maxEmoji: 🎆
+        color: "#14b8a6"
+        displayScale: PERCENT_ASCENDING
+    archetypes:
+      - name: The Comfort Cook
+        description: You make a small table feel like everyone has come home.
+        emoji: 🥘
+        targets:
+          improvisation: 15
+          hosting: 15
+          presentation: 15
+        color: "#475569,#a5b4fc"
+        relevance:
+          improvisation: 1
+          hosting: 0.8
+          presentation: 0.65
+      - name: The Kitchen Alchemist
+        description: Your intimate dinners double as delicious experiments.
+        emoji: 🌶️
+        targets:
+          improvisation: 85
+          hosting: 15
+          presentation: 85
+        color: "#be185d,#fb7185"
+        relevance:
+          improvisation: 0.65
+          hosting: 1
+          presentation: 0.65
+      - name: The Supper Ringmaster
+        description: You mix surprising flavors and personalities into a memorable evening.
+        emoji: 🎪
+        targets:
+          improvisation: 15
+          hosting: 85
+          presentation: 85
+        color: "#166534,#84cc16"
+        relevance:
+          improvisation: 0.65
+          hosting: 0.8
+          presentation: 1
+    questions:
+      - type: MULTIPLE_CHOICE
+        text: The menu begins with…
+        answers:
+          - text: A recipe I have made a dozen times.
+            weights:
+              improvisation: -12
+            emoji: 📖
+          - text: A favorite with one new dish.
+            weights:
+              improvisation: 0
+            emoji: ⚖️
+          - text: An ingredient I have never cooked.
+            weights:
+              improvisation: 12
+            emoji: 🌶️
+        emoji: 🍳
+      - type: MULTIPLE_CHOICE
+        text: The market is out of your main ingredient. You…
+        answers:
+          - text: Find the closest substitute.
+            weights:
+              improvisation: -12
+            emoji: 📖
+          - text: Adjust the recipe a little.
+            weights:
+              improvisation: 0
+            emoji: ⚖️
+          - text: Invent a new menu.
+            weights:
+              improvisation: 12
+            emoji: 🌶️
+        emoji: 🍳
+      - type: MULTIPLE_CHOICE
+        text: Your dream table has room for…
+        answers:
+          - text: Two people and a long conversation.
+            weights:
+              hosting: -12
+            emoji: 🕯️
+          - text: A handful of friends.
+            weights:
+              hosting: 0
+            emoji: ⚖️
+          - text: Anyone who wants to pull up a chair.
+            weights:
+              hosting: 12
+            emoji: 🎊
+        emoji: 🥂
+      - type: MULTIPLE_CHOICE
+        text: After dinner, the mood is…
+        answers:
+          - text: Quiet and unhurried.
+            weights:
+              hosting: -12
+            emoji: 🕯️
+          - text: Warm conversation.
+            weights:
+              hosting: 0
+            emoji: ⚖️
+          - text: Music, games, and another round of stories.
+            weights:
+              hosting: 12
+            emoji: 🎊
+        emoji: 🥂
+      - type: SLIDER
+        text: How much culinary improvisation sounds fun?
+        answers:
+          - text: Follow the recipe
+            weights:
+              improvisation: -16
+            emoji: 📖
+          - text: Cook by instinct
+            weights:
+              improvisation: 16
+            emoji: 🌶️
+        emoji: 🍳
+      - type: SCALE
+        text: How big is your ideal gathering?
+        answers:
+          - text: A cozy few
+            weights:
+              hosting: -16
+          - text: A lively crowd
+            weights:
+              hosting: 16
+          - text: Two
+            weights: {}
+          - text: Four
+            weights: {}
+          - text: Six
+            weights: {}
+          - text: Ten
+            weights: {}
+          - text: The neighborhood
+            weights: {}
+        emoji: 🥂
+      - type: MULTIPLE_CHOICE
+        text: Dinner is ready. How do you serve it?
+        emoji: 🎨
+        answers:
+          - text: Good food in the pan it came from.
+            emoji: 🥣
+            weights:
+              presentation: -12
+          - text: It depends on the moment.
+            emoji: ⚖️
+            weights:
+              presentation: 0
+          - text: A reveal worth gathering everyone for.
+            emoji: 🎆
+            weights:
+              presentation: 12
+      - type: SLIDER
+        text: You have ten spare minutes before guests arrive.
+        emoji: 🎨
+        answers:
+          - text: Set out napkins and relax.
+            emoji: 🥣
+            weights:
+              presentation: -12
+          - text: Make the table a little world of its own.
+            emoji: 🎆
+            weights:
+              presentation: 12
+      - type: SCALE
+        text: How appealing is a dinner with a dress code, a soundtrack, and a theme?
+        emoji: 🎨
+        answers:
+          - text: Let the food speak for itself.
+            emoji: 🥣
+            weights:
+              presentation: -16
+          - text: I am already planning the centerpiece.
+            emoji: 🎆
+            weights:
+              presentation: 16
+          - text: Not at all
+            weights: {}
+          - text: A little
+            weights: {}
+          - text: Somewhat
+            weights: {}
+          - text: Quite a bit
+            weights: {}
+          - text: Very much
+            weights: {}
+    color: "#c2410c,#f59e0b"
+  - slug: fantasy-tavern
+    title: Who are you at the fantasy tavern?
+    description: Your quest can wait five minutes. There is a mysterious noticeboard and suspiciously
+      good soup. For fun and reflection; not a validated assessment.
+    emoji: 🐉
+    dimensions:
+      - key: risk
+        name: Risk appetite
+        minLabel: Cautious
+        maxLabel: Daring
+        description: Your appetite for danger when adventure comes knocking.
+        emoji: 🐉
+        minEmoji: 🛡️
+        maxEmoji: ⚔️
+        color: "#06b6d4"
+        displayScale: PERCENT_ASCENDING
+      - key: sociability
+        name: Sociability
+        minLabel: Reserved
+        maxLabel: Gregarious
+        description: How eagerly you mingle with fellow tavern visitors.
+        emoji: 🍻
+        minEmoji: 📚
+        maxEmoji: 🎶
+        color: "#6366f1"
+        displayScale: BIPOLAR
+      - key: allegiance
+        name: Allegiance
+        description: The pull of personal freedom versus loyalty to a traveling company.
+        emoji: 🛡️
+        minLabel: Independent
+        maxLabel: Devoted
+        minEmoji: 🦅
+        maxEmoji: 🤝
+        color: "#8b5cf6"
+        displayScale: PERCENT_ASCENDING
+      - key: wonder
+        name: Wonder
+        description: How strongly the magical and mysterious draw your attention.
+        emoji: 🔮
+        minLabel: Pragmatic
+        maxLabel: Enchanted
+        minEmoji: 🔨
+        maxEmoji: ✨
+        color: "#ec4899"
+        displayScale: PERCENT_ASCENDING
+    archetypes:
+      - name: The Hearthkeeper
+        description: You know the safe roads and the value of a peaceful corner.
+        emoji: 🕯️
+        targets:
+          risk: 15
+          sociability: 15
+          allegiance: 15
+          wonder: 15
+        color: "#166534,#84cc16"
+        relevance:
+          risk: 1
+          sociability: 0.8
+          allegiance: 0.65
+          wonder: 0.8
+      - name: The Lone Ranger
+        description: You travel light and accept the quests with questionable maps.
+        emoji: 🏹
+        targets:
+          risk: 85
+          sociability: 15
+          allegiance: 15
+          wonder: 15
+        color: "#c2410c,#a855f7"
+        relevance:
+          risk: 0.65
+          sociability: 1
+          allegiance: 0.65
+          wonder: 0.8
+      - name: The Guild Organizer
+        description: You turn a tavern full of strangers into a reliable party.
+        emoji: 🛡️
+        targets:
+          risk: 15
+          sociability: 85
+          allegiance: 85
+          wonder: 15
+        color: "#172554,#0e7490"
+        relevance:
+          risk: 0.65
+          sociability: 0.8
+          allegiance: 1
+          wonder: 0.8
+      - name: The Chaos Bard
+        description: You charm the room, accept the quest, and probably name the dragon.
+        emoji: 🪕
+        targets:
+          risk: 85
+          sociability: 85
+          allegiance: 15
+          wonder: 85
+        color: "#fb923c,#fb7185"
+        relevance:
+          risk: 0.65
+          sociability: 0.8
+          allegiance: 0.65
+          wonder: 1
+      - name: The Moonlit Guardian
+        emoji: 🦉
+        description: You keep your companions close and leave room in your plans for a little magic.
+        targets:
+          risk: 15
+          sociability: 15
+          allegiance: 85
+          wonder: 85
+        relevance:
+          risk: 1
+          sociability: 0.8
+          allegiance: 0.65
+          wonder: 0.8
+        color: "#4f46e5,#ec4899"
+      - name: The Mythmaker
+        emoji: 📜
+        description: You turn bold adventures and loyal friendships into stories that grow with every telling.
+        targets:
+          risk: 85
+          sociability: 85
+          allegiance: 85
+          wonder: 85
+        relevance:
+          risk: 0.65
+          sociability: 1
+          allegiance: 0.65
+          wonder: 0.8
+        color: "#0d9488,#a3e635"
+    questions:
+      - type: MULTIPLE_CHOICE
+        text: The noticeboard offers a job. You pick…
+        answers:
+          - text: A well-paid delivery on a safe road.
+            weights:
+              risk: -12
+            emoji: 🛡️
+          - text: A scouting trip with a decent map.
+            weights:
+              risk: 0
+            emoji: ⚖️
+          - text: A ruin that rearranges itself at midnight.
+            weights:
+              risk: 12
+            emoji: ⚔️
+        emoji: 🐉
+      - type: MULTIPLE_CHOICE
+        text: A glowing potion is offered for free. You…
+        answers:
+          - text: Politely decline.
+            weights:
+              risk: -12
+            emoji: 🛡️
+          - text: Ask the alchemist for details.
+            weights:
+              risk: 0
+            emoji: ⚖️
+          - text: Ask what happens if I drink two.
+            weights:
+              risk: 12
+            emoji: ⚔️
+        emoji: 🐉
+      - type: MULTIPLE_CHOICE
+        text: You enter the tavern and head toward…
+        answers:
+          - text: An empty corner booth.
+            weights:
+              sociability: -12
+            emoji: 📚
+          - text: A friendly-looking small table.
+            weights:
+              sociability: 0
+            emoji: ⚖️
+          - text: The loudest group in the room.
+            weights:
+              sociability: 12
+            emoji: 🎶
+        emoji: 🍻
+      - type: MULTIPLE_CHOICE
+        text: The party needs a spokesperson. You…
+        answers:
+          - text: Let someone else do the talking.
+            weights:
+              sociability: -12
+            emoji: 📚
+          - text: Help when my knowledge is useful.
+            weights:
+              sociability: 0
+            emoji: ⚖️
+          - text: Introduce everyone before they ask.
+            weights:
+              sociability: 12
+            emoji: 🎶
+        emoji: 🍻
+      - type: SLIDER
+        text: How dangerous should the next quest be?
+        answers:
+          - text: A sensible errand
+            weights:
+              risk: -16
+            emoji: 🛡️
+          - text: A legend in the making
+            weights:
+              risk: 16
+            emoji: ⚔️
+        emoji: 🐉
+      - type: SCALE
+        text: How many companions should join the quest?
+        answers:
+          - text: A quiet corner
+            weights:
+              sociability: -16
+          - text: Work the whole room
+            weights:
+              sociability: 16
+          - text: None
+            weights: {}
+          - text: One
+            weights: {}
+          - text: A small party
+            weights: {}
+          - text: A guild
+            weights: {}
+          - text: A parade
+            weights: {}
+        emoji: 🍻
+      - type: MULTIPLE_CHOICE
+        text: The guild asks you to stay for one more mission.
+        emoji: 🛡️
+        answers:
+          - text: My road leads somewhere else.
+            emoji: 🦅
+            weights:
+              allegiance: -12
+          - text: It depends on the moment.
+            emoji: ⚖️
+            weights:
+              allegiance: 0
+          - text: My companions can count on me.
+            emoji: 🤝
+            weights:
+              allegiance: 12
+      - type: SLIDER
+        text: You discover a treasure map that only one person can follow.
+        emoji: 🛡️
+        answers:
+          - text: A perfect excuse for a solo quest.
+            emoji: 🦅
+            weights:
+              allegiance: -12
+          - text: I would rather find a quest we can share.
+            emoji: 🤝
+            weights:
+              allegiance: 12
+      - type: SCALE
+        text: How much does belonging to a loyal company matter to you?
+        emoji: 🛡️
+        answers:
+          - text: I travel light, including commitments.
+            emoji: 🦅
+            weights:
+              allegiance: -16
+          - text: The company is the heart of the adventure.
+            emoji: 🤝
+            weights:
+              allegiance: 16
+          - text: Not at all
+            weights: {}
+          - text: A little
+            weights: {}
+          - text: Somewhat
+            weights: {}
+          - text: Quite a bit
+            weights: {}
+          - text: Very much
+            weights: {}
+      - type: MULTIPLE_CHOICE
+        text: A merchant offers a reliable lantern or a whispering crystal.
+        emoji: 🔮
+        answers:
+          - text: The lantern has a useful handle.
+            emoji: 🔨
+            weights:
+              wonder: -12
+          - text: It depends on the moment.
+            emoji: ⚖️
+            weights:
+              wonder: 0
+          - text: What exactly does the crystal whisper?
+            emoji: ✨
+            weights:
+              wonder: 12
+      - type: SLIDER
+        text: The inn has one room beside the stables and one inside a floating tower.
+        emoji: 🔮
+        answers:
+          - text: A solid floor and a decent bed.
+            emoji: 🔨
+            weights:
+              wonder: -12
+          - text: A view that ignores the laws of gravity.
+            emoji: ✨
+            weights:
+              wonder: 12
+      - type: SCALE
+        text: How tempted are you to investigate a door that only appears in moonlight?
+        emoji: 🔮
+        answers:
+          - text: I would first check where it leads.
+            emoji: 🔨
+            weights:
+              wonder: -16
+          - text: That sounds like the beginning of a wonderful story.
+            emoji: ✨
+            weights:
+              wonder: 16
+          - text: Not at all
+            weights: {}
+          - text: A little
+            weights: {}
+          - text: Somewhat
+            weights: {}
+          - text: Quite a bit
+            weights: {}
+          - text: Very much
+            weights: {}
+    color: "#0f766e,#38bdf8"
+  - slug: city-after-dark
+    title: What kind of city explorer are you?
+    description: Side streets, bright lights, and the place that only serves one excellent thing. For
+      fun and reflection; not a validated assessment.
+    emoji: 🌃
+    dimensions:
+      - key: discovery
+        name: Discovery
+        minLabel: Familiar
+        maxLabel: Exploratory
+        description: Your pull toward neighborhood favorites or undiscovered places.
+        emoji: 🗺️
+        minEmoji: 🏘️
+        maxEmoji: 🚪
+        color: "#ec4899"
+        displayScale: PERCENT_ASCENDING
+      - key: pace
+        name: Pace
+        minLabel: Unhurried
+        maxLabel: Energetic
+        description: How much movement you like to fit into an evening.
+        emoji: 🌃
+        minEmoji: 🪑
+        maxEmoji: 🛼
+        color: "#f43f5e"
+        displayScale: PERCENT_ASCENDING
+    archetypes:
+      - name: The Neighborhood Regular
+        description: You savor a familiar place until it becomes part of your story.
+        emoji: ☕
+        targets:
+          discovery: 15
+          pace: 15
+        color: "#172554,#0e7490"
+        relevance:
+          discovery: 1
+          pace: 0.8
+      - name: The Hidden-Gem Hunter
+        description: You take your time finding the little places that reward curiosity.
+        emoji: 🗝️
+        targets:
+          discovery: 85
+          pace: 15
+        color: "#fb923c,#fb7185"
+        relevance:
+          discovery: 0.65
+          pace: 1
+      - name: The Neon Nomad
+        description: You follow the city’s surprises and rarely stay in one place for long.
+        emoji: 🌆
+        targets:
+          discovery: 85
+          pace: 85
+        color: "#4f46e5,#ec4899"
+        relevance:
+          discovery: 1
+          pace: 0.8
+    questions:
+      - type: MULTIPLE_CHOICE
+        text: Where does the evening start?
+        answers:
+          - text: My dependable favorite.
+            weights:
+              discovery: -12
+            emoji: 🏘️
+          - text: A place a friend recommended.
+            weights:
+              discovery: 0
+            emoji: ⚖️
+          - text: An intriguing doorway I just noticed.
+            weights:
+              discovery: 12
+            emoji: 🚪
+        emoji: 🗺️
+      - type: MULTIPLE_CHOICE
+        text: A menu has one dish you cannot identify. You…
+        answers:
+          - text: Order what I already love.
+            weights:
+              discovery: -12
+            emoji: 🏘️
+          - text: Ask the server about it.
+            weights:
+              discovery: 0
+            emoji: ⚖️
+          - text: Give the mystery dish its moment.
+            weights:
+              discovery: 12
+            emoji: 🚪
+        emoji: 🗺️
+      - type: MULTIPLE_CHOICE
+        text: At the first stop, you prefer to…
+        answers:
+          - text: Settle in for the evening.
+            weights:
+              pace: -12
+            emoji: 🪑
+          - text: See how the mood develops.
+            weights:
+              pace: 0
+            emoji: ⚖️
+          - text: Enjoy it, then find the next place.
+            weights:
+              pace: 12
+            emoji: 🛼
+        emoji: 🌃
+      - type: MULTIPLE_CHOICE
+        text: An hour remains before the last train. You…
+        answers:
+          - text: Stay somewhere comfortable.
+            weights:
+              pace: -12
+            emoji: 🪑
+          - text: Fit in one more easy stop.
+            weights:
+              pace: 0
+            emoji: ⚖️
+          - text: Make a miniature adventure of it.
+            weights:
+              pace: 12
+            emoji: 🛼
+        emoji: 🌃
+      - type: SLIDER
+        text: How unfamiliar should tonight feel?
+        answers:
+          - text: Comfortably known
+            weights:
+              discovery: -16
+            emoji: 🏘️
+          - text: Entirely new
+            weights:
+              discovery: 16
+            emoji: 🚪
+        emoji: 🗺️
+      - type: SCALE
+        text: What pace feels right?
+        answers:
+          - text: One lovely stop
+            weights:
+              pace: -16
+          - text: Keep the night moving
+            weights:
+              pace: 16
+          - text: Lingering
+            weights: {}
+          - text: Unhurried
+            weights: {}
+          - text: Flexible
+            weights: {}
+          - text: Lively
+            weights: {}
+          - text: Always moving
+            weights: {}
+        emoji: 🌃
+    color: "#475569,#a5b4fc"
+  - slug: space-crew
+    title: What is your space-crew assignment?
+    description: The ship is held together by good intentions. Luckily, you have a useful kind of weird.
+      For fun and reflection; not a validated assessment.
+    emoji: 🚀
+    dimensions:
+      - key: adaptation
+        name: Adaptation
+        minLabel: Systematic
+        maxLabel: Adaptive
+        description: How readily you improvise when the mission changes.
+        emoji: 🛸
+        minEmoji: 📋
+        maxEmoji: 🔧
+        color: "#22c55e"
+        displayScale: PERCENT_ASCENDING
+      - key: outreach
+        name: Outreach
+        minLabel: Introspective
+        maxLabel: Outward-looking
+        description: Whether your attention turns toward the instruments or new encounters.
+        emoji: 📡
+        minEmoji: 🔭
+        maxEmoji: 👽
+        color: "#14b8a6"
+        displayScale: BIPOLAR
+      - key: boldness
+        name: Boldness
+        description: How much uncertainty you accept when the mission presents an opportunity.
+        emoji: ☄️
+        minLabel: Cautious
+        maxLabel: Bold
+        minEmoji: 🛟
+        maxEmoji: 🚀
+        color: "#06b6d4"
+        displayScale: PERCENT_ASCENDING
+      - key: stewardship
+        name: Stewardship
+        description: How you balance completing an objective with caring for the people along the way.
+        emoji: 🌱
+        minLabel: Mission-focused
+        maxLabel: Protective
+        minEmoji: 🎯
+        maxEmoji: 🫂
+        color: "#6366f1"
+        displayScale: PERCENT_ASCENDING
+      - key: horizon
+        name: Time horizon
+        description: Whether you gravitate toward today’s problems or the distant future.
+        emoji: 🪐
+        minLabel: Immediate
+        maxLabel: Far-sighted
+        minEmoji: ⏱️
+        maxEmoji: 🌌
+        color: "#8b5cf6"
+        displayScale: PERCENT_ASCENDING
+    archetypes:
+      - name: The Systems Keeper
+        description: You keep the ship steady through patient attention and trusted procedures.
+        emoji: ⚙️
+        targets:
+          adaptation: 15
+          outreach: 15
+          boldness: 15
+          stewardship: 15
+          horizon: 15
+        color: "#4f46e5,#ec4899"
+        relevance:
+          adaptation: 1
+          outreach: 0.8
+          boldness: 0.65
+          stewardship: 0.8
+          horizon: 0.65
+      - name: The Deep-Space Tinkerer
+        description: You solve quiet emergencies with unlikely parts and original thinking.
+        emoji: 🔧
+        targets:
+          adaptation: 85
+          outreach: 15
+          boldness: 15
+          stewardship: 85
+          horizon: 15
+        color: "#0d9488,#a3e635"
+        relevance:
+          adaptation: 0.65
+          outreach: 1
+          boldness: 0.65
+          stewardship: 0.8
+          horizon: 0.65
+      - name: The Mission Diplomat
+        description: You pair a dependable plan with a talent for bringing people aboard.
+        emoji: 🛰️
+        targets:
+          adaptation: 15
+          outreach: 85
+          boldness: 15
+          stewardship: 15
+          horizon: 85
+        color: "#2563eb,#7c3aed"
+        relevance:
+          adaptation: 0.65
+          outreach: 0.8
+          boldness: 1
+          stewardship: 0.8
+          horizon: 0.65
+      - name: The First-Contact Improviser
+        description: You greet the unknown with an open channel and a gloriously unfinished plan.
+        emoji: 👽
+        targets:
+          adaptation: 85
+          outreach: 85
+          boldness: 15
+          stewardship: 15
+          horizon: 15
+        color: "#7c3aed,#db2777"
+        relevance:
+          adaptation: 0.65
+          outreach: 0.8
+          boldness: 0.65
+          stewardship: 1
+          horizon: 0.65
+      - name: The Horizon Cartographer
+        emoji: 🗺️
+        description: You map distant possibilities without losing sight of the next safe step.
+        targets:
+          adaptation: 15
+          outreach: 15
+          boldness: 85
+          stewardship: 85
+          horizon: 15
+        relevance:
+          adaptation: 0.65
+          outreach: 0.8
+          boldness: 0.65
+          stewardship: 0.8
+          horizon: 1
+        color: "#c2410c,#f59e0b"
+      - name: The Rescue Pathfinder
+        emoji: 🛟
+        description: You improvise a route through uncertainty with the crew’s wellbeing at the center.
+        targets:
+          adaptation: 85
+          outreach: 15
+          boldness: 85
+          stewardship: 15
+          horizon: 85
+        relevance:
+          adaptation: 1
+          outreach: 0.8
+          boldness: 0.65
+          stewardship: 0.8
+          horizon: 0.65
+        color: "#0f766e,#38bdf8"
+      - name: The Tomorrow Captain
+        emoji: 🌠
+        description: You welcome the unknown while carrying a clear vision for the people and futures
+          entrusted to you.
+        targets:
+          adaptation: 85
+          outreach: 85
+          boldness: 85
+          stewardship: 85
+          horizon: 85
+        relevance:
+          adaptation: 0.65
+          outreach: 1
+          boldness: 0.65
+          stewardship: 0.8
+          horizon: 0.65
+        color: "#475569,#a5b4fc"
+    questions:
+      - type: MULTIPLE_CHOICE
+        text: An alarm sounds on the bridge. Your first move?
+        answers:
+          - text: Open the emergency checklist.
+            weights:
+              adaptation: -12
+            emoji: 📋
+          - text: Check the readings, then adapt.
+            weights:
+              adaptation: 0
+            emoji: ⚖️
+          - text: Build a workaround on the fly.
+            weights:
+              adaptation: 12
+            emoji: 🔧
+        emoji: 🛸
+      - type: MULTIPLE_CHOICE
+        text: The mission plan hits an unexpected obstacle. You…
+        answers:
+          - text: Find the documented fallback.
+            weights:
+              adaptation: -12
+            emoji: 📋
+          - text: Modify the original plan.
+            weights:
+              adaptation: 0
+            emoji: ⚖️
+          - text: Sketch an entirely new approach.
+            weights:
+              adaptation: 12
+            emoji: 🔧
+        emoji: 🛸
+      - type: MULTIPLE_CHOICE
+        text: An unknown signal arrives. You want to…
+        answers:
+          - text: Study the pattern in peace.
+            weights:
+              outreach: -12
+            emoji: 🔭
+          - text: Discuss it with the science team.
+            weights:
+              outreach: 0
+            emoji: ⚖️
+          - text: Open a channel and say hello.
+            weights:
+              outreach: 12
+            emoji: 👽
+        emoji: 📡
+      - type: MULTIPLE_CHOICE
+        text: During downtime, you gravitate toward…
+        answers:
+          - text: A personal project in the workshop.
+            weights:
+              outreach: -12
+            emoji: 🔭
+          - text: A small shared meal.
+            weights:
+              outreach: 0
+            emoji: ⚖️
+          - text: Meeting everyone on the next station.
+            weights:
+              outreach: 12
+            emoji: 👽
+        emoji: 📡
+      - type: SLIDER
+        text: How much improvisation belongs on the bridge?
+        answers:
+          - text: Checklist first
+            weights:
+              adaptation: -16
+            emoji: 📋
+          - text: Whatever works
+            weights:
+              adaptation: 16
+            emoji: 🔧
+        emoji: 🛸
+      - type: SCALE
+        text: How eager are you to make first contact?
+        answers:
+          - text: Study the instruments
+            weights:
+              outreach: -16
+          - text: Hail the unknown ship
+            weights:
+              outreach: 16
+          - text: Observe quietly
+            weights: {}
+          - text: Listen first
+            weights: {}
+          - text: Ask a question
+            weights: {}
+          - text: Start a conversation
+            weights: {}
+          - text: Broadcast a welcome
+            weights: {}
+        emoji: 📡
+      - type: MULTIPLE_CHOICE
+        text: An unstable shortcut could save days of travel.
+        emoji: ☄️
+        answers:
+          - text: Take the charted route.
+            emoji: 🛟
+            weights:
+              boldness: -12
+          - text: It depends on the moment.
+            emoji: ⚖️
+            weights:
+              boldness: 0
+          - text: Plot a careful course through the shortcut.
+            emoji: 🚀
+            weights:
+              boldness: 12
+      - type: SLIDER
+        text: A strange signal is fading beyond your mapped sector.
+        emoji: ☄️
+        answers:
+          - text: Record it and stay on mission.
+            emoji: 🛟
+            weights:
+              boldness: -12
+          - text: Follow it while there is still time.
+            emoji: 🚀
+            weights:
+              boldness: 12
+      - type: SCALE
+        text: How appealing is an expedition with no guaranteed way home?
+        emoji: ☄️
+        answers:
+          - text: I need a reliable return plan.
+            emoji: 🛟
+            weights:
+              boldness: -16
+          - text: The discovery could be worth the uncertainty.
+            emoji: 🚀
+            weights:
+              boldness: 16
+          - text: Not at all
+            weights: {}
+          - text: A little
+            weights: {}
+          - text: Somewhat
+            weights: {}
+          - text: Quite a bit
+            weights: {}
+          - text: Very much
+            weights: {}
+      - type: MULTIPLE_CHOICE
+        text: Your exhausted crew could push on or lose a day to recovery.
+        emoji: 🌱
+        answers:
+          - text: Keep the objective within reach.
+            emoji: 🎯
+            weights:
+              stewardship: -12
+          - text: It depends on the moment.
+            emoji: ⚖️
+            weights:
+              stewardship: 0
+          - text: Make sure everyone can recover first.
+            emoji: 🫂
+            weights:
+              stewardship: 12
+      - type: SLIDER
+        text: You have room for one extra supply crate.
+        emoji: 🌱
+        answers:
+          - text: Specialized tools for the mission.
+            emoji: 🎯
+            weights:
+              stewardship: -12
+          - text: Comforts and backup provisions for the crew.
+            emoji: 🫂
+            weights:
+              stewardship: 12
+      - type: SCALE
+        text: How much should crew wellbeing shape a difficult command decision?
+        emoji: 🌱
+        answers:
+          - text: The mission sets the priorities.
+            emoji: 🎯
+            weights:
+              stewardship: -16
+          - text: Protecting the crew is central to the mission.
+            emoji: 🫂
+            weights:
+              stewardship: 16
+          - text: Not at all
+            weights: {}
+          - text: A little
+            weights: {}
+          - text: Somewhat
+            weights: {}
+          - text: Quite a bit
+            weights: {}
+          - text: Very much
+            weights: {}
+      - type: MULTIPLE_CHOICE
+        text: You get a free hour at the observation deck.
+        emoji: 🪐
+        answers:
+          - text: Solve a problem that is slowing us down today.
+            emoji: ⏱️
+            weights:
+              horizon: -12
+          - text: It depends on the moment.
+            emoji: ⚖️
+            weights:
+              horizon: 0
+          - text: Sketch what this mission could lead to in ten years.
+            emoji: 🌌
+            weights:
+              horizon: 12
+      - type: SLIDER
+        text: Your research budget can fund one project.
+        emoji: 🪐
+        answers:
+          - text: A practical upgrade we can use this week.
+            emoji: ⏱️
+            weights:
+              horizon: -12
+          - text: An ambitious idea for the next generation of ships.
+            emoji: 🌌
+            weights:
+              horizon: 12
+      - type: SCALE
+        text: How often do distant possibilities guide your present choices?
+        emoji: 🪐
+        answers:
+          - text: I prefer a clear next step.
+            emoji: ⏱️
+            weights:
+              horizon: -16
+          - text: I like a next step that serves a bigger future.
+            emoji: 🌌
+            weights:
+              horizon: 16
+          - text: Not at all
+            weights: {}
+          - text: A little
+            weights: {}
+          - text: Somewhat
+            weights: {}
+          - text: Quite a bit
+            weights: {}
+          - text: Very much
+            weights: {}
+    color: "#be185d,#fb7185"
+  - slug: team-project
+    title: What do you bring to a team project?
+    description: A playful look at your collaboration style, without turning your coworkers into a
+      personality spreadsheet. For fun and reflection; not a validated assessment.
+    emoji: 🛠️
+    dimensions:
+      - key: structure
+        name: Structure
+        minLabel: Spontaneous
+        maxLabel: Structured
+        description: How much planning helps you do your best work.
+        emoji: 🗂️
+        minEmoji: 🌱
+        maxEmoji: 📐
+        color: "#6366f1"
+        displayScale: PERCENT_ASCENDING
+      - key: initiative
+        name: Initiative
+        minLabel: Supportive
+        maxLabel: Directive
+        description: Whether you prefer strengthening a shared plan or setting its course.
+        emoji: 🚀
+        minEmoji: 🤝
+        maxEmoji: 🧭
+        color: "#8b5cf6"
+        displayScale: PERCENT_ASCENDING
+      - key: collaboration
+        name: Collaboration
+        description: How much shared thinking you want in your working process.
+        emoji: 🧩
+        minLabel: Autonomous
+        maxLabel: Collaborative
+        minEmoji: 🎧
+        maxEmoji: 🗣️
+        color: "#ec4899"
+        displayScale: PERCENT_ASCENDING
+      - key: momentum
+        name: Momentum
+        description: How you balance careful consideration with getting a first version moving.
+        emoji: ⚡
+        minLabel: Deliberate
+        maxLabel: Action-oriented
+        minEmoji: 🔎
+        maxEmoji: 🏃
+        color: "#f43f5e"
+        displayScale: PERCENT_ASCENDING
+    archetypes:
+      - name: The Responsive Ally
+        description: You help the team adapt and make the work better where it needs you most.
+        emoji: 🌱
+        targets:
+          structure: 15
+          initiative: 15
+          collaboration: 15
+          momentum: 15
+        color: "#2563eb,#7c3aed"
+        relevance:
+          structure: 1
+          initiative: 0.8
+          collaboration: 0.65
+          momentum: 0.8
+      - name: The Reliable Finisher
+        description: You turn a shared plan into something people can depend on.
+        emoji: 🧱
+        targets:
+          structure: 85
+          initiative: 15
+          collaboration: 85
+          momentum: 15
+        color: "#7c3aed,#db2777"
+        relevance:
+          structure: 0.65
+          initiative: 1
+          collaboration: 0.65
+          momentum: 0.8
+      - name: The Possibility Scout
+        description: You start movement by noticing a promising direction nobody has tried.
+        emoji: 🔭
+        targets:
+          structure: 15
+          initiative: 85
+          collaboration: 15
+          momentum: 85
+        color: "#c2410c,#f59e0b"
+        relevance:
+          structure: 0.65
+          initiative: 0.8
+          collaboration: 1
+          momentum: 0.8
+      - name: The Roadmap Maker
+        description: You turn a big goal into a clear direction and help people move together.
+        emoji: 🗺️
+        targets:
+          structure: 85
+          initiative: 85
+          collaboration: 85
+          momentum: 15
+        color: "#0f766e,#38bdf8"
+        relevance:
+          structure: 0.65
+          initiative: 0.8
+          collaboration: 0.65
+          momentum: 1
+      - name: The Launch Partner
+        emoji: 🤝
+        description: You connect a clear direction with shared effort and the momentum to get a first
+          version into the world.
+        targets:
+          structure: 85
+          initiative: 85
+          collaboration: 85
+          momentum: 85
+        relevance:
+          structure: 1
+          initiative: 0.8
+          collaboration: 0.65
+          momentum: 0.8
+        color: "#475569,#a5b4fc"
+    questions:
+      - type: MULTIPLE_CHOICE
+        text: A new project lands. You want to begin by…
+        answers:
+          - text: Trying a small experiment.
+            weights:
+              structure: -12
+            emoji: 🌱
+          - text: Agreeing on a loose outline.
+            weights:
+              structure: 0
+            emoji: ⚖️
+          - text: Mapping milestones and responsibilities.
+            weights:
+              structure: 12
+            emoji: 📐
+        emoji: 🗂️
+      - type: MULTIPLE_CHOICE
+        text: A deadline shifts. You prefer to…
+        answers:
+          - text: Adjust as the new work takes shape.
+            weights:
+              structure: -12
+            emoji: 🌱
+          - text: Update the next few priorities.
+            weights:
+              structure: 0
+            emoji: ⚖️
+          - text: Rebuild the schedule clearly.
+            weights:
+              structure: 12
+            emoji: 📐
+        emoji: 🗂️
+      - type: MULTIPLE_CHOICE
+        text: A meeting stalls. You naturally…
+        answers:
+          - text: Help clarify someone else’s idea.
+            weights:
+              initiative: -12
+            emoji: 🤝
+          - text: Offer a question to move things along.
+            weights:
+              initiative: 0
+            emoji: ⚖️
+          - text: Propose a direction and a next step.
+            weights:
+              initiative: 12
+            emoji: 🧭
+        emoji: 🚀
+      - type: MULTIPLE_CHOICE
+        text: A promising opportunity appears. You…
+        answers:
+          - text: Offer support to whoever picks it up.
+            weights:
+              initiative: -12
+            emoji: 🤝
+          - text: Discuss whether it fits the team.
+            weights:
+              initiative: 0
+            emoji: ⚖️
+          - text: Take the first step and invite others.
+            weights:
+              initiative: 12
+            emoji: 🧭
+        emoji: 🚀
+      - type: SLIDER
+        text: How detailed should a project plan be?
+        answers:
+          - text: A rough direction
+            weights:
+              structure: -16
+            emoji: 🌱
+          - text: A clear roadmap
+            weights:
+              structure: 16
+            emoji: 📐
+        emoji: 🗂️
+      - type: SCALE
+        text: How often do you like to initiate the next move?
+        answers:
+          - text: Strengthen the work
+            weights:
+              initiative: -16
+          - text: Set the direction
+            weights:
+              initiative: 16
+          - text: Rarely
+            weights: {}
+          - text: Occasionally
+            weights: {}
+          - text: Sometimes
+            weights: {}
+          - text: Often
+            weights: {}
+          - text: Usually
+            weights: {}
+        emoji: 🚀
+      - type: MULTIPLE_CHOICE
+        text: A tricky task lands on your desk.
+        emoji: 🧩
+        answers:
+          - text: Give me time to think it through alone.
+            emoji: 🎧
+            weights:
+              collaboration: -12
+          - text: It depends on the moment.
+            emoji: ⚖️
+            weights:
+              collaboration: 0
+          - text: Let us put a few minds around it.
+            emoji: 🗣️
+            weights:
+              collaboration: 12
+      - type: SLIDER
+        text: You are working out a rough first idea.
+        emoji: 🧩
+        answers:
+          - text: I want something formed before sharing it.
+            emoji: 🎧
+            weights:
+              collaboration: -12
+          - text: I think best with someone to bounce ideas off.
+            emoji: 🗣️
+            weights:
+              collaboration: 12
+      - type: SCALE
+        text: How much do regular working sessions with teammates help you?
+        emoji: 🧩
+        answers:
+          - text: I do better with uninterrupted solo time.
+            emoji: 🎧
+            weights:
+              collaboration: -16
+          - text: Shared working time gives me energy and clarity.
+            emoji: 🗣️
+            weights:
+              collaboration: 16
+          - text: Not at all
+            weights: {}
+          - text: A little
+            weights: {}
+          - text: Somewhat
+            weights: {}
+          - text: Quite a bit
+            weights: {}
+          - text: Very much
+            weights: {}
+      - type: MULTIPLE_CHOICE
+        text: The team has two promising approaches.
+        emoji: ⚡
+        answers:
+          - text: Compare the tradeoffs before committing.
+            emoji: 🔎
+            weights:
+              momentum: -12
+          - text: It depends on the moment.
+            emoji: ⚖️
+            weights:
+              momentum: 0
+          - text: Try a small version and learn from it.
+            emoji: 🏃
+            weights:
+              momentum: 12
+      - type: SLIDER
+        text: A decision is reversible but the information is incomplete.
+        emoji: ⚡
+        answers:
+          - text: Gather one more useful piece of evidence.
+            emoji: 🔎
+            weights:
+              momentum: -12
+          - text: Make the call and keep checking the results.
+            emoji: 🏃
+            weights:
+              momentum: 12
+      - type: SCALE
+        text: How much do you enjoy turning a rough idea into a quick first attempt?
+        emoji: ⚡
+        answers:
+          - text: I want to understand the problem before starting.
+            emoji: 🔎
+            weights:
+              momentum: -16
+          - text: A first attempt helps me understand the problem.
+            emoji: 🏃
+            weights:
+              momentum: 16
+          - text: Not at all
+            weights: {}
+          - text: A little
+            weights: {}
+          - text: Somewhat
+            weights: {}
+          - text: Quite a bit
+            weights: {}
+          - text: Very much
+            weights: {}
+    color: "#166534,#84cc16"
+  - slug: rainy-day
+    title: What is your rainy-day alter ego?
+    description: The forecast says stay inside. Your ideal indoor world says a little more. For fun and
+      reflection; not a validated assessment.
+    emoji: 🌧️
+    dimensions:
+      - key: stimulation
+        name: Stimulation
+        minLabel: Tranquil
+        maxLabel: Stimulated
+        description: How much activity makes an indoor day satisfying.
+        emoji: ☔
+        minEmoji: 🫖
+        maxEmoji: 🎮
+        color: "#f43f5e"
+        displayScale: PERCENT_ASCENDING
+      - key: sharing
+        name: Sharing
+        minLabel: Independent
+        maxLabel: Communal
+        description: Whether your ideal rainy day is personal or shared.
+        emoji: 🛋️
+        minEmoji: 📔
+        maxEmoji: 🫂
+        color: "#f97316"
+        displayScale: BIPOLAR
+      - key: nostalgia
+        name: Nostalgia
+        description: Whether comfort comes from a fresh experience or a familiar favorite.
+        emoji: 📼
+        minLabel: Novelty-seeking
+        maxLabel: Nostalgic
+        minEmoji: 🎲
+        maxEmoji: 📺
+        color: "#22c55e"
+        displayScale: PERCENT_ASCENDING
+    archetypes:
+      - name: The Blanket Philosopher
+        description: You create a quiet pocket of time for your own thoughts and comforts.
+        emoji: 📖
+        targets:
+          stimulation: 15
+          sharing: 15
+          nostalgia: 15
+        color: "#c2410c,#f59e0b"
+        relevance:
+          stimulation: 1
+          sharing: 0.8
+          nostalgia: 0.65
+      - name: The Solo Side-Quest
+        description: You disappear into a game, a project, or a wonderfully consuming rabbit hole.
+        emoji: 🎮
+        targets:
+          stimulation: 85
+          sharing: 15
+          nostalgia: 15
+        color: "#0f766e,#38bdf8"
+        relevance:
+          stimulation: 0.65
+          sharing: 1
+          nostalgia: 0.65
+      - name: The Cozy Host
+        description: You turn bad weather into an excuse for tea and good company.
+        emoji: 🫖
+        targets:
+          stimulation: 15
+          sharing: 85
+          nostalgia: 85
+        color: "#475569,#a5b4fc"
+        relevance:
+          stimulation: 0.65
+          sharing: 0.8
+          nostalgia: 1
+      - name: The Living-Room Carnival
+        description: You bring the people, the playlist, and the game with too many pieces.
+        emoji: 🎲
+        targets:
+          stimulation: 85
+          sharing: 85
+          nostalgia: 85
+        color: "#be185d,#fb7185"
+        relevance:
+          stimulation: 1
+          sharing: 0.8
+          nostalgia: 0.65
+    questions:
+      - type: MULTIPLE_CHOICE
+        text: Rain cancels your plans. Your replacement is…
+        answers:
+          - text: A gentle book and a warm drink.
+            weights:
+              stimulation: -12
+            emoji: 🫖
+          - text: A film or a small creative project.
+            weights:
+              stimulation: 0
+            emoji: ⚖️
+          - text: A game or project that takes all my attention.
+            weights:
+              stimulation: 12
+            emoji: 🎮
+        emoji: ☔
+      - type: MULTIPLE_CHOICE
+        text: Your room’s soundtrack is…
+        answers:
+          - text: The rain itself.
+            weights:
+              stimulation: -12
+            emoji: 🫖
+          - text: A soft playlist.
+            weights:
+              stimulation: 0
+            emoji: ⚖️
+          - text: Something with energy and momentum.
+            weights:
+              stimulation: 12
+            emoji: 🎮
+        emoji: ☔
+      - type: MULTIPLE_CHOICE
+        text: Who belongs in your rainy-day plan?
+        answers:
+          - text: Just me.
+            weights:
+              sharing: -12
+            emoji: 📔
+          - text: One close companion.
+            weights:
+              sharing: 0
+            emoji: ⚖️
+          - text: A few friends looking for shelter.
+            weights:
+              sharing: 12
+            emoji: 🫂
+        emoji: 🛋️
+      - type: MULTIPLE_CHOICE
+        text: You make something delicious. You…
+        answers:
+          - text: Enjoy it in peace.
+            weights:
+              sharing: -12
+            emoji: 📔
+          - text: Save some for someone I love.
+            weights:
+              sharing: 0
+            emoji: ⚖️
+          - text: Invite people over while it is still warm.
+            weights:
+              sharing: 12
+            emoji: 🫂
+        emoji: 🛋️
+      - type: SLIDER
+        text: How much stimulation sounds good today?
+        answers:
+          - text: Peace and quiet
+            weights:
+              stimulation: -16
+            emoji: 🫖
+          - text: Something absorbing
+            weights:
+              stimulation: 16
+            emoji: 🎮
+        emoji: ☔
+      - type: SCALE
+        text: How much company feels right indoors?
+        answers:
+          - text: My own little world
+            weights:
+              sharing: -16
+          - text: Bring people together
+            weights:
+              sharing: 16
+          - text: Solo
+            weights: {}
+          - text: One person
+            weights: {}
+          - text: A few
+            weights: {}
+          - text: A full sofa
+            weights: {}
+          - text: Everyone fits somehow
+            weights: {}
+        emoji: 🛋️
+      - type: MULTIPLE_CHOICE
+        text: You settle in with something to watch.
+        emoji: 📼
+        answers:
+          - text: A film I know almost nothing about.
+            emoji: 🎲
+            weights:
+              nostalgia: -12
+          - text: It depends on the moment.
+            emoji: ⚖️
+            weights:
+              nostalgia: 0
+          - text: The favorite I can quote by heart.
+            emoji: 📺
+            weights:
+              nostalgia: 12
+      - type: SLIDER
+        text: A rainy afternoon gives you time for a small project.
+        emoji: 📼
+        answers:
+          - text: Try something I have never made.
+            emoji: 🎲
+            weights:
+              nostalgia: -12
+          - text: Return to a hobby that already feels like home.
+            emoji: 📺
+            weights:
+              nostalgia: 12
+      - type: SCALE
+        text: How much do familiar rituals improve an indoor day?
+        emoji: 📼
+        answers:
+          - text: Surprise me with something new.
+            emoji: 🎲
+            weights:
+              nostalgia: -16
+          - text: The rituals are half the pleasure.
+            emoji: 📺
+            weights:
+              nostalgia: 16
+          - text: Not at all
+            weights: {}
+          - text: A little
+            weights: {}
+          - text: Somewhat
+            weights: {}
+          - text: Quite a bit
+            weights: {}
+          - text: Very much
+            weights: {}
+    color: "#c2410c,#a855f7"

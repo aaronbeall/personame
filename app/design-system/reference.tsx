@@ -40,10 +40,10 @@ const palette = [
 const artwork = [
   ['creation', 'A new idea', 'Setup and questions'],
   ['science', 'Curiosity at work', 'Dimensions and quiz-taking'],
-  ['tree-house', 'Room to grow', 'Dashboard and archetypes'],
+  ['tree-house', 'Room to grow', 'Dashboard'],
   ['galaxy-expansion', 'Out into the world', 'Review and publishing'],
   ['party', 'A little celebration', 'Results'],
-  ['islands', 'A warm welcome', 'Sign-in and covers'],
+  ['islands', 'A warm welcome', 'Archetypes, sign-in and covers'],
 ] as const
 const sections = [
   'Principles',

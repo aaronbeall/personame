@@ -1,9 +1,10 @@
+import { parse as parseYaml } from 'yaml'
 import 'dotenv/config'
 import { readFileSync } from 'node:fs'
 import { PrismaClient } from '@prisma/client'
 import { parseCatalog, compileCatalogQuiz } from '../lib/quiz-catalog'
 const catalog = parseCatalog(
-  JSON.parse(readFileSync('content/seed-quizzes.json', 'utf8')),
+  parseYaml(readFileSync('content/seed-quizzes.yaml', 'utf8')),
 )
 const db = new PrismaClient()
 async function main() {
@@ -36,6 +37,11 @@ async function main() {
           data: {
             personaId: persona.id,
             name: m.name,
+            description: m.description,
+            emoji: m.emoji,
+            minEmoji: m.minEmoji,
+            maxEmoji: m.maxEmoji,
+            displayScale: m.displayScale,
             color: m.color,
             minLabel: m.minLabel,
             maxLabel: m.maxLabel,
@@ -73,12 +79,16 @@ async function main() {
             questions: {
               create: page.questions.map((q) => ({
                 text: q.text,
+                emoji: q.emoji,
+                color: q.color,
                 type: q.type,
                 required: q.required,
                 order: q.order,
                 answers: {
                   create: q.answers.map((a) => ({
                     text: a.text,
+                    emoji: a.emoji,
+                    color: a.color,
                     order: a.order,
                     weights: {
                       create: a.weights.map((w) => ({

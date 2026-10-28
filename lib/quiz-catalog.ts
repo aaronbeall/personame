@@ -19,6 +19,13 @@ export const catalogSchema = z.object({
             z.object({
               key: label,
               name: label,
+              description: label.optional(),
+              emoji: label.optional(),
+              minEmoji: label.nullable().optional(),
+              maxEmoji: label.nullable().optional(),
+              displayScale: z
+                .enum(['PERCENT_ASCENDING', 'PERCENT_DESCENDING', 'BIPOLAR'])
+                .default('PERCENT_ASCENDING'),
               minLabel: label,
               maxLabel: label,
               color: storedColorSchema,
@@ -33,6 +40,9 @@ export const catalogSchema = z.object({
               description: label,
               emoji: label,
               color: storedColorSchema,
+              relevance: z
+                .record(z.string(), z.number().min(0).max(1))
+                .optional(),
               targets: z.record(z.string(), z.number().min(0).max(100)),
             }),
           )
@@ -42,8 +52,19 @@ export const catalogSchema = z.object({
             z.object({
               type: z.enum(['MULTIPLE_CHOICE', 'SLIDER', 'SCALE']),
               text: label,
+              emoji: label.optional(),
+              color: storedColorSchema,
               required: z.boolean().default(true),
-              answers: z.array(z.object({ text: label, weights })).min(2),
+              answers: z
+                .array(
+                  z.object({
+                    text: label,
+                    emoji: label.optional(),
+                    color: storedColorSchema,
+                    weights,
+                  }),
+                )
+                .min(2),
             }),
           )
           .min(1),
@@ -58,6 +79,16 @@ export function compileCatalogQuiz(definition: CatalogQuiz): FullQuiz {
   if (new Set(keys).size !== keys.length)
     throw new Error(`${definition.slug}: duplicate dimension key`)
   for (const archetype of definition.archetypes) {
+    if (
+      Object.keys(archetype.relevance ?? {}).some((key) => !keys.includes(key))
+    )
+      throw new Error(
+        `${definition.slug}: unknown dimension in archetype relevance`,
+      )
+    if (!keys.some((key) => (archetype.relevance?.[key] ?? 1) > 0))
+      throw new Error(
+        `${definition.slug}: archetypes need at least one relevant dimension`,
+      )
     if (
       keys.some((k) => archetype.targets[k] === undefined) ||
       Object.keys(archetype.targets).some((k) => !keys.includes(k))
@@ -100,7 +131,7 @@ export function compileCatalogQuiz(definition: CatalogQuiz): FullQuiz {
       dimensions: keys.map((dimensionId) => ({
         dimensionId,
         targetValue: a.targets[dimensionId],
-        relevance: 1,
+        relevance: a.relevance?.[dimensionId] ?? 1,
       })),
     })),
     pages: [
@@ -123,12 +154,12 @@ export function compileCatalogQuiz(definition: CatalogQuiz): FullQuiz {
           ...q,
           id: `question-${order}`,
           order,
-          emoji: null,
+          emoji: q.emoji ?? null,
           answers: q.answers.map((a, i) => ({
             ...a,
             id: `answer-${order}-${i}`,
             order: i,
-            emoji: null,
+            emoji: a.emoji ?? null,
             weights: Object.entries(a.weights).map(([dimensionId, value]) => ({
               dimensionId,
               value,

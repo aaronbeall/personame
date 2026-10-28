@@ -1,3 +1,4 @@
+import { parse as parseYaml } from 'yaml'
 import 'dotenv/config'
 import { test as base, expect } from '@playwright/test'
 import { PrismaClient } from '@prisma/client'
@@ -59,7 +60,7 @@ export const test = base.extend<{
     const request = context.request
     await provide(async () => {
       const definition = parseCatalog(
-        JSON.parse(readFileSync('content/seed-quizzes.json', 'utf8')),
+        parseYaml(readFileSync('content/seed-quizzes.yaml', 'utf8')),
       ).quizzes[0]
       const quiz = compileCatalogQuiz(definition)
       const created = await request.post('/api/personames', {
@@ -73,12 +74,17 @@ export const test = base.extend<{
       const path = `/api/personames/${id}`
       const saved = await request.post(`${path}/dimensions`, {
         data: {
-          dimensions: quiz.dimensions.map((m) => ({ ...m, id: `temp-${m.id}` })),
+          dimensions: quiz.dimensions.map((m) => ({
+            ...m,
+            id: `temp-${m.id}`,
+          })),
         },
       })
       expect(saved.ok()).toBeTruthy()
       const dimensions = (await saved.json()) as { id: string }[]
-      const remap = new Map(quiz.dimensions.map((m, i) => [m.id, dimensions[i].id]))
+      const remap = new Map(
+        quiz.dimensions.map((m, i) => [m.id, dimensions[i].id]),
+      )
       expect(
         (
           await request.post(`${path}/archetypes`, {
