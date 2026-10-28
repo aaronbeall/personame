@@ -17,7 +17,7 @@ import {
 } from 'lucide-react'
 import { getTempId, cn } from '@/lib/utils'
 import { DimensionTag } from '@/components/entity-identity'
-import { getColorTheme } from '@/lib/colors'
+import { getBarGradient } from '@/lib/colors'
 import { useState } from 'react'
 import { createDefaultAnswers } from './question-defaults'
 
@@ -384,7 +384,9 @@ const AnswerWeightsEditor = ({
       {expanded ? (
         <div className="divide-y divide-muted-100">
           {dimensions.map((dimension) => {
-            const weight = answer.weights.find((w) => w.dimensionId === dimension.id)
+            const weight = answer.weights.find(
+              (w) => w.dimensionId === dimension.id,
+            )
             const weightValue = weight?.value ?? 0
             return (
               <div
@@ -396,7 +398,7 @@ const AnswerWeightsEditor = ({
               >
                 <div
                   className="w-2 h-2 rounded-sm"
-                  style={{ background: getColorTheme(dimension.color).hex }}
+                  style={{ background: getBarGradient(dimension.color) }}
                 />
                 <span className="text-xs w-28 truncate">{dimension.name}</span>
                 <Slider

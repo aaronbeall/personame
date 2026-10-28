@@ -1,6 +1,7 @@
 'use client'
 
 import { useId, type CSSProperties } from 'react'
+import { getColorTheme, getScalePreview } from '@/lib/colors'
 import { DimensionDisplayScale } from '@prisma/client'
 
 const options = [
@@ -33,11 +34,19 @@ export function DimensionDisplayScaleSelector({
 }) {
   const groupId = useId()
   return (
-    <fieldset className="space-y-1.5" title="Display preview only. Saved scores stay 0–100.">
+    <fieldset
+      className="space-y-1.5"
+      title="Display preview only. Saved scores stay 0–100."
+    >
       <legend className="text-sm font-medium text-slate-700">
         Scale display
       </legend>
-      <div className="scale-choice-bar" style={{ '--dimension-color': color } as CSSProperties}>
+      <div
+        className="scale-choice-bar"
+        style={
+          { '--dimension-color': getColorTheme(color).hex } as CSSProperties
+        }
+      >
         {options.map((option) => (
           <label key={option.value} className="scale-choice">
             <input
@@ -55,6 +64,17 @@ export function DimensionDisplayScaleSelector({
               </span>
               <span
                 className={`scale-choice-preview scale-choice-preview-${option.value.toLowerCase()}`}
+                style={{
+                  background: getScalePreview(
+                    color,
+                    option.value === DimensionDisplayScale.BIPOLAR
+                      ? 'bipolar'
+                      : option.value ===
+                          DimensionDisplayScale.PERCENT_DESCENDING
+                        ? 'descending'
+                        : 'ascending',
+                  ),
+                }}
                 aria-hidden="true"
               />
             </span>

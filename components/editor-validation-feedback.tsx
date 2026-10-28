@@ -16,10 +16,22 @@ export function EditorValidationFeedback({
       aria-live="polite"
     >
       <CircleAlert size={14} aria-hidden="true" />
-      <div>
-        {messages.map((message) => (
-          <p key={message}>{message}</p>
-        ))}
+      <div className="editor-validation-messages">
+        {messages.map((message, index) => {
+          const separator = message.indexOf(': ')
+          return (
+            <p key={`${index}-${message}`}>
+              {separator < 0 ? (
+                message
+              ) : (
+                <>
+                  <strong>{message.slice(0, separator)}</strong>
+                  {message.slice(separator)}
+                </>
+              )}
+            </p>
+          )
+        })}
       </div>
     </div>
   )

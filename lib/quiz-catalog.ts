@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { storedColorSchema } from './colors'
 import { readiness } from './quiz-validation'
 import type { FullQuiz } from './personas'
 const label = z.string().trim().min(1)
@@ -12,6 +13,7 @@ export const catalogSchema = z.object({
         title: label.max(200),
         description: label,
         emoji: label,
+        color: storedColorSchema,
         dimensions: z
           .array(
             z.object({
@@ -19,6 +21,7 @@ export const catalogSchema = z.object({
               name: label,
               minLabel: label,
               maxLabel: label,
+              color: storedColorSchema,
             }),
           )
           .min(1)
@@ -29,6 +32,7 @@ export const catalogSchema = z.object({
               name: label,
               description: label,
               emoji: label,
+              color: storedColorSchema,
               targets: z.record(z.string(), z.number().min(0).max(100)),
             }),
           )
@@ -67,7 +71,9 @@ export function compileCatalogQuiz(definition: CatalogQuiz): FullQuiz {
       throw new Error(`${definition.slug}: sliders need exactly two endpoints`)
     for (const a of q.answers)
       if (Object.keys(a.weights).some((k) => !keys.includes(k)))
-        throw new Error(`${definition.slug}: unknown dimension in answer weights`)
+        throw new Error(
+          `${definition.slug}: unknown dimension in answer weights`,
+        )
     if (
       q.type === 'SCALE' &&
       q.answers
@@ -81,12 +87,16 @@ export function compileCatalogQuiz(definition: CatalogQuiz): FullQuiz {
   const quiz = {
     ...definition,
     id: definition.slug,
-    dimensions: definition.dimensions.map((m, order) => ({ ...m, id: m.key, order })),
+    dimensions: definition.dimensions.map((m, order) => ({
+      ...m,
+      id: m.key,
+      order,
+    })),
     archetypes: definition.archetypes.map((a, order) => ({
       ...a,
       id: `archetype-${order}`,
       order,
-      color: null,
+      color: a.color ?? null,
       dimensions: keys.map((dimensionId) => ({
         dimensionId,
         targetValue: a.targets[dimensionId],

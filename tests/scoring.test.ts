@@ -173,3 +173,13 @@ test('result snapshots preserve endpoint emoji independently of later edits', ()
   assert.equal(result.snapshot.scores[0].minEmoji, '🌱')
   assert.equal(result.snapshot.scores[0].score, 100)
 })
+
+test('result snapshots retain complete dimension and archetype themes', () => {
+  const quiz = fixture()
+  quiz.dimensions[0] = { ...quiz.dimensions[0], color: '#7c3aed,#db2777' }
+  quiz.archetypes[1].color = '#2563eb,#7c3aed'
+  const result = scoreQuiz(quiz, { q: { answerId: 'high' } })
+  assert.equal(result.snapshot.scores[0].color, '#7c3aed,#db2777')
+  assert.equal(result.snapshot.archetype.color, '#2563eb,#7c3aed')
+  assert.equal(result.snapshot.scores[0].score, 100)
+})

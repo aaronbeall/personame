@@ -15,7 +15,12 @@ export function QuizCoverMark({
   return (
     <span
       className={`quiz-cover-mark quiz-cover-mark-${size}`}
-      style={{ '--quiz-color': theme.hex } as CSSProperties}
+      style={
+        {
+          '--quiz-color': theme.hex,
+          '--quiz-accent': theme.colors.at(-1),
+        } as CSSProperties
+      }
       aria-hidden="true"
     >
       <span className="quiz-cover-kicker">Quiz</span>

@@ -3,6 +3,10 @@ import assert from 'node:assert/strict'
 import { contrastAPCA } from 'colorjs.io/fn'
 import {
   COLOR_THEME,
+  COLOR_THEMES,
+  getBarGradient,
+  getBadgeAppearance,
+  getScalePreview,
   getColorName,
   getColorTheme,
   getUnusedColorTheme,
@@ -82,4 +86,53 @@ test('surface shading stays subtle, preserves hue endpoints and checks all contr
     assert.equal(surface.textColor, getContrastText(surface.stops))
     assert.equal(surface.background.includes('linear-gradient', 1), false)
   }
+})
+
+test('curated themes normalize and retain every color while custom multi-color input is deferred', () => {
+  for (const theme of COLOR_THEMES) {
+    const value = theme.colors.join(',')
+    for (const schema of [
+      storedColorSchema,
+      quizDetailsSchema.shape.color,
+      dimensionInput.shape.color,
+    ]) {
+      assert.equal(
+        schema.parse(
+          theme.colors.map((color) => color.toUpperCase()).join(', '),
+        ),
+        value,
+      )
+      assert.equal(schema.safeParse('#ffffff,#000000').success, false)
+      assert.equal(schema.safeParse('#123456,#abcdef,#987654').success, false)
+    }
+    const resolved = getColorTheme(value)
+    assert.equal(resolved.value, value)
+    assert.deepEqual(resolved.colors, [...theme.colors])
+    assert.equal(resolved.label, theme.label)
+    assert.equal(getColorName(value), theme.label)
+    assert.equal(
+      getBarGradient(value),
+      `linear-gradient(90deg, ${theme.colors.join(', ')})`,
+    )
+    const surface = getColorSurface(value)
+    theme.colors.forEach((color) =>
+      assert.ok(surface.background.includes(color)),
+    )
+    assert.equal(surface.textColor, getContrastText(surface.stops))
+    const badge = getBadgeAppearance(value)
+    assert.equal(badge.themed, true)
+    assert.equal(badge.primary, theme.colors[0])
+    assert.equal(badge.accent, theme.colors[1])
+    assert.notEqual(badge.border, '#ffffff')
+    assert.notEqual(badge.texture, badge.primary)
+    assert.ok(getScalePreview(value, 'ascending').includes(theme.colors[1]))
+    assert.ok(
+      getScalePreview(value, 'descending').indexOf(theme.colors[1]) <
+        getScalePreview(value, 'descending').indexOf(theme.colors[0]),
+    )
+  }
+  assert.equal(getColorName('#3b82f6,#ec4899'), 'Blue/Pink')
+  assert.equal(getColorName('#123456,#abcdef'), '#123456/#ABCDEF')
+  assert.equal(getColorTheme('#123456,#abcdef,#987654').colors.length, 3)
+  assert.equal(getBadgeAppearance('#123456').themed, false)
 })

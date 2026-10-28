@@ -284,7 +284,7 @@ export default function DimensionsPage({
                         maxLabel={max}
                         minEmoji={dimension.minEmoji}
                         maxEmoji={dimension.maxEmoji}
-                        color={colorInfo.hex}
+                        color={colorInfo.value}
                       />
                     )}
 
@@ -413,7 +413,7 @@ export default function DimensionsPage({
                           </div>
                         </div>
                         <DimensionDisplayScaleSelector
-                          color={colorInfo.hex}
+                          color={colorInfo.value}
                           value={dimension.displayScale}
                           onChange={(value) =>
                             updateDimension(dimension.id, 'displayScale', value)

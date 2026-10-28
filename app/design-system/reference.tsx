@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import { COLOR_THEMES, getBarGradient } from '@/lib/colors'
 import { useState } from 'react'
 import { ArrowRight, Check, Copy, Sparkles } from 'lucide-react'
 import { AppLayoutBackground } from '@/components/app-layout-background'
@@ -144,7 +145,8 @@ export function DesignReference() {
             </div>
             <div className="design-copy-examples">
               <span>
-                Continue to Dimensions <ArrowRight size={14} aria-hidden="true" />
+                Continue to Dimensions{' '}
+                <ArrowRight size={14} aria-hidden="true" />
               </span>
               <span>Set the mood in a sentence or two.</span>
               <span>We couldn’t save your changes. Please try again.</span>
@@ -324,8 +326,8 @@ export function DesignReference() {
                 Dimensions
               </h3>
               <p className="muted mt-2">
-                Faceted, solid, vibrant, precise. Soft diamond symbols,
-                sleek tags, and diamond value markers on crisp scales.
+                Faceted, solid, vibrant, precise. Soft diamond symbols, sleek
+                tags, and diamond value markers on crisp scales.
               </p>
               <div className="flex items-center gap-4 mt-6">
                 <DimensionSymbol name="Curiosity" emoji="🧠" color="#8b5cf6" />
@@ -357,6 +359,41 @@ export function DesignReference() {
                 />
               </div>
             </article>
+          </div>
+        </section>
+
+        <section className="design-section" aria-label="Color themes">
+          <div className="design-section-heading">
+            <p className="eyebrow">Color stories</p>
+            <h2>One palette. Different personalities.</h2>
+            <p className="muted">
+              Themes keep their colors across covers, dimension gradients, and
+              framed archetypes.
+            </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {COLOR_THEMES.map((theme) => {
+              const value = theme.colors.join(',')
+              return (
+                <article className="surface" key={theme.label}>
+                  <h3>{theme.label}</h3>
+                  <div className="flex items-center justify-between gap-4 mt-5 mb-5">
+                    <QuizCoverMark emoji="✨" color={value} size="sm" />
+                    <DimensionSymbol name={theme.label} color={value} />
+                    <ArchetypeBadge
+                      name={theme.label}
+                      color={value}
+                      size={64}
+                      label={false}
+                    />
+                  </div>
+                  <div
+                    className="h-1.5 rounded"
+                    style={{ background: getBarGradient(value) }}
+                  />
+                </article>
+              )
+            })}
           </div>
         </section>
 

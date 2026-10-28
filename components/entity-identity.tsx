@@ -3,7 +3,7 @@ import {
   getColorTheme,
   COLOR_THEME,
   getColorSurface,
-  getBadgeTextColor,
+  getBadgeAppearance,
 } from '@/lib/colors'
 import { getInitials } from '@/lib/utils'
 
@@ -30,7 +30,7 @@ export function DimensionSymbol({
   color?: string | null
 }) {
   const theme = getColorTheme(color)
-  const surface = getColorSurface(theme.hex)
+  const surface = getColorSurface(theme.value)
   return (
     <span
       className="dimension-symbol"
@@ -49,7 +49,7 @@ export function DimensionSymbol({
 }
 export function DimensionTag({ name, emoji, color }: Identity) {
   const theme = getColorTheme(color)
-  const surface = getColorSurface(theme.hex)
+  const surface = getColorSurface(theme.value)
   return (
     <span
       className="dimension-tag"
@@ -68,13 +68,20 @@ export function ArchetypeBadge({
   label = true,
 }: { size?: number; label?: boolean } & Identity) {
   const theme = getArchetypeTheme(color, name)
+  const badge = getBadgeAppearance(theme.value)
   return (
     <div
-      className="archetype-badge"
+      className={`archetype-badge${badge.themed ? ' archetype-badge-themed' : ''}`}
       style={
         {
-          '--badge-color': theme.hex,
-          '--badge-ink': getBadgeTextColor(theme.hex),
+          '--badge-color': badge.primary,
+          '--badge-accent': badge.accent,
+          '--badge-shade': badge.shade,
+          '--badge-texture': badge.texture,
+          '--badge-frame': badge.border,
+          '--badge-ring': badge.ring,
+          '--badge-inner-ring': badge.innerRing,
+          '--badge-ink': badge.textColor,
           '--badge-size': `${size}px`,
         } as CSSProperties
       }

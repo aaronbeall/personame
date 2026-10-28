@@ -502,6 +502,22 @@ test('Editor footers explain required fields and clear feedback as fields are co
     await expect(record.getByRole('status')).toHaveText(
       'Enter a name, a low end label, and a high end label.',
     )
+    await test
+      .info()
+      .attach('Validation footer — desktop', {
+        body: await page.screenshot({ fullPage: true }),
+        contentType: 'image/png',
+      })
+    await page.setViewportSize({ width: 390, height: 844 })
+    await expect
+      .poll(() => page.locator('body').evaluate((el) => el.scrollWidth))
+      .toBeLessThanOrEqual(390)
+    await record
+      .locator('.item-editor-actions')
+      .screenshot({
+        path: test.info().outputPath('validation-actions-mobile.png'),
+      })
+    await page.setViewportSize({ width: 1440, height: 1000 })
     await record.getByPlaceholder('e.g., Extraversion').fill('Curiosity')
     await expect(record.getByRole('status')).toHaveText(
       'Enter a low end label and a high end label.',

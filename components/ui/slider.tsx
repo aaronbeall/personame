@@ -1,4 +1,4 @@
-import { getColorTheme } from '@/lib/colors'
+import { getColorTheme, getBarGradient } from '@/lib/colors'
 import { cn } from '@/lib/utils'
 import * as SliderPrimitive from '@radix-ui/react-slider'
 import { useMemo, useState } from 'react'
@@ -63,11 +63,12 @@ const Slider = ({
     >
       <SliderPrimitive.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-muted-300">
         <SliderPrimitive.Range
-          style={{ background: getColorTheme(color).hex }}
+          style={{ background: getBarGradient(color) }}
           className="absolute h-full"
         />
       </SliderPrimitive.Track>
       <SliderPrimitive.Thumb
+        aria-label={props['aria-label']}
         style={{ background: getColorTheme(color).hex }}
         className={cn(
           'block h-5 w-5 rounded-full border-2 border-white bg-white shadow-md ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
@@ -76,6 +77,7 @@ const Slider = ({
       />
       {center !== undefined && (
         <SliderPrimitive.Thumb
+          aria-label={props['aria-label']}
           style={{ background: getColorTheme(color).hex }}
           className={cn(
             'block h-5 w-5 rounded-full border-2 border-white bg-white shadow-md ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',

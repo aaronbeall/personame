@@ -129,3 +129,6 @@ New artwork should match the existing outlines, palette, character expressions, 
 - Is the interface calm enough for sustained creation?
 
 Dimension identity uses rounded diamond emblems and diamond markers on read-only value bars. Emoji and initials remain upright inside the diamond. Keep facets subtle and precise; avoid gemstone illustrations or heavy textures. Labels stay readable in compact tags. Dimension rows use a quiet neutral outline without a colored top stripe. Standard slider thumbs and edit buttons remain circular.
+
+
+Color themes are authored palettes with a recognizable color story. The picker offers Aurora, Wildflower, Ember, Lagoon, Moonstone, Rosewater, Orchard, Desert Bloom, Midnight Swim, Peach Fizz, Supernova, and Mint Condition. Dimension shapes stay faceted with blended fills; archetypes use layered circular framing, texture, and accent colors; quizzes retain their cover silhouette. Theme names belong to the UI and stored values contain only ordered hex colors.

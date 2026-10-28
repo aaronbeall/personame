@@ -86,3 +86,9 @@ Deploy the current source and run `npx prisma migrate deploy` against the deploy
 ## Hex colors and contrast
 
 Color tests cover canonical `#rrggbb` storage, null/short/mixed-case hex, rejection of named or transparent colors, palette display names, custom hex retention, and library-based contrast decisions. The color migration test uses disposable tables to verify all authored color fields and saved archetype artwork. The custom-color browser test picks a native custom color, saves, and reloads it. Palette names are UI metadata only; existing historical palettes are converted by migration.
+
+
+Theme coverage checks canonical color lists, known-theme validation, fallback naming, all-color bar gradients, distinct badge accents, result snapshots, and preservation of existing solids by migration. The theme migration also verifies that storage can hold three-color lists for future use. The browser scenario selects themes on quizzes, dimensions, and archetypes, checks both picker tabs and keyboard navigation, reloads saved values, verifies rendered gradients, and captures themed archetype artwork.
+
+
+Dimension value tests verify symmetric descriptor bands, midpoint neutrality, bounds and decimals. The browser scenario checks persistent value callouts, raw scores, dominant endpoint emoji, absence of the separate Target label, callout alignment within the rail, and unbroken endpoint text at desktop and mobile widths.

@@ -1,5 +1,8 @@
 import type { FullQuiz } from './personas'
-import { calculateDimensionScores, findBestArchetype } from './quiz-calculations'
+import {
+  calculateDimensionScores,
+  findBestArchetype,
+} from './quiz-calculations'
 export type ResponseValue = { answerId?: string; value?: number }
 export type QuizResponses = Record<string, ResponseValue>
 export type ResultSnapshot = {
@@ -14,6 +17,7 @@ export type ResultSnapshot = {
   scores: {
     dimensionId: string
     dimensionName: string
+    color?: string | null
     score: number
     minEmoji?: string | null
     maxEmoji?: string | null
@@ -28,7 +32,8 @@ export function scoreQuiz(quiz: FullQuiz, responses: QuizResponses) {
     .flatMap((p) => p.questions)
   if (Object.keys(responses).some((id) => !questions.some((q) => q.id === id)))
     throw new Error('An answer refers to a question that is not in this quiz.')
-  const contributions: { weights: { dimensionId: string; value: number }[] }[] = []
+  const contributions: { weights: { dimensionId: string; value: number }[] }[] =
+    []
   const answers: { answerId: string; value?: number }[] = []
   for (const q of questions) {
     const response = responses[q.id]
@@ -88,8 +93,13 @@ export function scoreQuiz(quiz: FullQuiz, responses: QuizResponses) {
     },
     scores: scores.map((s) => ({
       ...s,
-      minEmoji: quiz.dimensions.find((m) => m.id === s.dimensionId)!.minEmoji ?? null,
-      maxEmoji: quiz.dimensions.find((m) => m.id === s.dimensionId)!.maxEmoji ?? null,
+      color:
+        quiz.dimensions.find((dimension) => dimension.id === s.dimensionId)!
+          .color ?? null,
+      minEmoji:
+        quiz.dimensions.find((m) => m.id === s.dimensionId)!.minEmoji ?? null,
+      maxEmoji:
+        quiz.dimensions.find((m) => m.id === s.dimensionId)!.maxEmoji ?? null,
       minLabel: quiz.dimensions.find((m) => m.id === s.dimensionId)!.minLabel,
       maxLabel: quiz.dimensions.find((m) => m.id === s.dimensionId)!.maxLabel,
     })),

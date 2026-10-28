@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { Copy, RotateCcw, Check } from 'lucide-react'
 import { Button } from './ui/button'
+import { getColorTheme, getBarGradient } from '@/lib/colors'
+import type { CSSProperties } from 'react'
 import { DimensionEndpointLabel } from './dimension-endpoint-label'
 import { EntityIcon } from './entity-icon'
 import { ArchetypeBadge, DimensionTag } from './entity-identity'
@@ -66,10 +68,19 @@ export function ResultView({
           Every dimension tells a different part of your story.
         </p>
         {result.scores.map((m) => (
-          <div className="result-dimension" key={m.dimensionId}>
+          <div
+            className="result-dimension"
+            key={m.dimensionId}
+            style={
+              {
+                '--result-bar': getBarGradient(m.color),
+                '--result-point': getColorTheme(m.color).colors.at(-1),
+              } as CSSProperties
+            }
+          >
             <div>
               <strong>
-                <DimensionTag name={m.dimensionName} />
+                <DimensionTag name={m.dimensionName} color={m.color} />
               </strong>
               <span>{Math.round(m.score)} / 100</span>
             </div>

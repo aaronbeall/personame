@@ -1,4 +1,5 @@
 import { DimensionEndpointLabel } from './dimension-endpoint-label'
+import { getColorTheme, getBarGradient } from '@/lib/colors'
 import type { CSSProperties } from 'react'
 
 /** A dimension defines a spectrum, so no score or selected position is implied. */
@@ -18,7 +19,13 @@ export function DimensionScale({
   return (
     <div
       className="dimension-scale"
-      style={{ '--dimension-color': color } as CSSProperties}
+      style={
+        {
+          '--dimension-color': getColorTheme(color).hex,
+          '--dimension-end-color': getColorTheme(color).colors.at(-1),
+          '--dimension-bar': getBarGradient(color),
+        } as CSSProperties
+      }
       role="img"
       aria-label={`Scale from ${minLabel} at 0 to ${maxLabel} at 100`}
     >

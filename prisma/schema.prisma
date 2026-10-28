@@ -67,7 +67,7 @@ model Persona {
   description String?
   slug        String            @unique
   emoji       String?
-  color       String? // Opaque lowercase hex (#rrggbb)
+  color       String? // Ordered comma-separated lowercase hex colors (#rrggbb[,#rrggbb...])
   style       String?
   icon        String?
   status      PersonaStatus     @default(DRAFT)
@@ -124,7 +124,7 @@ model Dimension {
   maxLabel    String? // Label for maximum value (e.g., "Extroverted")
   order       Int     @default(0)
   emoji       String?
-  color       String? // Opaque lowercase hex (#rrggbb)
+  color       String? // Ordered comma-separated lowercase hex colors (#rrggbb[,#rrggbb...])
   style       String?
   icon        String?
 
@@ -146,7 +146,7 @@ model Archetype {
   name        String
   description String?
   emoji       String?
-  color       String? // Opaque lowercase hex (#rrggbb)
+  color       String? // Ordered comma-separated lowercase hex colors (#rrggbb[,#rrggbb...])
   imageUrl    String?
   order       Int     @default(0)
   style       String?
@@ -192,7 +192,7 @@ model QuizPage {
   order       Int     @default(0)
   hidden      Boolean @default(false)
   emoji       String?
-  color       String? // Opaque lowercase hex (#rrggbb)
+  color       String? // Ordered comma-separated lowercase hex colors (#rrggbb[,#rrggbb...])
   style       String?
   icon        String?
 

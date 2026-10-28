@@ -26,6 +26,7 @@ async function main() {
           description: quiz.description,
           slug: quiz.slug,
           emoji: definition.emoji,
+          color: definition.color,
           creatorId: user.id,
         },
       })
@@ -35,6 +36,7 @@ async function main() {
           data: {
             personaId: persona.id,
             name: m.name,
+            color: m.color,
             minLabel: m.minLabel,
             maxLabel: m.maxLabel,
             order: m.order,
@@ -49,6 +51,7 @@ async function main() {
             name: a.name,
             description: a.description,
             emoji: a.emoji,
+            color: a.color,
             order: a.order,
             dimensions: {
               create: a.dimensions.map((m) => ({

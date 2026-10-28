@@ -1,11 +1,13 @@
 'use client'
 
+import { DimensionValueMarker } from '@/components/dimension-value-marker'
+import { describeDimensionValue } from '@/lib/dimension-value'
 import { DimensionEndpointLabel } from '@/components/dimension-endpoint-label'
 import { EntityIcon } from '@/components/entity-icon'
 import { Button } from '@/components/ui/button'
 import { Dimension, ArchetypeDimension, Archetype } from '@prisma/client'
 import { Edit2 } from 'lucide-react'
-import { getColorTheme } from '@/lib/colors'
+import { getColorTheme, getBarGradient } from '@/lib/colors'
 import type { CSSProperties } from 'react'
 import { useConfirmDialog } from '@/components/ui/confirm-dialog'
 import { StyleEditors } from '@/components/style-editors'
@@ -19,7 +21,9 @@ import {
 interface ArchetypeRowProps {
   archetype: Archetype & { dimensions: ArchetypeDimension[] }
   dimensions: Dimension[]
-  onChange: (archetype: Archetype & { dimensions: ArchetypeDimension[] }) => void
+  onChange: (
+    archetype: Archetype & { dimensions: ArchetypeDimension[] },
+  ) => void
   onDelete: () => void
   isEditing: boolean
   onEdit: () => void
@@ -70,7 +74,12 @@ export function ArchetypeRow({
       {dialog}
       <article
         className="archetype-view"
-        style={{ '--archetype-color': colorInfo.hex } as CSSProperties}
+        style={
+          {
+            '--archetype-color': colorInfo.hex,
+            '--archetype-accent': colorInfo.colors.at(-1),
+          } as CSSProperties
+        }
       >
         <header className="archetype-view-header">
           <StyleEditors
@@ -108,7 +117,9 @@ export function ArchetypeRow({
             {dimensions
               .map((dimension) => ({
                 dimension,
-                target: archetype.dimensions.find((t) => t.dimensionId === dimension.id),
+                target: archetype.dimensions.find(
+                  (t) => t.dimensionId === dimension.id,
+                ),
               }))
               .sort(
                 (a, b) =>
@@ -122,7 +133,12 @@ export function ArchetypeRow({
                   <div
                     className="archetype-dimension"
                     key={dimension.id}
-                    style={{ '--dimension-color': color.hex } as CSSProperties}
+                    style={
+                      {
+                        '--dimension-color': color.hex,
+                        '--dimension-bar': getBarGradient(color.value),
+                      } as CSSProperties
+                    }
                   >
                     <div className="archetype-dimension-heading">
                       <span className="archetype-dimension-name">
@@ -132,42 +148,63 @@ export function ArchetypeRow({
                           color={dimension.color}
                         />
                       </span>
-                      <span className="archetype-dimension-stat">
-                        Target{' '}
-                        <strong>
-                          {Math.round(value)}
-                          <span>/100</span>
-                        </strong>
-                      </span>
                       <span className="archetype-dimension-stat archetype-dimension-importance">
-                        Importance <strong>{importance}%</strong>
+                        Importance
+                        <span
+                          className="importance-indicator"
+                          role="meter"
+                          aria-label={`${dimension.name} importance`}
+                          aria-valuemin={0}
+                          aria-valuemax={100}
+                          aria-valuenow={importance}
+                        >
+                          {[0, 1, 2, 3, 4].map((segment) => (
+                            <span key={segment} aria-hidden="true">
+                              <span
+                                style={{
+                                  height: `${Math.max(0, Math.min(100, (importance - segment * 20) * 5))}%`,
+                                }}
+                              />
+                            </span>
+                          ))}
+                        </span>
+                        <strong>{importance}%</strong>
                       </span>
                     </div>
-                    <div
-                      className="archetype-target-track"
-                      role="meter"
-                      aria-label={`${dimension.name} target`}
-                      aria-valuemin={0}
-                      aria-valuemax={100}
-                      aria-valuenow={value}
-                    >
+                    <div className="archetype-target-track">
                       <span
                         className="archetype-target-fill"
                         style={{ width: `${value}%` }}
+                        role="meter"
+                        aria-label={`${dimension.name} target`}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-valuenow={value}
+                        aria-valuetext={
+                          describeDimensionValue(
+                            value,
+                            dimension.minLabel || 'Low',
+                            dimension.maxLabel || 'High',
+                          ).description
+                        }
                       />
-                      <span
-                        className="archetype-target-point"
-                        style={{ left: `${value}%` }}
+                      <DimensionValueMarker
+                        name={dimension.name}
+                        value={value}
+                        minLabel={dimension.minLabel || 'Low'}
+                        maxLabel={dimension.maxLabel || 'High'}
+                        minEmoji={dimension.minEmoji}
+                        maxEmoji={dimension.maxEmoji}
                       />
                     </div>
                     <div className="archetype-target-ends">
                       <DimensionEndpointLabel
-                        label={dimension.minLabel || '0'}
+                        label={dimension.minLabel || 'Low'}
                         emoji={dimension.minEmoji}
                         end="low"
                       />
                       <DimensionEndpointLabel
-                        label={dimension.maxLabel || '100'}
+                        label={dimension.maxLabel || 'High'}
                         emoji={dimension.maxEmoji}
                         end="high"
                       />

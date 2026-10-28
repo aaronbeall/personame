@@ -65,7 +65,7 @@ export function NameStep({ quizId }: { quizId?: string }) {
         title: q.title,
         description: q.description || '',
         emoji: q.emoji || null,
-        color: getColorTheme(q.color || '#8b5cf6').hex,
+        color: getColorTheme(q.color || '#8b5cf6').value,
       }
     },
   })
@@ -115,7 +115,7 @@ export function NameStep({ quizId }: { quizId?: string }) {
         title: saved.title,
         description: saved.description || '',
         emoji: saved.emoji || null,
-        color: getColorTheme(saved.color).hex,
+        color: getColorTheme(saved.color).value,
       }
       draft.accept(canonical)
       cache.setQueryData(['quiz-details', saved.id], canonical)

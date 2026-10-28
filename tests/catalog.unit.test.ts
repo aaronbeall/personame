@@ -122,3 +122,16 @@ test('publishing rejects blank text, missing options, foreign weights and zero-o
   )
   assert.equal(readiness(zero).filter((s) => s.includes('non-zero')).length, 2)
 })
+
+test('editable catalog preserves curated theme lists on quizzes, dimensions and archetypes', () => {
+  const themed = structuredClone(raw)
+  const value = '#2563eb,#7c3aed'
+  themed.quizzes[0].color = value
+  themed.quizzes[0].dimensions[0].color = value
+  themed.quizzes[0].archetypes[0].color = value
+  const definition = parseCatalog(themed).quizzes[0]
+  const quiz = compileCatalogQuiz(definition)
+  assert.equal(quiz.color, value)
+  assert.equal(quiz.dimensions[0].color, value)
+  assert.equal(quiz.archetypes[0].color, value)
+})

@@ -99,6 +99,17 @@ test(
         'Updated quiz',
       )
       assert.equal((await call(path)).data.color, '#14b8a6')
+      const aurora = '#2563eb,#7c3aed'
+      assert.equal(
+        (await call(path, 'PATCH', { color: aurora })).data.color,
+        aurora,
+      )
+      assert.equal((await call(path)).data.color, aurora)
+      assert.equal(
+        (await call(path, 'PATCH', { color: '#ffffff,#000000' })).status,
+        400,
+      )
+      await call(path, 'PATCH', { color: '#14b8a6' })
       for (const section of ['dimensions', 'archetypes', 'questions'])
         assert.equal(
           (await call(`${path}/${section}`, 'GET', undefined, otherToken))
@@ -122,6 +133,7 @@ test(
             {
               id: 'temp-m',
               name: 'Curiosity',
+              color: '#7c3aed,#db2777',
               minLabel: 'Grounded',
               maxLabel: 'Exploratory',
               order: 0,
@@ -130,6 +142,7 @@ test(
         })
       ).data[0]
       assert.equal(dimension.displayScale, 'PERCENT_ASCENDING')
+      assert.equal(dimension.color, '#7c3aed,#db2777')
       const renamedQuiz = (await call(path)).data
       assert.equal(renamedQuiz.dimensions[0].id, dimension.id)
       assert.equal('metrics' in renamedQuiz, false)
@@ -190,6 +203,7 @@ test(
             {
               id: 'temp-b',
               name: 'Explorer',
+              color: '#4f46e5,#ec4899',
               description: 'New horizons.',
               emoji: '✨',
               order: 1,
@@ -354,6 +368,8 @@ test(
       assert.equal('metricId' in historical.scores[0], false)
       assert.equal('metricName' in historical.scores[0], false)
       assert.equal(historical.archetype.name, 'Explorer')
+      assert.equal(historical.archetype.color, '#4f46e5,#ec4899')
+      assert.equal(historical.scores[0].color, '#7c3aed,#db2777')
       assert.equal(historical.scores[0].score, 100)
       await call(`${path}/archetypes`, 'POST', { archetypes: [archetypes[0]] })
       assert.equal(
