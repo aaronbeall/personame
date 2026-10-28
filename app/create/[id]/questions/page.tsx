@@ -1,22 +1,39 @@
 'use client'
+import { LoadingState } from '@/components/ui/loading'
 
-import { useState, useEffect, use } from 'react'
+import { confirmLeave } from '@/hooks/use-unsaved-changes'
+import { useBuilderDraft } from '@/hooks/use-builder-draft'
+import { useState, useMemo, use } from 'react'
 import { useRouter } from 'next/navigation'
-import { useQuery, useMutation } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useProtectedPage } from '@/hooks/use-protected-page'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { ArrowRight, ArrowLeft, Plus, ChevronLeft, ChevronRight } from 'lucide-react'
+import {
+  ArrowRight,
+  ArrowLeft,
+  Plus,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react'
 import { ErrorBanner } from '@/components/ui/error-banner'
 import { AppLayoutBackground } from '@/components/app-layout-background'
+import { BuilderFooter } from '@/components/builder-footer'
 import { StepProgress } from '@/components/step-progress'
 import { getTempId } from '@/lib/utils'
-import { QuizPage, Question, Answer, AnswerWeight, Metric, Archetype } from '@prisma/client'
+import {
+  QuizPage,
+  Question,
+  Answer,
+  AnswerWeight,
+  Dimension,
+  Archetype,
+} from '@prisma/client'
 import { PageNavigator } from './page-navigator'
 import { PagePreview } from './page-preview'
 import { PageOptionsPanel } from './page-options-panel'
 import { QuestionOptionsPanel } from './question-options-panel'
-import { MetricsArchetypesSummary } from './metrics-archetypes-summary'
+import { DimensionsArchetypesSummary } from './dimensions-archetypes-summary'
 import { createDefaultAnswers } from './question-defaults'
 
 type QuizPageWithQuestions = QuizPage & {
@@ -27,22 +44,28 @@ type QuizPageWithQuestions = QuizPage & {
   })[]
 }
 
-export default function QuestionsPage({ params }: { params: Promise<{ id: string }> }) {
+export default function QuestionsPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
   const router = useRouter()
+  const queryClient = useQueryClient()
   useProtectedPage()
   const { id } = use(params)
 
-  const [pages, setPages] = useState<QuizPageWithQuestions[]>([])
   const [currentPageIndex, setCurrentPageIndex] = useState(0)
-  const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(null)
+  const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(
+    null,
+  )
 
-  // Fetch metrics
-  const metricsQuery = useQuery({
-    queryKey: ['metrics', id],
+  // Fetch dimensions
+  const dimensionsQuery = useQuery({
+    queryKey: ['dimensions', id],
     queryFn: async () => {
-      const res = await fetch(`/api/personames/${id}/metrics`)
-      if (!res.ok) throw new Error('Failed to fetch metrics')
-      return res.json() as Promise<Metric[]>
+      const res = await fetch(`/api/personames/${id}/dimensions`)
+      if (!res.ok) throw new Error('Failed to fetch dimensions')
+      return res.json() as Promise<Dimension[]>
     },
   })
 
@@ -67,11 +90,11 @@ export default function QuestionsPage({ params }: { params: Promise<{ id: string
   })
 
   // Initialize pages with cover and results if empty
-  useEffect(() => {
+  const sourcePages = useMemo(() => {
     if (pagesQuery.data) {
       if (pagesQuery.data.length === 0) {
         // Initialize with cover and results pages
-        setPages([
+        return [
           {
             id: getTempId(),
             title: 'Welcome',
@@ -102,12 +125,17 @@ export default function QuestionsPage({ params }: { params: Promise<{ id: string
             createdAt: new Date(),
             updatedAt: new Date(),
           },
-        ])
+        ]
       } else {
-        setPages(pagesQuery.data)
+        return pagesQuery.data
       }
     }
   }, [pagesQuery.data, id])
+
+  const draft = useBuilderDraft(sourcePages, id)
+  const pages = draft.value ?? []
+  const setPages = draft.update
+  const dirty = draft.dirty
 
   const savePagesMutation = useMutation({
     mutationFn: async (pagesToSave: QuizPageWithQuestions[]) => {
@@ -118,12 +146,16 @@ export default function QuestionsPage({ params }: { params: Promise<{ id: string
       })
 
       if (!res.ok) {
-        throw new Error('Failed to save quiz pages')
+        throw new Error((await res.json()).error ?? 'Failed to save quiz pages')
       }
 
       return res.json()
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      draft.accept(data)
+      queryClient.setQueryData(['questions', id], data)
+      queryClient.invalidateQueries({ queryKey: ['review', id] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
       router.push(`/create/${id}/preview`)
     },
   })
@@ -157,12 +189,14 @@ export default function QuestionsPage({ params }: { params: Promise<{ id: string
   }
 
   const handleUpdatePage = (updatedPage: QuizPageWithQuestions) => {
-    setPages(pages.map(p => p.id === updatedPage.id ? updatedPage : p))
+    setPages(pages.map((p) => (p.id === updatedPage.id ? updatedPage : p)))
   }
 
   const handleDeletePage = (pageId: string) => {
-    const pageIndex = pages.findIndex(p => p.id === pageId)
-    const updatedPages = pages.filter(p => p.id !== pageId).map((p, idx) => ({ ...p, order: idx }))
+    const pageIndex = pages.findIndex((p) => p.id === pageId)
+    const updatedPages = pages
+      .filter((p) => p.id !== pageId)
+      .map((p, idx) => ({ ...p, order: idx }))
     setPages(updatedPages)
 
     // Adjust current page index
@@ -179,7 +213,9 @@ export default function QuestionsPage({ params }: { params: Promise<{ id: string
     const currentPage = pages[currentPageIndex]
     if (currentPage.style === 'cover' || currentPage.style === 'results') return
 
-    const newQuestion: Question & { answers: (Answer & { weights: AnswerWeight[] })[] } = {
+    const newQuestion: Question & {
+      answers: (Answer & { weights: AnswerWeight[] })[]
+    } = {
       id: getTempId(),
       text: 'New question',
       type: 'MULTIPLE_CHOICE',
@@ -190,13 +226,16 @@ export default function QuestionsPage({ params }: { params: Promise<{ id: string
       style: null,
       icon: null,
       pageId: currentPage.id,
-      answers: createDefaultAnswers('MULTIPLE_CHOICE', metricsQuery.data || []),
+      answers: createDefaultAnswers(
+        'MULTIPLE_CHOICE',
+        dimensionsQuery.data || [],
+      ),
       createdAt: new Date(),
       updatedAt: new Date(),
     }
 
     // Update answer questionIds
-    newQuestion.answers = newQuestion.answers.map(a => ({
+    newQuestion.answers = newQuestion.answers.map((a) => ({
       ...a,
       questionId: newQuestion.id,
     }))
@@ -210,7 +249,9 @@ export default function QuestionsPage({ params }: { params: Promise<{ id: string
     setSelectedQuestionId(newQuestion.id)
   }
 
-  const handleAddQuestionOfType = (type: 'MULTIPLE_CHOICE' | 'SLIDER' | 'SCALE') => {
+  const handleAddQuestionOfType = (
+    type: 'MULTIPLE_CHOICE' | 'SLIDER' | 'SCALE',
+  ) => {
     if (currentPageIndex < 0 || currentPageIndex >= pages.length) return
 
     const currentPage = pages[currentPageIndex]
@@ -220,9 +261,11 @@ export default function QuestionsPage({ params }: { params: Promise<{ id: string
       return handleAddQuestion()
     }
 
-    const answers = createDefaultAnswers(type, metricsQuery.data || [])
+    const answers = createDefaultAnswers(type, dimensionsQuery.data || [])
 
-    const newQuestion: Question & { answers: (Answer & { weights: AnswerWeight[] })[] } = {
+    const newQuestion: Question & {
+      answers: (Answer & { weights: AnswerWeight[] })[]
+    } = {
       id: getTempId(),
       text: type === 'SLIDER' ? 'New slider question' : 'New scale question',
       type,
@@ -239,7 +282,7 @@ export default function QuestionsPage({ params }: { params: Promise<{ id: string
     }
 
     // Update answer questionIds now that we have the question id
-    newQuestion.answers = newQuestion.answers.map(a => ({
+    newQuestion.answers = newQuestion.answers.map((a) => ({
       ...a,
       questionId: newQuestion.id,
     }))
@@ -253,11 +296,17 @@ export default function QuestionsPage({ params }: { params: Promise<{ id: string
     setSelectedQuestionId(newQuestion.id)
   }
 
-  const handleUpdateQuestion = (updatedQuestion: Question & { answers: (Answer & { weights: AnswerWeight[] })[] }) => {
+  const handleUpdateQuestion = (
+    updatedQuestion: Question & {
+      answers: (Answer & { weights: AnswerWeight[] })[]
+    },
+  ) => {
     const currentPage = pages[currentPageIndex]
     const updatedPage = {
       ...currentPage,
-      questions: currentPage.questions.map(q => q.id === updatedQuestion.id ? updatedQuestion : q),
+      questions: currentPage.questions.map((q) =>
+        q.id === updatedQuestion.id ? updatedQuestion : q,
+      ),
     }
     handleUpdatePage(updatedPage)
   }
@@ -266,7 +315,9 @@ export default function QuestionsPage({ params }: { params: Promise<{ id: string
     const currentPage = pages[currentPageIndex]
     const updatedPage = {
       ...currentPage,
-      questions: currentPage.questions.filter(q => q.id !== questionId).map((q, idx) => ({ ...q, order: idx })),
+      questions: currentPage.questions
+        .filter((q) => q.id !== questionId)
+        .map((q, idx) => ({ ...q, order: idx })),
     }
     handleUpdatePage(updatedPage)
     if (selectedQuestionId === questionId) {
@@ -280,33 +331,57 @@ export default function QuestionsPage({ params }: { params: Promise<{ id: string
   }
 
   const currentPage = pages[currentPageIndex]
-  const selectedQuestion = currentPage?.questions.find(q => q.id === selectedQuestionId)
-  const canAddQuestion = currentPage?.style !== 'cover' && currentPage?.style !== 'results'
+  const selectedQuestion = currentPage?.questions.find(
+    (q) => q.id === selectedQuestionId,
+  )
+  const canAddQuestion =
+    currentPage?.style !== 'cover' && currentPage?.style !== 'results'
+
+  if (
+    (!draft.ready || dimensionsQuery.isPending || archetypesQuery.isPending) &&
+    !pagesQuery.error &&
+    !dimensionsQuery.error &&
+    !archetypesQuery.error
+  )
+    return (
+      <AppLayoutBackground>
+        <div className="max-w-4xl mx-auto">
+          <LoadingState label="Loading your questions…" />
+        </div>
+      </AppLayoutBackground>
+    )
 
   return (
     <AppLayoutBackground>
       <div className="max-w-7xl mx-auto">
         <StepProgress
           steps={[
-            { number: 1, label: 'Metrics', completed: true },
+            { number: 1, label: 'Dimensions', completed: true },
             { number: 2, label: 'Archetypes', completed: true },
             { number: 3, label: 'Questions', active: true },
           ]}
-          title="Build Your Quiz"
-          description="Create pages and questions for your quiz"
+          title="Build your quiz"
+          description="Bring your idea to life with questions. Choose a page, then add and fine-tune its questions."
         />
 
-        <ErrorBanner error={savePagesMutation.error} />
+        <ErrorBanner
+          error={
+            savePagesMutation.error ||
+            pagesQuery.error ||
+            dimensionsQuery.error ||
+            archetypesQuery.error
+          }
+        />
 
-        {/* Summary of metrics and archetypes */}
-        <MetricsArchetypesSummary
-          metrics={metricsQuery.data || []}
+        {/* Summary of dimensions and archetypes */}
+        <DimensionsArchetypesSummary
+          dimensions={dimensionsQuery.data || []}
           archetypes={archetypesQuery.data || []}
         />
 
-        <div className="grid grid-cols-12 gap-6 mb-6">
+        <div className="question-editor-grid grid grid-cols-1 xl:grid-cols-12 gap-5 mb-6">
           {/* Page Navigator - Left sidebar */}
-          <div className="col-span-2">
+          <div className="xl:col-span-2">
             <PageNavigator
               pages={pages}
               currentPageIndex={currentPageIndex}
@@ -316,14 +391,16 @@ export default function QuestionsPage({ params }: { params: Promise<{ id: string
           </div>
 
           {/* Page Preview - Center */}
-          <div className="col-span-6">
-            <Card className="p-6">
+          <div className="xl:col-span-6">
+            <Card className="question-preview-panel p-6">
               <div className="mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setCurrentPageIndex(Math.max(0, currentPageIndex - 1))}
+                    onClick={() =>
+                      setCurrentPageIndex(Math.max(0, currentPageIndex - 1))
+                    }
                     disabled={currentPageIndex === 0}
                   >
                     <ChevronLeft className="h-4 w-4" />
@@ -334,7 +411,11 @@ export default function QuestionsPage({ params }: { params: Promise<{ id: string
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setCurrentPageIndex(Math.min(pages.length - 1, currentPageIndex + 1))}
+                    onClick={() =>
+                      setCurrentPageIndex(
+                        Math.min(pages.length - 1, currentPageIndex + 1),
+                      )
+                    }
                     disabled={currentPageIndex === pages.length - 1}
                   >
                     <ChevronRight className="h-4 w-4" />
@@ -358,7 +439,9 @@ export default function QuestionsPage({ params }: { params: Promise<{ id: string
                 <div className="h-2 bg-muted-200 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-primary to-secondary transition-all"
-                    style={{ width: `${((currentPageIndex + 1) / pages.length) * 100}%` }}
+                    style={{
+                      width: `${((currentPageIndex + 1) / pages.length) * 100}%`,
+                    }}
                   />
                 </div>
               </div>
@@ -378,11 +461,11 @@ export default function QuestionsPage({ params }: { params: Promise<{ id: string
           </div>
 
           {/* Options Panel - Right sidebar */}
-          <div className="col-span-4">
+          <div className="question-inspector xl:col-span-4">
             {selectedQuestion ? (
               <QuestionOptionsPanel
                 question={selectedQuestion}
-                metrics={metricsQuery.data || []}
+                dimensions={dimensionsQuery.data || []}
                 onUpdate={handleUpdateQuestion}
                 onClose={() => setSelectedQuestionId(null)}
               />
@@ -390,28 +473,49 @@ export default function QuestionsPage({ params }: { params: Promise<{ id: string
               currentPage && (
                 <PageOptionsPanel
                   page={currentPage}
-                  onUpdate={handleUpdatePage}
-                  onDelete={currentPageIndex > 0 && currentPageIndex < pages.length - 1 ? () => handleDeletePage(currentPage.id) : undefined}
+                  onUpdate={(updated) =>
+                    handleUpdatePage({ ...currentPage, ...updated })
+                  }
+                  onDelete={
+                    currentPageIndex > 0 && currentPageIndex < pages.length - 1
+                      ? () => handleDeletePage(currentPage.id)
+                      : undefined
+                  }
                 />
               )
             )}
           </div>
         </div>
 
-        <div className="flex justify-between">
-          <Button variant="outline" onClick={() => router.push(`/create/${id}/archetypes`)}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
+        <BuilderFooter
+          note={
+            pages.length < 2
+              ? 'Add at least two pages to continue.'
+              : 'Save your questions, then try the complete quiz before publishing.'
+          }
+          back={
+            <Button
+              variant="outline"
+              onClick={() =>
+                confirmLeave(dirty, () =>
+                  router.push(`/create/${id}/archetypes`),
+                )
+              }
+            >
+              <ArrowLeft size={16} /> Back
+            </Button>
+          }
+        >
           <Button
             onClick={handleSave}
+            loading={savePagesMutation.isPending}
             disabled={pages.length < 2 || savePagesMutation.isPending}
-            className="bg-gradient-to-r from-primary to-secondary hover:from-primary-600 hover:to-secondary-600 text-white shadow-md"
+            className="builder-primary-action"
           >
             {savePagesMutation.isPending ? 'Saving...' : 'Continue to Preview'}
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
-        </div>
+        </BuilderFooter>
       </div>
     </AppLayoutBackground>
   )

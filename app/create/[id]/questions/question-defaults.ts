@@ -1,4 +1,4 @@
-import { Answer, AnswerWeight, Metric } from '@prisma/client'
+import { Answer, AnswerWeight, Dimension } from '@prisma/client'
 import { getTempId } from '@/lib/utils'
 
 /**
@@ -6,12 +6,12 @@ import { getTempId } from '@/lib/utils'
  */
 export function createDefaultAnswers(
   type: 'MULTIPLE_CHOICE' | 'SLIDER' | 'SCALE',
-  metrics: Metric[]
+  dimensions: Dimension[]
 ): (Answer & { weights: AnswerWeight[] })[] {
   const createWeights = (answerId: string): AnswerWeight[] => {
-    return metrics.map(m => ({
+    return dimensions.map(m => ({
       id: getTempId(),
-      metricId: m.id,
+      dimensionId: m.id,
       value: 0,
       answerId,
       createdAt: new Date(),

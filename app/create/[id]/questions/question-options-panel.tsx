@@ -1,4 +1,4 @@
-import { Question, Answer, AnswerWeight, Metric } from '@prisma/client'
+import { Question, Answer, AnswerWeight, Dimension } from '@prisma/client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -6,9 +6,18 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { EmojiPicker } from '@/components/ui/emoji-picker'
 import { Slider } from '@/components/ui/slider'
-import { X, Plus, Trash2, CheckSquare, Sliders, BarChart3, ChevronDown } from 'lucide-react'
+import {
+  X,
+  Plus,
+  Trash2,
+  CheckSquare,
+  Sliders,
+  BarChart3,
+  ChevronDown,
+} from 'lucide-react'
 import { getTempId, cn } from '@/lib/utils'
-import { getColorTheme } from '@/lib/colors'
+import { DimensionTag } from '@/components/entity-identity'
+import { getBarGradient } from '@/lib/colors'
 import { useState } from 'react'
 import { createDefaultAnswers } from './question-defaults'
 
@@ -18,8 +27,10 @@ interface QuestionOptionsPanelProps {
       weights: AnswerWeight[]
     })[]
   }
-  metrics: Metric[]
-  onUpdate: (question: Question & { answers: (Answer & { weights: AnswerWeight[] })[] }) => void
+  dimensions: Dimension[]
+  onUpdate: (
+    question: Question & { answers: (Answer & { weights: AnswerWeight[] })[] },
+  ) => void
   onClose: () => void
 }
 
@@ -29,9 +40,16 @@ const QUESTION_TYPES = [
   { value: 'SCALE', label: 'Scale', Icon: BarChart3 },
 ] as const
 
-export function QuestionOptionsPanel({ question, metrics, onUpdate, onClose }: QuestionOptionsPanelProps) {
+export function QuestionOptionsPanel({
+  question,
+  dimensions,
+  onUpdate,
+  onClose,
+}: QuestionOptionsPanelProps) {
   // Store answers by question type to restore when switching back
-  const [rememberedAnswers, setRememberedAnswers] = useState<Record<string, (Answer & { weights: AnswerWeight[] })[]>>({
+  const [rememberedAnswers, setRememberedAnswers] = useState<
+    Record<string, (Answer & { weights: AnswerWeight[] })[]>
+  >({
     [question.type]: question.answers,
   })
 
@@ -46,9 +64,9 @@ export function QuestionOptionsPanel({ question, metrics, onUpdate, onClose }: Q
       style: null,
       icon: null,
       questionId: question.id,
-      weights: metrics.map(m => ({
+      weights: dimensions.map((m) => ({
         id: getTempId(),
-        metricId: m.id,
+        dimensionId: m.id,
         value: 0,
         answerId,
         createdAt: new Date(),
@@ -63,29 +81,37 @@ export function QuestionOptionsPanel({ question, metrics, onUpdate, onClose }: Q
   const handleDeleteAnswer = (answerId: string) => {
     onUpdate({
       ...question,
-      answers: question.answers.filter(a => a.id !== answerId).map((a, idx) => ({ ...a, order: idx })),
+      answers: question.answers
+        .filter((a) => a.id !== answerId)
+        .map((a, idx) => ({ ...a, order: idx })),
     })
   }
 
   const handleUpdateAnswer = (answerId: string, updates: Partial<Answer>) => {
     onUpdate({
       ...question,
-      answers: question.answers.map(a => a.id === answerId ? { ...a, ...updates } : a),
+      answers: question.answers.map((a) =>
+        a.id === answerId ? { ...a, ...updates } : a,
+      ),
     })
   }
 
-  const handleUpdateWeight = (answerId: string, metricId: string, value: number) => {
+  const handleUpdateWeight = (
+    answerId: string,
+    dimensionId: string,
+    value: number,
+  ) => {
     onUpdate({
       ...question,
-      answers: question.answers.map(a =>
+      answers: question.answers.map((a) =>
         a.id === answerId
           ? {
-            ...a,
-            weights: a.weights.map(w =>
-              w.metricId === metricId ? { ...w, value } : w
-            ),
-          }
-          : a
+              ...a,
+              weights: a.weights.map((w) =>
+                w.dimensionId === dimensionId ? { ...w, value } : w,
+              ),
+            }
+          : a,
       ),
     })
   }
@@ -98,6 +124,7 @@ export function QuestionOptionsPanel({ question, metrics, onUpdate, onClose }: Q
           <Button
             variant="ghost"
             size="sm"
+            aria-label="Close question settings"
             onClick={onClose}
           >
             <X className="h-4 w-4" />
@@ -138,7 +165,7 @@ export function QuestionOptionsPanel({ question, metrics, onUpdate, onClose }: Q
                 onClick={() => {
                   if (type.value !== question.type) {
                     // Store current answers for current type
-                    setRememberedAnswers(prev => ({
+                    setRememberedAnswers((prev) => ({
                       ...prev,
                       [question.type]: question.answers,
                     }))
@@ -150,23 +177,30 @@ export function QuestionOptionsPanel({ question, metrics, onUpdate, onClose }: Q
                       newAnswers = rememberedAnswers[type.value]
                     } else {
                       // Generate default answers for the new type
-                      const defaultAnswers = createDefaultAnswers(type.value, metrics)
-                      newAnswers = defaultAnswers.map(a => ({
+                      const defaultAnswers = createDefaultAnswers(
+                        type.value,
+                        dimensions,
+                      )
+                      newAnswers = defaultAnswers.map((a) => ({
                         ...a,
                         questionId: question.id,
                       }))
                     }
 
                     // Update question with new type and answers
-                    const updatedQuestion = { ...question, type: type.value, answers: newAnswers }
+                    const updatedQuestion = {
+                      ...question,
+                      type: type.value,
+                      answers: newAnswers,
+                    }
                     onUpdate(updatedQuestion)
                   }
                 }}
                 className={cn(
-                  "p-3 rounded-lg border-2 text-center transition-all",
+                  'p-3 rounded-lg border-2 text-center transition-all',
                   question.type === type.value
-                    ? "border-primary-500 bg-primary-50"
-                    : "border-muted-200 hover:border-primary-300"
+                    ? 'border-primary-500 bg-primary-50'
+                    : 'border-muted-200 hover:border-primary-300',
                 )}
               >
                 <type.Icon className="h-6 w-6 mx-auto mb-1 text-muted-600" />
@@ -180,7 +214,9 @@ export function QuestionOptionsPanel({ question, metrics, onUpdate, onClose }: Q
           id="required"
           label="Required question"
           checked={question.required}
-          onChange={(e) => onUpdate({ ...question, required: e.target.checked })}
+          onChange={(e) =>
+            onUpdate({ ...question, required: e.target.checked })
+          }
         />
 
         {question.type === 'MULTIPLE_CHOICE' && (
@@ -189,11 +225,7 @@ export function QuestionOptionsPanel({ question, metrics, onUpdate, onClose }: Q
               <label className="text-sm font-medium text-muted-700">
                 Answer Options
               </label>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleAddAnswer}
-              >
+              <Button variant="outline" size="sm" onClick={handleAddAnswer}>
                 <Plus className="h-3 w-3 mr-1" />
                 Add
               </Button>
@@ -201,15 +233,22 @@ export function QuestionOptionsPanel({ question, metrics, onUpdate, onClose }: Q
 
             <div className="space-y-3">
               {question.answers.map((answer) => (
-                <div key={answer.id} className="border border-muted-200 rounded-lg p-3 space-y-2">
+                <div
+                  key={answer.id}
+                  className="border border-muted-200 rounded-lg p-3 space-y-2"
+                >
                   <div className="flex items-start gap-2">
                     <EmojiPicker
                       value={answer.emoji || ''}
-                      onSelect={(emoji) => handleUpdateAnswer(answer.id, { emoji })}
+                      onSelect={(emoji) =>
+                        handleUpdateAnswer(answer.id, { emoji })
+                      }
                     />
                     <Input
                       value={answer.text}
-                      onChange={(e) => handleUpdateAnswer(answer.id, { text: e.target.value })}
+                      onChange={(e) =>
+                        handleUpdateAnswer(answer.id, { text: e.target.value })
+                      }
                       placeholder="Answer text"
                       className="flex-1"
                     />
@@ -226,7 +265,7 @@ export function QuestionOptionsPanel({ question, metrics, onUpdate, onClose }: Q
 
                   <AnswerWeightsEditor
                     answer={answer}
-                    metrics={metrics}
+                    dimensions={dimensions}
                     onUpdateWeight={handleUpdateWeight}
                   />
                 </div>
@@ -251,24 +290,34 @@ export function QuestionOptionsPanel({ question, metrics, onUpdate, onClose }: Q
             {question.type === 'SLIDER' && (
               <div className="space-y-3">
                 <div className="text-xs text-muted-600 mb-3">
-                  Define the minimum and maximum values for this slider. Users will select a value between these endpoints.
+                  Define the minimum and maximum values for this slider. Users
+                  will select a value between these endpoints.
                 </div>
                 {question.answers.map((answer, idx) => {
                   const isMin = idx === 0
                   const label = isMin ? 'Min' : 'Max'
                   return (
-                    <div key={answer.id} className="border border-muted-200 rounded-lg p-3 space-y-2">
+                    <div
+                      key={answer.id}
+                      className="border border-muted-200 rounded-lg p-3 space-y-2"
+                    >
                       <label className="text-xs font-semibold text-muted-600 block">
                         {label} Label
                       </label>
                       <div className="flex items-center gap-2">
                         <EmojiPicker
                           value={answer.emoji || ''}
-                          onSelect={(emoji) => handleUpdateAnswer(answer.id, { emoji })}
+                          onSelect={(emoji) =>
+                            handleUpdateAnswer(answer.id, { emoji })
+                          }
                         />
                         <Input
                           value={answer.text}
-                          onChange={(e) => handleUpdateAnswer(answer.id, { text: e.target.value })}
+                          onChange={(e) =>
+                            handleUpdateAnswer(answer.id, {
+                              text: e.target.value,
+                            })
+                          }
                           placeholder={`Enter ${label.toLowerCase()} label`}
                           className="flex-1"
                         />
@@ -276,7 +325,7 @@ export function QuestionOptionsPanel({ question, metrics, onUpdate, onClose }: Q
 
                       <AnswerWeightsEditor
                         answer={answer}
-                        metrics={metrics}
+                        dimensions={dimensions}
                         onUpdateWeight={handleUpdateWeight}
                       />
                     </div>
@@ -288,10 +337,12 @@ export function QuestionOptionsPanel({ question, metrics, onUpdate, onClose }: Q
             {question.type === 'SCALE' && (
               <ScaleEditor
                 question={question}
-                metrics={metrics}
+                dimensions={dimensions}
                 onUpdateAnswer={handleUpdateAnswer}
                 onUpdateWeight={handleUpdateWeight}
-                onUpdateAnswers={(answers) => onUpdate({ ...question, answers })}
+                onUpdateAnswers={(answers) =>
+                  onUpdate({ ...question, answers })
+                }
               />
             )}
           </div>
@@ -301,59 +352,78 @@ export function QuestionOptionsPanel({ question, metrics, onUpdate, onClose }: Q
   )
 }
 
-
 const AnswerWeightsEditor = ({
-  label = 'Metric Weights',
+  label = 'Dimension Weights',
   answer,
-  metrics,
+  dimensions,
   onUpdateWeight,
 }: {
   label?: string
   answer: Answer & { weights: AnswerWeight[] }
-  metrics: Metric[]
-  onUpdateWeight: (answerId: string, metricId: string, value: number) => void
+  dimensions: Dimension[]
+  onUpdateWeight: (answerId: string, dimensionId: string, value: number) => void
 }) => {
   const [expanded, setExpanded] = useState(true)
 
   return (
     <fieldset className="rounded-lg border border-muted-200 bg-white/70 shadow-sm">
       <legend className="px-2 text-[11px] font-semibold uppercase tracking-wide text-muted-600">
-        <button className='hover:text-primary-600' onClick={() => setExpanded(prev => !prev)}><ChevronDown className={cn("inline-block mr-1 h-4 w-4 transition-transform", expanded ? "rotate-0" : "-rotate-90")} /> {label}</button>
+        <button
+          className="hover:text-primary-600"
+          onClick={() => setExpanded((prev) => !prev)}
+        >
+          <ChevronDown
+            className={cn(
+              'inline-block mr-1 h-4 w-4 transition-transform',
+              expanded ? 'rotate-0' : '-rotate-90',
+            )}
+          />{' '}
+          {label}
+        </button>
       </legend>
       {expanded ? (
         <div className="divide-y divide-muted-100">
-          {metrics.map((metric) => {
-            const weight = answer.weights.find(w => w.metricId === metric.id)
+          {dimensions.map((dimension) => {
+            const weight = answer.weights.find(
+              (w) => w.dimensionId === dimension.id,
+            )
             const weightValue = weight?.value ?? 0
             return (
               <div
-                key={metric.id}
+                key={dimension.id}
                 className={cn(
-                  "flex items-center gap-2 px-2 py-2",
-                  weightValue === 0 ? "opacity-60" : ""
+                  'flex items-center gap-2 px-2 py-2',
+                  weightValue === 0 ? 'opacity-60' : '',
                 )}
               >
                 <div
-                  className={cn(
-                    "w-2 h-2 rounded-full",
-                    getColorTheme(metric.color).bgClass
-                  )}
+                  className="w-2 h-2 rounded-sm"
+                  style={{ background: getBarGradient(dimension.color) }}
                 />
-                <span className="text-xs w-28 truncate">{metric.name}</span>
+                <span className="text-xs w-28 truncate">{dimension.name}</span>
                 <Slider
-                  color={metric.color ?? undefined}
+                  color={dimension.color ?? undefined}
                   center={0}
                   min={-100}
                   max={100}
                   step={1}
                   value={[weightValue]}
-                  onValueChange={(vals) => onUpdateWeight(answer.id, metric.id, (vals?.[0] ?? 0))}
+                  onValueChange={(vals) =>
+                    onUpdateWeight(answer.id, dimension.id, vals?.[0] ?? 0)
+                  }
                   className="flex-1"
                 />
                 <Input
                   type="number"
+                  aria-label={`${answer.text}: ${dimension.name} weight`}
                   value={weightValue}
-                  onChange={(e) => onUpdateWeight(answer.id, metric.id, parseFloat(e.target.value) || 0)}
+                  onChange={(e) =>
+                    onUpdateWeight(
+                      answer.id,
+                      dimension.id,
+                      parseFloat(e.target.value) || 0,
+                    )
+                  }
                   min={-100}
                   max={100}
                   step={1}
@@ -366,31 +436,24 @@ const AnswerWeightsEditor = ({
       ) : (
         <div className="px-2 py-2 flex flex-wrap gap-2">
           {(() => {
-            const nonZeroWeights = answer.weights.filter(w => w.value !== 0)
-            const maxAbsValue = Math.max(...nonZeroWeights.map(w => Math.abs(w.value)), 1)
-            return nonZeroWeights.map(w => {
-              const metric = metrics.find(m => m.id === w.metricId)
-              if (!metric) return null
-              const { bgClass, bgLightClass, hex } = getColorTheme(metric.color)
-              const scale = Math.max(0.85, Math.abs(w.value) / maxAbsValue) // Min scale 0.85
+            const nonZeroWeights = answer.weights.filter((w) => w.value !== 0)
+            return nonZeroWeights.map((w) => {
+              const dimension = dimensions.find((m) => m.id === w.dimensionId)
+              if (!dimension) return null
               return (
-                <div key={w.metricId} className={cn(
-                  "inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium transition-transform origin-left",
-                  bgLightClass
-                )} style={{ color: hex, transform: `scale(${scale})` }}>
-                  <div
-                    className={cn(
-                      "w-1.5 h-1.5 rounded-full",
-                      bgClass
-                    )}
-                  />
-                  <span className="whitespace-nowrap">{metric.name} {w.value >= 0 ? '+' : ''}{w.value}</span>
-                </div>
+                <DimensionTag
+                  key={w.dimensionId}
+                  name={`${dimension.name} ${w.value >= 0 ? '+' : ''}${w.value}`}
+                  emoji={dimension.emoji}
+                  color={dimension.color}
+                />
               )
             })
           })()}
-          {answer.weights.every(w => w.value === 0) && (
-            <span className="text-xs text-muted-400 italic">No weights set</span>
+          {answer.weights.every((w) => w.value === 0) && (
+            <span className="text-xs text-muted-400 italic">
+              No weights set
+            </span>
           )}
         </div>
       )}
@@ -404,23 +467,65 @@ interface ScaleEditorProps {
       weights: AnswerWeight[]
     })[]
   }
-  metrics: Metric[]
+  dimensions: Dimension[]
   onUpdateAnswer: (answerId: string, updates: Partial<Answer>) => void
-  onUpdateWeight: (answerId: string, metricId: string, value: number) => void
+  onUpdateWeight: (answerId: string, dimensionId: string, value: number) => void
   onUpdateAnswers: (answers: (Answer & { weights: AnswerWeight[] })[]) => void
 }
 
 const SCALE_PRESETS = [
   { name: '1-5', values: ['1', '2', '3', '4', '5'] },
-  { name: '1-5 Stars ⭐', values: ['⭐', '⭐⭐', '⭐⭐⭐', '⭐⭐⭐⭐', '⭐⭐⭐⭐⭐'] },
-  { name: 'Importance', values: ['Not important', 'Slightly important', 'Important', 'Very important', 'Critical'] },
-  { name: 'Agreement', values: ['Strongly disagree', 'Disagree', 'Neutral', 'Agree', 'Strongly agree'] },
-  { name: 'Frequency', values: ['Never', 'Rarely', 'Sometimes', 'Often', 'Always'] },
-  { name: 'Quality', values: ['Poor', 'Fair', 'Good', 'Very good', 'Excellent'] },
-  { name: 'Likelihood', values: ['Very unlikely', 'Unlikely', 'Neutral', 'Likely', 'Very likely'] },
-  { name: 'Positivity', values: ['Very negative', 'Negative', 'Neutral', 'Positive', 'Very positive'] },
+  {
+    name: '1-5 Stars ⭐',
+    values: ['⭐', '⭐⭐', '⭐⭐⭐', '⭐⭐⭐⭐', '⭐⭐⭐⭐⭐'],
+  },
+  {
+    name: 'Importance',
+    values: [
+      'Not important',
+      'Slightly important',
+      'Important',
+      'Very important',
+      'Critical',
+    ],
+  },
+  {
+    name: 'Agreement',
+    values: [
+      'Strongly disagree',
+      'Disagree',
+      'Neutral',
+      'Agree',
+      'Strongly agree',
+    ],
+  },
+  {
+    name: 'Frequency',
+    values: ['Never', 'Rarely', 'Sometimes', 'Often', 'Always'],
+  },
+  {
+    name: 'Quality',
+    values: ['Poor', 'Fair', 'Good', 'Very good', 'Excellent'],
+  },
+  {
+    name: 'Likelihood',
+    values: ['Very unlikely', 'Unlikely', 'Neutral', 'Likely', 'Very likely'],
+  },
+  {
+    name: 'Positivity',
+    values: [
+      'Very negative',
+      'Negative',
+      'Neutral',
+      'Positive',
+      'Very positive',
+    ],
+  },
   { name: 'Emojis 😀', values: ['😞', '😐', '😊', '😀', '😍'] },
-  { name: '1-5 Hearts ❤️', values: ['❤️', '❤️❤️', '❤️❤️❤️', '❤️❤️❤️❤️', '❤️❤️❤️❤️❤️'] },
+  {
+    name: '1-5 Hearts ❤️',
+    values: ['❤️', '❤️❤️', '❤️❤️❤️', '❤️❤️❤️❤️', '❤️❤️❤️❤️❤️'],
+  },
   { name: 'Naughtiness 😈', values: ['😈', '😏', '😑', '🙂', '😇'] },
   { name: 'Reactions 👍', values: ['🤬', '👎', '🤷', '👍', '🥳'] },
   { name: 'Sunshine 🌦️', values: ['🌧️', '🌦️', '🌤️', '☀️', '🌈'] },
@@ -429,12 +534,17 @@ const SCALE_PRESETS = [
   { name: 'Hotness 🥵', values: ['🥶', '🤢', '😊', '🤤', '🥵'] },
 ]
 
-
-function ScaleEditor({ question, metrics, onUpdateAnswer, onUpdateWeight, onUpdateAnswers }: ScaleEditorProps) {
+function ScaleEditor({
+  question,
+  dimensions,
+  onUpdateAnswer,
+  onUpdateWeight,
+  onUpdateAnswers,
+}: ScaleEditorProps) {
   const [showPresets, setShowPresets] = useState(false)
   const scalePointAnswers = question.answers.slice(2)
 
-  const handleApplyPreset = (preset: typeof SCALE_PRESETS[0]) => {
+  const handleApplyPreset = (preset: (typeof SCALE_PRESETS)[0]) => {
     const endpointAnswers = question.answers.slice(0, 2)
     const newScalePointAnswers = preset.values.map((label, idx) => {
       const existingAnswer = question.answers[2 + idx]
@@ -451,9 +561,9 @@ function ScaleEditor({ question, metrics, onUpdateAnswer, onUpdateWeight, onUpda
         style: null,
         icon: null,
         questionId: question.id,
-        weights: metrics.map(m => ({
+        weights: dimensions.map((m) => ({
           id: getTempId(),
-          metricId: m.id,
+          dimensionId: m.id,
           value: 0,
           answerId: newAnswerId,
           createdAt: new Date(),
@@ -478,9 +588,9 @@ function ScaleEditor({ question, metrics, onUpdateAnswer, onUpdateWeight, onUpda
       style: null,
       icon: null,
       questionId: question.id,
-      weights: metrics.map(m => ({
+      weights: dimensions.map((m) => ({
         id: getTempId(),
-        metricId: m.id,
+        dimensionId: m.id,
         value: 0,
         answerId: newAnswerId,
         createdAt: new Date(),
@@ -507,14 +617,18 @@ function ScaleEditor({ question, metrics, onUpdateAnswer, onUpdateWeight, onUpda
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <label className="text-xs font-semibold text-muted-600">Endpoints</label>
+        <label className="text-xs font-semibold text-muted-600">
+          Endpoints
+        </label>
         <div className="grid grid-cols-2 gap-3">
           {question.answers.slice(0, 2).map((answer, idx) => {
             const isMin = idx === 0
             const label = isMin ? 'Min' : 'Max'
             return (
               <div key={answer.id} className="space-y-1.5">
-                <label className="text-xs font-semibold text-muted-600 block">{label}</label>
+                <label className="text-xs font-semibold text-muted-600 block">
+                  {label}
+                </label>
                 <div className="flex items-center gap-2">
                   <EmojiPicker
                     value={answer.emoji || ''}
@@ -522,7 +636,9 @@ function ScaleEditor({ question, metrics, onUpdateAnswer, onUpdateWeight, onUpda
                   />
                   <Input
                     value={answer.text}
-                    onChange={(e) => onUpdateAnswer(answer.id, { text: e.target.value })}
+                    onChange={(e) =>
+                      onUpdateAnswer(answer.id, { text: e.target.value })
+                    }
                     placeholder={`${label} label`}
                     className="flex-1"
                   />
@@ -535,25 +651,27 @@ function ScaleEditor({ question, metrics, onUpdateAnswer, onUpdateWeight, onUpda
 
       <div className="space-y-2">
         <AnswerWeightsEditor
-          label='Min Endpoint Weights'
+          label="Min Endpoint Weights"
           answer={question.answers[0]}
-          metrics={metrics}
+          dimensions={dimensions}
           onUpdateWeight={onUpdateWeight}
         />
       </div>
 
       <div className="space-y-2">
         <AnswerWeightsEditor
-          label='Max Endpoint Weights'
+          label="Max Endpoint Weights"
           answer={question.answers[1]}
-          metrics={metrics}
+          dimensions={dimensions}
           onUpdateWeight={onUpdateWeight}
         />
       </div>
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <label className="text-xs font-semibold text-muted-600">Scale Point Labels</label>
+          <label className="text-xs font-semibold text-muted-600">
+            Scale Point Labels
+          </label>
           <Button
             variant="outline"
             size="sm"
@@ -580,7 +698,9 @@ function ScaleEditor({ question, metrics, onUpdateAnswer, onUpdateWeight, onUpda
         <div className="space-y-1.5">
           {scalePointAnswers.map((answer, idx) => (
             <div key={answer.id} className="flex items-center gap-2">
-              <span className="text-xs font-medium text-muted-600 w-6 text-center">{idx + 1}</span>
+              <span className="text-xs font-medium text-muted-600 w-6 text-center">
+                {idx + 1}
+              </span>
               <Input
                 value={answer.text}
                 onChange={(e) => handleUpdateLabel(idx, e.target.value)}

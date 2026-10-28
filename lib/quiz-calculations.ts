@@ -1,8 +1,8 @@
-// Example quiz calculation utilities
+// Scores start neutral; answer contributions are additive and clamp once at the end.
 
-export interface MetricScore {
-  metricId: string
-  metricName: string
+export interface DimensionScore {
+  dimensionId: string
+  dimensionName: string
   score: number
 }
 
@@ -14,43 +14,43 @@ export interface ArchetypeMatch {
 }
 
 /**
- * Calculate metric scores from user answers
+ * Calculate dimension scores from user answers
  */
-export function calculateMetricScores(
-  answers: Array<{ weights: Array<{ metricId: string; value: number }> }>,
-  metrics: Array<{ id: string; name: string }>
-): MetricScore[] {
+export function calculateDimensionScores(
+  answers: Array<{ weights: Array<{ dimensionId: string; value: number }> }>,
+  dimensions: Array<{ id: string; name: string }>
+): DimensionScore[] {
   const scores: Record<string, number> = {}
 
-  // Initialize all metrics to 50 (neutral)
-  metrics.forEach((metric) => {
-    scores[metric.id] = 50
+  // Initialize all dimensions to 50 (neutral)
+  dimensions.forEach((dimension) => {
+    scores[dimension.id] = 50
   })
 
   // Add weights from answers
   answers.forEach((answer) => {
     answer.weights.forEach((weight) => {
-      scores[weight.metricId] = (scores[weight.metricId] || 50) + weight.value
+      scores[weight.dimensionId] = (scores[weight.dimensionId] ?? 50) + weight.value
     })
   })
 
   // Normalize to 0-100 range
-  return metrics.map((metric) => ({
-    metricId: metric.id,
-    metricName: metric.name,
-    score: Math.max(0, Math.min(100, scores[metric.id])),
+  return dimensions.map((dimension) => ({
+    dimensionId: dimension.id,
+    dimensionName: dimension.name,
+    score: Math.max(0, Math.min(100, scores[dimension.id]))
   }))
 }
 
 /**
- * Find the best matching archetype based on metric scores
+ * Find the best matching archetype based on dimension scores
  */
 export function findBestArchetype(
-  metricScores: MetricScore[],
+  dimensionScores: DimensionScore[],
   archetypes: Array<{
     id: string
     name: string
-    metrics: Array<{ metricId: string; targetValue: number; relevance: number }>
+    dimensions: Array<{ dimensionId: string; targetValue: number; relevance: number }>
   }>
 ): ArchetypeMatch | null {
   if (archetypes.length === 0) return null
@@ -60,12 +60,14 @@ export function findBestArchetype(
     let distance = 0
     let totalWeight = 0
 
-    archetype.metrics.forEach((archetypeMetric) => {
-      const userScore = metricScores.find((s) => s.metricId === archetypeMetric.metricId)
+    archetype.dimensions.forEach((archetypeDimension) => {
+      const userScore = dimensionScores.find(
+        (s) => s.dimensionId === archetypeDimension.dimensionId
+      )
       if (userScore) {
-        const diff = userScore.score - archetypeMetric.targetValue
-        distance += Math.pow(diff, 2) * archetypeMetric.relevance
-        totalWeight += archetypeMetric.relevance
+        const diff = userScore.score - archetypeDimension.targetValue
+        distance += Math.pow(diff, 2) * archetypeDimension.relevance
+        totalWeight += archetypeDimension.relevance
       }
     })
 
@@ -78,7 +80,7 @@ export function findBestArchetype(
       archetypeId: archetype.id,
       archetypeName: archetype.name,
       matchScore,
-      distance,
+      distance
     }
   })
 
@@ -89,7 +91,7 @@ export function findBestArchetype(
 }
 
 /**
- * Calculate percentile rank for a metric score
+ * Calculate percentile rank for a dimension score
  */
 export function calculatePercentile(
   score: number,

@@ -1,62 +1,222 @@
-import { nonNull } from "./utils";
+import {
+  ColorSpace,
+  sRGB,
+  contrastAPCA,
+  parse,
+  serialize,
+  mix,
+} from 'colorjs.io/fn'
+import { z } from 'zod'
 
-/**
- * Color palette for metric badges and UI elements with human-friendly names.
- * Uses Tailwind's default color palette for a vibrant, diverse spectrum.
- */
+ColorSpace.register(sRGB)
+
+function normalizeHex(value: string) {
+  return serialize(parse(value), {
+    format: 'hex',
+    collapse: false,
+  }).toLowerCase()
+}
+
+function mixHex(color: string, other: string, amount: number) {
+  return serialize(mix(color, other, amount, { space: 'srgb' }), {
+    format: 'hex',
+    collapse: false,
+  })
+}
+
+/** Names belong to the UI; persisted colors are opaque, lowercase #rrggbb. */
 export const COLOR_THEME = [
-  { name: 'blue', label: 'Blue', bgClass: 'bg-gradient-to-br from-blue-500 to-blue-600', bgLightClass: 'bg-blue-50', textClass: 'text-cyan-300', borderClass: 'border-blue-500', borderLeftClass: 'border-l-4 border-l-blue-500', hex: '#3b82f6' },
-  { name: 'purple', label: 'Purple', bgClass: 'bg-gradient-to-br from-purple-500 to-purple-600', bgLightClass: 'bg-purple-50', textClass: 'text-fuchsia-200', borderClass: 'border-purple-500', borderLeftClass: 'border-l-4 border-l-purple-500', hex: '#8b5cf6' },
-  { name: 'pink', label: 'Pink', bgClass: 'bg-gradient-to-br from-pink-500 to-pink-600', bgLightClass: 'bg-pink-50', textClass: 'text-yellow-100', borderClass: 'border-pink-500', borderLeftClass: 'border-l-4 border-l-pink-500', hex: '#ec4899' },
-  { name: 'rose', label: 'Rose', bgClass: 'bg-gradient-to-br from-rose-500 to-rose-600', bgLightClass: 'bg-rose-50', textClass: 'text-yellow-100', borderClass: 'border-rose-500', borderLeftClass: 'border-l-4 border-l-rose-500', hex: '#f43f5e' },
-  { name: 'orange', label: 'Orange', bgClass: 'bg-gradient-to-br from-orange-500 to-orange-600', bgLightClass: 'bg-orange-50', textClass: 'text-yellow-100', borderClass: 'border-orange-500', borderLeftClass: 'border-l-4 border-l-orange-500', hex: '#f97316' },
-  { name: 'amber', label: 'Amber', bgClass: 'bg-gradient-to-br from-amber-500 to-amber-600', bgLightClass: 'bg-amber-50', textClass: 'text-yellow-900', borderClass: 'border-amber-500', borderLeftClass: 'border-l-4 border-l-amber-500', hex: '#f59e42' },
-  { name: 'green', label: 'Green', bgClass: 'bg-gradient-to-br from-green-500 to-green-600', bgLightClass: 'bg-green-50', textClass: 'text-lime-200', borderClass: 'border-green-500', borderLeftClass: 'border-l-4 border-l-green-500', hex: '#22c55e' },
-  { name: 'teal', label: 'Teal', bgClass: 'bg-gradient-to-br from-teal-500 to-teal-600', bgLightClass: 'bg-teal-50', textClass: 'text-cyan-100', borderClass: 'border-teal-500', borderLeftClass: 'border-l-4 border-l-teal-500', hex: '#14b8a6' },
-  { name: 'cyan', label: 'Cyan', bgClass: 'bg-gradient-to-br from-cyan-500 to-cyan-600', bgLightClass: 'bg-cyan-50', textClass: 'text-white', borderClass: 'border-cyan-500', borderLeftClass: 'border-l-4 border-l-cyan-500', hex: '#06b6d4' },
-  { name: 'indigo', label: 'Indigo', bgClass: 'bg-gradient-to-br from-indigo-500 to-indigo-600', bgLightClass: 'bg-indigo-50', textClass: 'text-cyan-200', borderClass: 'border-indigo-500', borderLeftClass: 'border-l-4 border-l-indigo-500', hex: '#6366f1' },
-  { name: 'violet', label: 'Violet', bgClass: 'bg-gradient-to-br from-violet-500 to-violet-600', bgLightClass: 'bg-violet-50', textClass: 'text-pink-100', borderClass: 'border-violet-500', borderLeftClass: 'border-l-4 border-l-violet-500', hex: '#a21caf' },
-  { name: 'fuchsia', label: 'Fuchsia', bgClass: 'bg-gradient-to-br from-fuchsia-500 to-fuchsia-600', bgLightClass: 'bg-fuchsia-50', textClass: 'text-yellow-100', borderClass: 'border-fuchsia-500', borderLeftClass: 'border-l-4 border-l-fuchsia-500', hex: '#d946ef' },
+  { label: 'Blue', hex: '#3b82f6' },
+  { label: 'Purple', hex: '#8b5cf6' },
+  { label: 'Pink', hex: '#ec4899' },
+  { label: 'Rose', hex: '#f43f5e' },
+  { label: 'Orange', hex: '#f97316' },
+  { label: 'Amber', hex: '#f59e42' },
+  { label: 'Green', hex: '#22c55e' },
+  { label: 'Teal', hex: '#14b8a6' },
+  { label: 'Cyan', hex: '#06b6d4' },
+  { label: 'Indigo', hex: '#6366f1' },
+  { label: 'Violet', hex: '#a21caf' },
+  { label: 'Fuchsia', hex: '#d946ef' },
 ] as const
 
-export type ColorThemeName = typeof COLOR_THEME[number]['name'];
+export const COLOR_THEMES = [
+  { label: 'Aurora', colors: ['#2563eb', '#7c3aed'] },
+  { label: 'Wildflower', colors: ['#7c3aed', '#db2777'] },
+  { label: 'Ember', colors: ['#c2410c', '#f59e0b'] },
+  { label: 'Lagoon', colors: ['#0f766e', '#38bdf8'] },
+  { label: 'Moonstone', colors: ['#475569', '#a5b4fc'] },
+  { label: 'Rosewater', colors: ['#be185d', '#fb7185'] },
+  { label: 'Orchard', colors: ['#166534', '#84cc16'] },
+  { label: 'Desert Bloom', colors: ['#c2410c', '#a855f7'] },
+  { label: 'Midnight Swim', colors: ['#172554', '#0e7490'] },
+  { label: 'Peach Fizz', colors: ['#fb923c', '#fb7185'] },
+  { label: 'Supernova', colors: ['#4f46e5', '#ec4899'] },
+  { label: 'Mint Condition', colors: ['#0d9488', '#a3e635'] },
+] as const
 
-/**
- * Safe getter for color theme, by name or index, or defaults to first color if not found.
- * TODO: Expand this to support custom colors in the future.
- */
-export const getColorTheme = (color?: string | null, index?: number) =>
-  findColorThemeByName(color) ?? COLOR_THEME[(index ?? 0) % COLOR_THEME.length];
+export const hexColorSchema = z
+  .string()
+  .trim()
+  .regex(
+    /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/,
+    'Use a hex color such as #3b82f6.',
+  )
+  .transform(normalizeHex)
 
-/**
- * Strict type-safe color theme lookup
- */
-export const getColorThemeByName = (name: ColorThemeName) =>
-  nonNull(findColorThemeByName(name));
+const colorListSchema = z.string().transform((value, context) => {
+  const colors = value
+    .split(',')
+    .map((color) => hexColorSchema.safeParse(color))
+  if (colors.some((color) => !color.success)) {
+    context.addIssue({
+      code: 'custom',
+      message: 'Use comma-separated hex colors.',
+    })
+    return z.NEVER
+  }
+  return colors.map((color) => color.data!).join(',')
+})
 
-/**
- * Find color theme by name if possible
- */
-export const findColorThemeByName = (name?: string | null) =>
-  COLOR_THEME.find(c => c.name === name);
+/** Rendering and storage support lists; authored multi-color choices are curated for now. */
+export const colorValueSchema = colorListSchema.refine(
+  (value) =>
+    !value.includes(',') ||
+    COLOR_THEMES.some((theme) => theme.colors.join(',') === value),
+  'Choose one of the available color themes.',
+)
+export const storedColorSchema = z.preprocess(
+  (value) => (value === '' ? null : value),
+  colorValueSchema.nullable().optional(),
+)
 
-export const getColorThemeLabel = (name: ColorThemeName) =>
-  nonNull(COLOR_THEME.find(c => c.name === name)).label;
+export function getColorName(value: string): string {
+  const normalized = colorListSchema.parse(value)
+  const theme = COLOR_THEMES.find(
+    (theme) => theme.colors.join(',') === normalized,
+  )
+  if (theme) return theme.label
+  return normalized
+    .split(',')
+    .map(
+      (hex) =>
+        COLOR_THEME.find((color) => color.hex === hex)?.label ??
+        hex.toUpperCase(),
+    )
+    .join('/')
+}
 
-export const getColorThemeBgClass = (name: ColorThemeName) =>
-  nonNull(COLOR_THEME.find(c => c.name === name)).bgClass;
+function describeColor(value: string) {
+  const normalized = colorListSchema.parse(value)
+  const colors = normalized.split(',')
+  return {
+    value: normalized,
+    hex: colors[0],
+    colors,
+    label: getColorName(normalized),
+  }
+}
 
-export const getColorThemeTextClass = (name: ColorThemeName) =>
-  nonNull(COLOR_THEME.find(c => c.name === name)).textClass;
+export function getColorTheme(color?: string | null, index = 0) {
+  const parsed = color && colorListSchema.safeParse(color)
+  return parsed && parsed.success
+    ? describeColor(parsed.data)
+    : getColorThemeByIndex(index)
+}
 
-export const getColorThemeHex = (name: ColorThemeName) =>
-  nonNull(COLOR_THEME.find(c => c.name === name)).hex;
+export function getColorThemeByIndex(index: number) {
+  return describeColor(
+    COLOR_THEME[
+      ((index % COLOR_THEME.length) + COLOR_THEME.length) % COLOR_THEME.length
+    ].hex,
+  )
+}
 
-export const getColorThemeByIndex = (index: number) =>
-  COLOR_THEME[index % COLOR_THEME.length];
+export function getUnusedColorTheme(usedColors: (string | null | undefined)[]) {
+  const used = new Set(
+    usedColors.filter(Boolean).map((color) => getColorTheme(color).value),
+  )
+  return describeColor(
+    (COLOR_THEME.find((color) => !used.has(color.hex)) ?? COLOR_THEME[0]).hex,
+  )
+}
 
-export const getUnusedColorTheme = (usedColors: (string | null | undefined)[]) => {
-  const usedSet = new Set(usedColors);
-  const unused = COLOR_THEME.find(c => !usedSet.has(c.name));
-  return unused ?? COLOR_THEME[0];
+/** Perceptual contrast accounts for polarity and intermediate gradient colors. */
+export function getContrastText(background: string | string[]) {
+  const colors = Array.isArray(background) ? background : [background]
+  const samples = [
+    ...colors,
+    ...colors.slice(1).map((color, index) => mixHex(colors[index], color, 0.5)),
+  ]
+  const minimum = (ink: string) =>
+    Math.min(...samples.map((color) => Math.abs(contrastAPCA(color, ink))))
+  return minimum('#000000') >= minimum('#ffffff') ? '#000000' : '#ffffff'
+}
+
+export function getBarGradient(value?: string | null) {
+  const { colors } = getColorTheme(value)
+  return colors.length === 1
+    ? colors[0]
+    : `linear-gradient(90deg, ${colors.join(', ')})`
+}
+
+/** Shading is presentation-only; the authored list remains unchanged. */
+export function getColorSurface(value: string) {
+  const { colors } = getColorTheme(value)
+  const highlight = mixHex(colors[0], '#ffffff', 0.035)
+  const shade = mixHex(colors[colors.length - 1], '#000000', 0.12)
+  const stops = [highlight, ...colors, shade]
+  return {
+    background: `linear-gradient(135deg, ${stops.join(', ')})`,
+    textColor: getContrastText(stops),
+    stops,
+  }
+}
+
+export function getBadgeAppearance(value: string) {
+  const { colors } = getColorTheme(value)
+  const primary = colors[0],
+    accent = colors[colors.length - 1]
+  const themed = colors.length > 1
+  const shade = mixHex(primary, '#24204c', 0.27)
+  const texture = themed
+    ? mixHex(primary, accent, 0.45)
+    : mixHex(primary, '#ffffff', 0.21)
+  const backgrounds = [primary, shade, texture, mixHex(shade, '#ffffff', 0.21)]
+  // Accent lettering is only used when it remains readable on the badge fill.
+  const textColor =
+    themed &&
+    backgrounds.every((color) => Math.abs(contrastAPCA(color, accent)) >= 60)
+      ? accent
+      : getContrastText(backgrounds)
+  return {
+    themed,
+    primary,
+    accent,
+    shade,
+    texture,
+    border: themed ? mixHex(accent, '#ffffff', 0.22) : '#ffffff',
+    ring: themed ? accent : mixHex(primary, '#ffffff', 0.65),
+    innerRing: mixHex(accent, '#ffffff', 0.3),
+    textColor,
+  }
+}
+
+export function getBadgeTextColor(value: string) {
+  return getBadgeAppearance(value).textColor
+}
+
+export function getScalePreview(
+  value: string,
+  direction: 'ascending' | 'descending' | 'bipolar',
+) {
+  const { colors } = getColorTheme(value)
+  const first = colors[0],
+    last = colors[colors.length - 1]
+  if (direction === 'bipolar')
+    return `linear-gradient(90deg, ${first}, ${mixHex(mixHex(first, last, 0.5), '#ffffff', 0.9)} 50%, ${last})`
+  if (colors.length > 1)
+    return `linear-gradient(90deg, ${(direction === 'descending' ? [...colors].reverse() : colors).join(', ')})`
+  const pale = mixHex(first, '#ffffff', 0.85)
+  return `linear-gradient(90deg, ${direction === 'descending' ? `${first}, ${pale}` : `${pale}, ${first}`})`
 }

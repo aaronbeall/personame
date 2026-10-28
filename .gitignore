@@ -43,3 +43,8 @@ yarn-error.log*
 next-env.d.ts
 
 /app/generated/prisma
+
+# Playwright artifacts (contain disposable test sessions)
+/playwright-report/
+/test-results/
+/.next-e2e/

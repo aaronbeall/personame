@@ -1,7 +1,6 @@
 import { QuizPage } from '@prisma/client'
 import { cn } from '@/lib/utils'
 import { Plus, FileText, Home, Trophy } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 
 interface PageNavigatorProps {
   pages: QuizPage[]
@@ -17,7 +16,7 @@ export function PageNavigator({ pages, currentPageIndex, onSelectPage, onAddPage
   const contentPages = pages.filter(p => p.style !== 'cover' && p.style !== 'results')
 
   return (
-    <div className="space-y-2">
+    <div className="page-navigator space-y-2">
       <div className="text-xs font-semibold text-muted-600 mb-3 uppercase">Pages</div>
 
       {/* Cover Page */}

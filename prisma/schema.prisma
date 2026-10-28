@@ -67,7 +67,7 @@ model Persona {
   description String?
   slug        String            @unique
   emoji       String?
-  color       String?
+  color       String? // Ordered comma-separated lowercase hex colors (#rrggbb[,#rrggbb...])
   style       String?
   icon        String?
   status      PersonaStatus     @default(DRAFT)
@@ -76,7 +76,7 @@ model Persona {
   creatorId String
   creator   User   @relation(fields: [creatorId], references: [id], onDelete: Cascade)
 
-  metrics    Metric[]
+  dimensions    Dimension[]
   archetypes Archetype[]
   pages      QuizPage[]
   results    QuizResult[]
@@ -105,23 +105,33 @@ enum PersonaVisibility {
   PUBLIC
 }
 
-// Metrics (e.g., Openness, Conscientiousness)
-model Metric {
+// Display metadata only. Scores and targets remain normalized to 0–100.
+enum DimensionDisplayScale {
+  PERCENT_ASCENDING
+  PERCENT_DESCENDING
+  BIPOLAR
+}
+
+// Dimensions (e.g., Openness, Conscientiousness)
+model Dimension {
   id          String  @id @default(cuid())
   name        String
   description String?
+  minEmoji    String?
+  maxEmoji    String?
+  displayScale DimensionDisplayScale @default(PERCENT_ASCENDING)
   minLabel    String? // Label for minimum value (e.g., "Introverted")
   maxLabel    String? // Label for maximum value (e.g., "Extroverted")
   order       Int     @default(0)
   emoji       String?
-  color       String?
+  color       String? // Ordered comma-separated lowercase hex colors (#rrggbb[,#rrggbb...])
   style       String?
   icon        String?
 
   personaId String
   persona   Persona @relation(fields: [personaId], references: [id], onDelete: Cascade)
 
-  archetypeMetrics ArchetypeMetric[]
+  archetypeDimensions ArchetypeDimension[]
   answerWeights    AnswerWeight[]
 
   createdAt DateTime @default(now())
@@ -136,7 +146,7 @@ model Archetype {
   name        String
   description String?
   emoji       String?
-  color       String?
+  color       String? // Ordered comma-separated lowercase hex colors (#rrggbb[,#rrggbb...])
   imageUrl    String?
   order       Int     @default(0)
   style       String?
@@ -145,7 +155,7 @@ model Archetype {
   personaId String
   persona   Persona @relation(fields: [personaId], references: [id], onDelete: Cascade)
 
-  metrics ArchetypeMetric[]
+  dimensions ArchetypeDimension[]
   results QuizResult[]
 
   createdAt DateTime @default(now())
@@ -154,24 +164,24 @@ model Archetype {
   @@index([personaId])
 }
 
-// Archetype target values for each metric
-model ArchetypeMetric {
+// Archetype target values for each dimension
+model ArchetypeDimension {
   id          String @id @default(cuid())
-  targetValue Float // Target value for this metric (0-100)
-  relevance   Float  @default(1.0) // How important this metric is (0-1)
+  targetValue Float // Target value for this dimension (0-100)
+  relevance   Float  @default(1.0) // How important this dimension is (0-1)
 
   archetypeId String
   archetype   Archetype @relation(fields: [archetypeId], references: [id], onDelete: Cascade)
 
-  metricId String
-  metric   Metric @relation(fields: [metricId], references: [id], onDelete: Cascade)
+  dimensionId String
+  dimension   Dimension @relation(fields: [dimensionId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([archetypeId, metricId])
+  @@unique([archetypeId, dimensionId])
   @@index([archetypeId])
-  @@index([metricId])
+  @@index([dimensionId])
 }
 
 // Quiz Pages
@@ -182,7 +192,7 @@ model QuizPage {
   order       Int     @default(0)
   hidden      Boolean @default(false)
   emoji       String?
-  color       String?
+  color       String? // Ordered comma-separated lowercase hex colors (#rrggbb[,#rrggbb...])
   style       String?
   icon        String?
 
@@ -248,23 +258,23 @@ model Answer {
   @@index([questionId])
 }
 
-// How each answer affects metrics
+// How each answer affects dimensions
 model AnswerWeight {
   id    String @id @default(cuid())
-  value Float // Points added to metric (-100 to +100)
+  value Float // Points added to dimension (-100 to +100)
 
   answerId String
   answer   Answer @relation(fields: [answerId], references: [id], onDelete: Cascade)
 
-  metricId String
-  metric   Metric @relation(fields: [metricId], references: [id], onDelete: Cascade)
+  dimensionId String
+  dimension   Dimension @relation(fields: [dimensionId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([answerId, metricId])
+  @@unique([answerId, dimensionId])
   @@index([answerId])
-  @@index([metricId])
+  @@index([dimensionId])
 }
 
 // Quiz Results
@@ -277,11 +287,13 @@ model QuizResult {
   userId String?
   user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
-  archetypeId String
-  archetype   Archetype @relation(fields: [archetypeId], references: [id], onDelete: Cascade)
+  archetypeId String?
+  archetype   Archetype? @relation(fields: [archetypeId], references: [id], onDelete: SetNull)
+  snapshot Json?
+  submissionKey String? @unique
 
   answers      UserAnswer[]
-  metricScores MetricScore[]
+  dimensionScores DimensionScore[]
 
   completedAt DateTime @default(now())
 
@@ -298,8 +310,8 @@ model UserAnswer {
   resultId String
   result   QuizResult @relation(fields: [resultId], references: [id], onDelete: Cascade)
 
-  answerId String
-  answer   Answer @relation(fields: [answerId], references: [id], onDelete: Cascade)
+  answerId String?
+  answer   Answer? @relation(fields: [answerId], references: [id], onDelete: SetNull)
 
   value Float? // For slider/scale questions
 
@@ -309,15 +321,15 @@ model UserAnswer {
   @@index([answerId])
 }
 
-// Final metric scores for a result
-model MetricScore {
+// Final dimension scores for a result
+model DimensionScore {
   id    String @id @default(cuid())
   score Float // Final calculated score (0-100)
 
   resultId String
   result   QuizResult @relation(fields: [resultId], references: [id], onDelete: Cascade)
 
-  metricName String // Stored for historical data
+  dimensionName String // Stored for historical data
 
   createdAt DateTime @default(now())
 

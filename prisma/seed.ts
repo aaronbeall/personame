@@ -29,8 +29,8 @@ async function main() {
       visibility: 'PUBLIC',
       creatorId: user.id,
 
-      // Create 4 metrics
-      metrics: {
+      // Create 4 dimensions
+      dimensions: {
         create: [
           {
             name: 'Extraversion',
@@ -63,13 +63,13 @@ async function main() {
         ],
       },
     },
-    include: { metrics: true },
+    include: { dimensions: true },
   });
 
   console.log('✅ Persona:', persona.title);
 
-  // Get metrics for reference
-  const [extraversion, intuition, thinking, structure] = persona.metrics;
+  // Get dimensions for reference
+  const [extraversion, intuition, thinking, structure] = persona.dimensions;
 
   // Create 4 archetypes
   const archetypes = await Promise.all([
@@ -81,25 +81,25 @@ async function main() {
         emoji: '🌟',
         color: '#a855f7',
         personaId: persona.id,
-        metrics: {
+        dimensions: {
           create: [
             {
-              metricId: intuition.id,
+              dimensionId: intuition.id,
               targetValue: 80,
               relevance: 1,
             },
             {
-              metricId: thinking.id,
+              dimensionId: thinking.id,
               targetValue: 20,
               relevance: 0.9,
             },
             {
-              metricId: extraversion.id,
+              dimensionId: extraversion.id,
               targetValue: 70,
               relevance: 0.7,
             },
             {
-              metricId: structure.id,
+              dimensionId: structure.id,
               targetValue: 75,
               relevance: 0.6,
             },
@@ -115,25 +115,25 @@ async function main() {
         emoji: '⚙️',
         color: '#5568ff',
         personaId: persona.id,
-        metrics: {
+        dimensions: {
           create: [
             {
-              metricId: intuition.id,
+              dimensionId: intuition.id,
               targetValue: 20,
               relevance: 0.9,
             },
             {
-              metricId: thinking.id,
+              dimensionId: thinking.id,
               targetValue: 75,
               relevance: 1,
             },
             {
-              metricId: extraversion.id,
+              dimensionId: extraversion.id,
               targetValue: 30,
               relevance: 0.7,
             },
             {
-              metricId: structure.id,
+              dimensionId: structure.id,
               targetValue: 85,
               relevance: 0.9,
             },
@@ -149,25 +149,25 @@ async function main() {
         emoji: '🎭',
         color: '#f91880',
         personaId: persona.id,
-        metrics: {
+        dimensions: {
           create: [
             {
-              metricId: extraversion.id,
+              dimensionId: extraversion.id,
               targetValue: 85,
               relevance: 1,
             },
             {
-              metricId: intuition.id,
+              dimensionId: intuition.id,
               targetValue: 60,
               relevance: 0.8,
             },
             {
-              metricId: thinking.id,
+              dimensionId: thinking.id,
               targetValue: 40,
               relevance: 0.7,
             },
             {
-              metricId: structure.id,
+              dimensionId: structure.id,
               targetValue: 25,
               relevance: 0.9,
             },
@@ -183,25 +183,25 @@ async function main() {
         emoji: '🏗️',
         color: '#06b6d4',
         personaId: persona.id,
-        metrics: {
+        dimensions: {
           create: [
             {
-              metricId: intuition.id,
+              dimensionId: intuition.id,
               targetValue: 85,
               relevance: 1,
             },
             {
-              metricId: thinking.id,
+              dimensionId: thinking.id,
               targetValue: 80,
               relevance: 0.9,
             },
             {
-              metricId: extraversion.id,
+              dimensionId: extraversion.id,
               targetValue: 40,
               relevance: 0.6,
             },
             {
-              metricId: structure.id,
+              dimensionId: structure.id,
               targetValue: 65,
               relevance: 0.7,
             },
@@ -237,7 +237,7 @@ async function main() {
               order: 1,
               weights: {
                 create: {
-                  metricId: extraversion.id,
+                  dimensionId: extraversion.id,
                   value: 50,
                 },
               },
@@ -247,7 +247,7 @@ async function main() {
               order: 2,
               weights: {
                 create: {
-                  metricId: extraversion.id,
+                  dimensionId: extraversion.id,
                   value: -40,
                 },
               },
@@ -257,7 +257,7 @@ async function main() {
               order: 3,
               weights: {
                 create: {
-                  metricId: extraversion.id,
+                  dimensionId: extraversion.id,
                   value: -50,
                 },
               },
@@ -279,7 +279,7 @@ async function main() {
               order: 1,
               weights: {
                 create: {
-                  metricId: intuition.id,
+                  dimensionId: intuition.id,
                   value: -40,
                 },
               },
@@ -289,7 +289,7 @@ async function main() {
               order: 2,
               weights: {
                 create: {
-                  metricId: intuition.id,
+                  dimensionId: intuition.id,
                   value: 40,
                 },
               },
@@ -299,7 +299,7 @@ async function main() {
               order: 3,
               weights: {
                 create: {
-                  metricId: intuition.id,
+                  dimensionId: intuition.id,
                   value: 0,
                 },
               },
@@ -321,7 +321,7 @@ async function main() {
               order: 1,
               weights: {
                 create: {
-                  metricId: thinking.id,
+                  dimensionId: thinking.id,
                   value: 45,
                 },
               },
@@ -331,7 +331,7 @@ async function main() {
               order: 2,
               weights: {
                 create: {
-                  metricId: thinking.id,
+                  dimensionId: thinking.id,
                   value: -45,
                 },
               },
@@ -341,7 +341,7 @@ async function main() {
               order: 3,
               weights: {
                 create: {
-                  metricId: thinking.id,
+                  dimensionId: thinking.id,
                   value: 0,
                 },
               },
@@ -363,7 +363,7 @@ async function main() {
               order: 1,
               weights: {
                 create: {
-                  metricId: structure.id,
+                  dimensionId: structure.id,
                   value: 50,
                 },
               },
@@ -373,7 +373,7 @@ async function main() {
               order: 2,
               weights: {
                 create: {
-                  metricId: structure.id,
+                  dimensionId: structure.id,
                   value: -50,
                 },
               },
@@ -383,7 +383,7 @@ async function main() {
               order: 3,
               weights: {
                 create: {
-                  metricId: structure.id,
+                  dimensionId: structure.id,
                   value: 0,
                 },
               },
@@ -401,22 +401,22 @@ async function main() {
     data: {
       personaId: persona.id,
       archetypeId: archetypes[0].id, // The Advocate
-      metricScores: {
+      dimensionScores: {
         create: [
           {
-            metricName: extraversion.name,
+            dimensionName: extraversion.name,
             score: 72,
           },
           {
-            metricName: intuition.name,
+            dimensionName: intuition.name,
             score: 78,
           },
           {
-            metricName: thinking.name,
+            dimensionName: thinking.name,
             score: 25,
           },
           {
-            metricName: structure.name,
+            dimensionName: structure.name,
             score: 71,
           },
         ],
@@ -428,22 +428,22 @@ async function main() {
     data: {
       personaId: persona.id,
       archetypeId: archetypes[1].id, // The Logistician
-      metricScores: {
+      dimensionScores: {
         create: [
           {
-            metricName: extraversion.name,
+            dimensionName: extraversion.name,
             score: 28,
           },
           {
-            metricName: intuition.name,
+            dimensionName: intuition.name,
             score: 22,
           },
           {
-            metricName: thinking.name,
+            dimensionName: thinking.name,
             score: 76,
           },
           {
-            metricName: structure.name,
+            dimensionName: structure.name,
             score: 82,
           },
         ],
@@ -457,7 +457,7 @@ async function main() {
   console.log(`\n📊 Summary:`);
   console.log(`  - User: ${user.email}`);
   console.log(`  - Quiz: "${persona.title}"`);
-  console.log(`  - Metrics: ${persona.metrics.length}`);
+  console.log(`  - Dimensions: ${persona.dimensions.length}`);
   console.log(`  - Archetypes: ${archetypes.length}`);
   console.log(`  - Questions: ${questions.length}`);
   console.log(

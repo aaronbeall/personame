@@ -1,0 +1,48 @@
+/* Personame semantic tokens. Keep product styling and the design reference in sync here. */
+:root {
+  --pn-action: var(--color-primary-600);
+  --pn-action-hover: var(--color-primary-700);
+  --pn-ink: #39334c;
+  --pn-ink-strong: var(--color-primary-900);
+  --pn-text-secondary: #555269;
+  --pn-text-muted: #776e84;
+  --pn-canvas: #f0ebfb;
+  --pn-surface: #ffffff;
+  --pn-surface-soft: #fcfbfe;
+  --pn-field: #faf9fd;
+  --pn-border: #e3dfed;
+  --pn-field-border: #e2ddeb;
+  --pn-focus: #8b75c5;
+  --pn-focus-ring: #a790d822;
+  --pn-header: #eee4f5;
+  --pn-positive: #42775d;
+  --pn-positive-soft: #e8f3ed;
+  --pn-warning: #885b2f;
+  --pn-warning-soft: #fff4e5;
+  --pn-negative: #a64050;
+  --pn-negative-soft: #fff1f2;
+
+  --pn-space-1: 4px;
+  --pn-space-2: 8px;
+  --pn-space-3: 12px;
+  --pn-space-4: 16px;
+  --pn-space-5: 20px;
+  --pn-space-6: 24px;
+  --pn-space-7: 28px;
+  --pn-space-8: 32px;
+  --pn-space-10: 40px;
+  --pn-space-12: 48px;
+  --pn-space-16: 64px;
+
+  --pn-dimension-radius: 4px;
+  --pn-archetype-radius: 9999px;
+  --pn-radius-control: 10px;
+  --pn-radius-record: 14px;
+  --pn-radius-panel: 18px;
+  --pn-radius-pill: 9999px;
+  --pn-shadow-panel: 0 6px 24px #35234e07, 0 1px 3px #35234e04;
+  --pn-shadow-header: 0 4px 20px #42307412;
+  --pn-duration-fast: 160ms;
+  --pn-duration-normal: 240ms;
+  --pn-ease: cubic-bezier(0.2, 0, 0, 1);
+}

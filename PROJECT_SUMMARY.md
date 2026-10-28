@@ -40,13 +40,13 @@ personame/
 │   │   ├── auth/[...nextauth]/   # NextAuth.js endpoint
 │   │   └── personames/           # Quiz CRUD APIs
 │   │       └── [id]/
-│   │           └── metrics/      # Metrics API
+│   │           └── dimensions/      # Dimensions API
 │   ├── auth/
 │   │   └── signin/               # Sign in page
 │   ├── create/                   # Quiz creation flow
 │   │   ├── page.tsx              # Create new quiz
 │   │   └── [id]/
-│   │       └── metrics/          # Metrics editor (Step 1)
+│   │       └── dimensions/          # Dimensions editor (Step 1)
 │   ├── demo/                     # Feature showcase
 │   ├── globals.css               # Tailwind config with @theme
 │   ├── layout.tsx                # Root layout
@@ -87,19 +87,19 @@ personame/
 
 **2. Quiz Definition**
 - `Personame` - Quiz metadata (title, slug, status, visibility)
-- `Metric` - Personality dimensions (name, description, min/max labels)
+- `Dimension` - Personality dimensions (name, description, min/max labels)
 - `Archetype` - Personality types
-- `ArchetypeMetric` - Join table (archetype ↔ metric with target value and relevance)
+- `ArchetypeDimension` - Join table (archetype ↔ dimension with target value and relevance)
 
 **3. Quiz Content**
 - `QuestionPage` - Groups questions into pages
 - `Question` - Question text and type
 - `Answer` - Answer options
-- `AnswerWeight` - Join table (answer ↔ metric with weight value)
+- `AnswerWeight` - Join table (answer ↔ dimension with weight value)
 
 **4. Results**
 - `QuizResult` - User responses and calculated archetype match
-- `MetricScore` - Individual metric scores for a result
+- `DimensionScore` - Individual dimension scores for a result
 
 ### Key Relationships
 
@@ -109,13 +109,13 @@ User
 └─→ QuizResult (1:many, participant)
 
 Personame
-├─→ Metric (1:many)
+├─→ Dimension (1:many)
 ├─→ Archetype (1:many)
 ├─→ QuestionPage (1:many)
 └─→ QuizResult (1:many)
 
-Archetype ←→ Metric (many:many via ArchetypeMetric)
-  ArchetypeMetric { targetValue: 0-100, relevance: 0-1 }
+Archetype ←→ Dimension (many:many via ArchetypeDimension)
+  ArchetypeDimension { targetValue: 0-100, relevance: 0-1 }
 
 QuestionPage
 └─→ Question (1:many, ordered)
@@ -123,11 +123,11 @@ QuestionPage
 Question
 └─→ Answer (1:many, ordered)
 
-Answer ←→ Metric (many:many via AnswerWeight)
+Answer ←→ Dimension (many:many via AnswerWeight)
   AnswerWeight { weight: -100 to +100 }
 
 QuizResult
-└─→ MetricScore (1:many)
+└─→ DimensionScore (1:many)
 ```
 
 ### Full Schema
@@ -138,18 +138,18 @@ See `prisma/schema.prisma`
 
 All calculation utilities are located in [lib/quiz-calculations.ts](lib/quiz-calculations.ts).
 
-### Metric Score Calculation
+### Dimension Score Calculation
 
 **Pseudocode:**
 ```
-1. Initialize all metrics to 50 (neutral baseline)
+1. Initialize all dimensions to 50 (neutral baseline)
 2. For each user answer:
-   - Add the answer's weight value to its associated metric
+   - Add the answer's weight value to its associated dimension
 3. Clamp all scores to 0-100 range
-4. Return array of { metricId, metricName, score }
+4. Return array of { dimensionId, dimensionName, score }
 ```
 
-**Implementation:** `calculateMetricScores()` in [lib/quiz-calculations.ts](lib/quiz-calculations.ts)
+**Implementation:** `calculateDimensionScores()` in [lib/quiz-calculations.ts](lib/quiz-calculations.ts)
 
 ### Archetype Matching
 
@@ -168,7 +168,7 @@ All calculation utilities are located in [lib/quiz-calculations.ts](lib/quiz-cal
 
 **Pseudocode:**
 ```
-1. Sort all historical scores for the metric
+1. Sort all historical scores for the dimension
 2. Find position where user score would be inserted
 3. Calculate: (position / total) × 100
 4. Return rounded percentile
@@ -190,9 +190,9 @@ All calculation utilities are located in [lib/quiz-calculations.ts](lib/quiz-cal
 - `PATCH /api/personames/[id]` - Update quiz metadata
 - `DELETE /api/personames/[id]` - Delete quiz
 
-**Metrics:**
-- `GET /api/personames/[id]/metrics` - List metrics
-- `POST /api/personames/[id]/metrics` - Save all metrics (replaces existing)
+**Dimensions:**
+- `GET /api/personames/[id]/dimensions` - List dimensions
+- `POST /api/personames/[id]/dimensions` - Save all dimensions (replaces existing)
 
 ### To Implement
 

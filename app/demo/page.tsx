@@ -39,7 +39,7 @@ export default function DemoPage() {
                   <div className="h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center mb-2">
                     <span className="text-2xl font-bold text-primary-600">1</span>
                   </div>
-                  <CardTitle>Define Metrics</CardTitle>
+                  <CardTitle>Define Dimensions</CardTitle>
                   <CardDescription>
                     Create 3-5 personality dimensions like "Openness" or "Extraversion"
                   </CardDescription>
@@ -69,7 +69,7 @@ export default function DemoPage() {
                   </div>
                   <CardTitle>Create Archetypes</CardTitle>
                   <CardDescription>
-                    Design personality types with target metric values
+                    Design personality types with target dimension values
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -99,7 +99,7 @@ export default function DemoPage() {
                   </div>
                   <CardTitle>Build Questions</CardTitle>
                   <CardDescription>
-                    Create questions that measure your metrics
+                    Create questions that measure your dimensions
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -194,7 +194,7 @@ export default function DemoPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-700">
-                    Stunning visualizations with radar charts and metric breakdowns
+                    Stunning visualizations with radar charts and dimension breakdowns
                   </p>
                 </CardContent>
               </Card>

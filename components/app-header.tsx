@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useSession, signOut } from 'next-auth/react'
+import { Skeleton } from './ui/loading'
 import { useState } from 'react'
 import { Sparkles, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -17,20 +18,41 @@ export function AppHeader() {
   const initial = userName.charAt(0).toUpperCase()
 
   return (
-    <header className="w-full border-b border-muted-200 bg-linear-to-r from-primary-100 via-accent-100 to-secondary-100 shadow-lg">
+    <header className="w-full border-b border-muted-200 bg-white/95 backdrop-blur-sm">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <div className="h-9 w-9 relative">
-            <Image src="/logo.png" alt="Personame" fill sizes="36px" className="object-contain" />
+            <Image
+              src="/logo.png"
+              alt="Personame"
+              fill
+              sizes="36px"
+              className="object-contain"
+            />
           </div>
-          <span className="text-xl font-bold bg-linear-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
+          <span className="hidden sm:inline text-xl font-bold bg-linear-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
             Personame
           </span>
         </Link>
 
         <div className="flex items-center gap-3">
-          {status === 'authenticated' ? (
+          {status === 'loading' ? (
+            <div
+              className="flex items-center gap-3"
+              aria-label="Loading account"
+              role="status"
+            >
+              <Skeleton className="skeleton-account-action" />
+              <Skeleton className="skeleton-avatar" />
+            </div>
+          ) : status === 'authenticated' ? (
             <>
+              <Link
+                href="/dashboard"
+                className="whitespace-nowrap text-sm text-muted-600 hover:text-primary-700"
+              >
+                Your quizzes
+              </Link>
               <Link href="/create">
                 <Button className="bg-linear-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white shadow-md hover:shadow-lg transition-shadow px-4 h-9 text-sm font-semibold">
                   <Sparkles className="h-4 w-4 mr-1.5" />
@@ -45,9 +67,16 @@ export function AppHeader() {
                   >
                     {userImage ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={userImage} alt="avatar" className="h-full w-full object-cover" referrerPolicy="no-referrer" />
+                      <img
+                        src={userImage}
+                        alt="avatar"
+                        className="h-full w-full object-cover"
+                        referrerPolicy="no-referrer"
+                      />
                     ) : (
-                      <span className="text-sm font-semibold text-primary-700">{initial}</span>
+                      <span className="text-sm font-semibold text-primary-700">
+                        {initial}
+                      </span>
                     )}
                   </button>
                 </Popover.Trigger>
@@ -59,7 +88,9 @@ export function AppHeader() {
                   >
                     <div className="px-4 py-3 border-b border-muted-200">
                       <p className="text-xs text-muted-600">Signed in as</p>
-                      <p className="text-sm font-medium text-primary-900 truncate">{userName}</p>
+                      <p className="text-sm font-medium text-primary-900 truncate">
+                        {userName}
+                      </p>
                     </div>
                     <nav className="p-2 space-y-1">
                       <Link
@@ -86,9 +117,7 @@ export function AppHeader() {
             </>
           ) : (
             <Link href="/auth/signin">
-              <Button>
-                Sign in
-              </Button>
+              <Button>Sign in</Button>
             </Link>
           )}
         </div>
