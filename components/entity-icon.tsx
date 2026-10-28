@@ -1,9 +1,9 @@
-import { Drama, BookOpen, SlidersHorizontal } from 'lucide-react'
+import { Drama, BookOpen, Gem } from 'lucide-react'
 
 export type EntityKind = 'quiz' | 'dimension' | 'archetype'
 const icons = {
   quiz: BookOpen,
-  dimension: SlidersHorizontal,
+  dimension: Gem,
   archetype: Drama,
 } as const
 

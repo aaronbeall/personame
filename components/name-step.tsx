@@ -60,7 +60,7 @@ export function NameStep({ quizId }: { quizId?: string }) {
     enabled: !!quizId && auth === 'authenticated',
     refetchOnWindowFocus: false,
     queryFn: async () => {
-      const q = await requestJson<Details>(`/api/personames/${quizId}`)
+      const q = await requestJson<Details>(`/api/personames/${quizId}/details`)
       return {
         title: q.title,
         description: q.description || '',
@@ -120,6 +120,7 @@ export function NameStep({ quizId }: { quizId?: string }) {
       draft.accept(canonical)
       cache.setQueryData(['quiz-details', saved.id], canonical)
       cache.invalidateQueries({ queryKey: ['review', saved.id] })
+      cache.invalidateQueries({ queryKey: ['progress', saved.id] })
       cache.invalidateQueries({ queryKey: ['personal'] })
       cache.invalidateQueries({ queryKey: ['discover'] })
       if (advance) router.push(`/create/${saved.id}/dimensions`)
@@ -158,7 +159,6 @@ export function NameStep({ quizId }: { quizId?: string }) {
       <div className="create-setup">
         {quizId ? (
           <StepProgress
-            steps={[]}
             title="What’s your quiz about?"
             description="Give your quiz a name and a look that feels like you."
           />

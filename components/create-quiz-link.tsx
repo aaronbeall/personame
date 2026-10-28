@@ -9,9 +9,11 @@ import { ArtConfettiBurst, preloadArtConfetti } from './art-confetti-burst'
 export function CreateQuizLink({
   children,
   className = '',
+  'aria-current': ariaCurrent,
 }: {
   children: ReactNode
   className?: string
+  'aria-current'?: 'page'
 }) {
   const anchor = useRef<HTMLAnchorElement>(null)
   const [burst, setBurst] = useState(false)
@@ -34,6 +36,7 @@ export function CreateQuizLink({
     <Link
       ref={anchor}
       href="/create"
+      aria-current={ariaCurrent}
       className={`art-create-link ${className}`}
       onPointerEnter={(event) => {
         if (event.pointerType === 'mouse') celebrate()

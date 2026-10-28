@@ -5,7 +5,7 @@ import { getColorTheme } from '@/lib/colors'
 import { EntityIcon } from '@/components/entity-icon'
 import { QuizCoverMark } from '@/components/quiz-cover-mark'
 import { LoadingIndicator, LoadingState } from '@/components/ui/loading'
-import { useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
 import {
   Pencil,
@@ -23,6 +23,9 @@ import { PageIntro } from '@/components/page-intro'
 import { requestJson } from '@/lib/client-api'
 import type { OwnedQuizSummary } from '@/lib/quiz-composition'
 import { DraftComposition } from '@/components/draft-composition'
+import { CollectionPagination } from '@/components/collection-pagination'
+import type { ListPage } from '@/lib/pagination'
+import { useDebouncedValue } from '@/hooks/use-debounced-value'
 const tabs = [
   { key: 'DRAFT', label: 'Drafts', icon: LockKeyhole },
   { key: 'PUBLISHED', label: 'Published', icon: Radio },
@@ -32,23 +35,16 @@ export default function YourQuizzes() {
   const [activeTab, setActiveTab] = useState<string>('DRAFT')
   const [search, setSearch] = useState('')
   const status = useProtectedPage()
+  const [page, setPage] = useState(1)
+  const searchQuery = useDebouncedValue(search)
   const query = useQuery({
-    queryKey: ['personal'],
-    queryFn: () => requestJson<OwnedQuizSummary[]>('/api/me/quizzes'),
+    queryKey: ['personal', 'quizzes', activeTab, searchQuery, page],
+    queryFn: ({ signal }) => requestJson<ListPage<OwnedQuizSummary>>(`/api/me/quizzes?${new URLSearchParams({ status: activeTab, search: searchQuery, page: String(page) })}`, { signal }),
     enabled: status === 'authenticated',
     retry: false,
+    placeholderData: keepPreviousData,
   })
-  const matches = (q: { title: string; description: string | null }) =>
-    `${q.title} ${q.description ?? ''}`
-      .toLocaleLowerCase()
-      .includes(search.trim().toLocaleLowerCase())
-  const owned = query.data ?? []
-  const counts = {
-    DRAFT: owned.filter((q) => q.status === 'DRAFT').length,
-    PUBLISHED: owned.filter(
-      (q) => q.status === 'PUBLISHED' || q.status === 'CLOSED',
-    ).length,
-  }
+  const counts = query.data?.counts ?? { DRAFT: 0, PUBLISHED: 0 }
   return (
     <AppLayoutBackground>
       <div className="dashboard-page">
@@ -79,7 +75,7 @@ export default function YourQuizzes() {
                 aria-selected={activeTab === key}
                 aria-controls={`panel-${key}`}
                 tabIndex={activeTab === key ? 0 : -1}
-                onClick={() => setActiveTab(key)}
+                onClick={() => { setActiveTab(key); setPage(1) }}
                 onKeyDown={(event) => {
                   let next = index
                   if (event.key === 'ArrowRight')
@@ -91,6 +87,7 @@ export default function YourQuizzes() {
                   else return
                   event.preventDefault()
                   setActiveTab(tabs[next].key)
+                  setPage(1)
                   document.getElementById(`tab-${tabs[next].key}`)?.focus()
                 }}
               >
@@ -117,11 +114,14 @@ export default function YourQuizzes() {
               type="search"
               placeholder="Search quizzes…"
               value={search}
-              onChange={(event) => setSearch(event.target.value)}
+              onChange={(event) => { setSearch(event.target.value); setPage(1) }}
             />
           </label>
         </div>
+        <div id="quiz-collection" className="collection-anchor">
         <div
+          className="paginated-collection"
+          aria-busy={query.isFetching}
           role="tabpanel"
           id={`panel-${activeTab}`}
           aria-labelledby={`tab-${activeTab}`}
@@ -151,8 +151,7 @@ export default function YourQuizzes() {
               ]
                 .filter((group) => group.status === activeTab)
                 .map((group) => {
-                  const quizzes = query.data
-                    .filter(matches)
+                  const quizzes = query.data.items
                     .filter((q) =>
                       group.status === 'DRAFT'
                         ? q.status === 'DRAFT'
@@ -299,6 +298,8 @@ export default function YourQuizzes() {
             </div>
           )}
         </div>
+        </div>
+        {query.data && <CollectionPagination page={query.data.page} total={query.data.total} onPage={setPage} loading={query.isFetching} itemLabel="quizzes" contentId="quiz-collection" />}
       </div>
     </AppLayoutBackground>
   )

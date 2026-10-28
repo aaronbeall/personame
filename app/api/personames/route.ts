@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { apiError, currentUser } from '@/lib/personas'
 import { quizDetailsSchema } from '@/lib/quiz-details'
 import { generateUniqueSlug } from '@/lib/utils'
+import { publishedListings } from '@/lib/public-cache'
 
 export async function POST(req: Request) {
   try {
@@ -23,22 +24,7 @@ export async function POST(req: Request) {
 
 export async function GET() {
   try {
-    const personas = await prisma.persona.findMany({
-      where: { status: 'PUBLISHED', visibility: 'PUBLIC' },
-      select: {
-        id: true,
-        title: true,
-        slug: true,
-        description: true,
-        emoji: true,
-        color: true,
-        completions: true,
-        publishedAt: true,
-        _count: { select: { archetypes: true } },
-      },
-      orderBy: { publishedAt: 'desc' },
-      take: 30,
-    })
+    const personas = await publishedListings()
 
     return NextResponse.json(personas)
   } catch (error) {

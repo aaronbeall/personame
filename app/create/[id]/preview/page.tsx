@@ -41,7 +41,10 @@ export default function ReviewPage({
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
   const quiz = query.data
-  const refresh = () => cache.invalidateQueries({ queryKey: ['review', id] })
+  const refresh = () => Promise.all([
+    cache.invalidateQueries({ queryKey: ['review', id] }),
+    cache.invalidateQueries({ queryKey: ['progress', id] }),
+  ])
   const publish = async () => {
     setBusy(true)
     setError('')
@@ -84,7 +87,6 @@ export default function ReviewPage({
     <AppLayoutBackground>
       <div className="max-w-5xl mx-auto">
         <StepProgress
-          steps={[]}
           title="Make sure it feels like you"
           description="Try your quiz from start to finish, then send it out into the world. You can always return to refine it."
         />

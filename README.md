@@ -21,7 +21,7 @@ A platform for creating and sharing custom personality quizzes.
 
 Create a quiz, define dimensions and archetypes, build question pages, preview, and publish. Participants can answer multiple-choice, slider, and scale questions and receive a shareable archetype result. Your quizzes lets you return to drafts and live quizzes.
 
-See [Core workflow and verification](docs/CORE_WORKFLOW.md) for scoring rules, migrations, and tests.
+See [Core workflow and verification](docs/CORE_WORKFLOW.md) for scoring rules, migrations, and tests. [API performance](docs/API_PERFORMANCE.md) documents bounded collections, targeted reads, save batching, and cache behavior.
 
 ## Brand and design
 

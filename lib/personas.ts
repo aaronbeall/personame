@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { authOptions } from './auth'
 import { prisma } from './prisma'
+import type { ParticipantQuiz } from './quiz-projections'
 
 export const quizInclude = {
   dimensions: { orderBy: { order: 'asc' } },
@@ -31,14 +32,16 @@ export class WorkflowError extends Error {
 }
 export async function currentUser() {
   const session = await getServerSession(authOptions)
-  if (!session?.user?.email)
-    throw new WorkflowError('Sign in to continue.', 401)
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-  })
-  if (!user) throw new WorkflowError('Account not found.', 401)
-  return user
+  if (!session?.user?.id) throw new WorkflowError('Sign in to continue.', 401)
+  return { id: session.user.id }
 }
+export async function ownedQuizSelect<T extends Prisma.PersonaSelect>(id: string, select: T) {
+  const user = await currentUser()
+  const quiz = await prisma.persona.findFirst({ where: { id, creatorId: user.id }, select })
+  if (!quiz) throw new WorkflowError('Quiz not found.', 404)
+  return quiz
+}
+
 export async function ownedQuiz(id: string) {
   const user = await currentUser()
   const quiz = await prisma.persona.findFirst({
@@ -78,7 +81,7 @@ export function apiError(error: unknown) {
     { status: 500 },
   )
 }
-export function publicQuiz(quiz: FullQuiz) {
+export function publicQuiz(quiz: ParticipantQuiz) {
   return {
     id: quiz.id,
     title: quiz.title,

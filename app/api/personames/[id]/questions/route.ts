@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server'
-import { ownedQuiz, apiError } from '@/lib/personas'
+import { ownedQuizSelect, apiError, quizInclude } from '@/lib/personas'
 import { savePages } from '@/lib/editor-save'
 type Context = { params: Promise<{ id: string }> }
 export async function GET(_req: Request, { params }: Context) {
   try {
-    return NextResponse.json((await ownedQuiz((await params).id)).pages)
+    return NextResponse.json((await ownedQuizSelect((await params).id, { pages: quizInclude.pages })).pages)
   } catch (e) {
     return apiError(e)
   }

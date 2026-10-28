@@ -91,6 +91,7 @@ test('Homepage keeps its local explore section and links to the full discovery p
 test('Explore header count covers the full public catalog and stays visible while scrolling', async ({
   page,
   account,
+  seedQuiz,
   db,
   context,
 }) => {
@@ -122,6 +123,9 @@ test('Explore header count covers the full public catalog and stays visible whil
       },
     ],
   })
+  // Direct fixture inserts bypass cache tags; exercise the real publish invalidation.
+  const published = await seedQuiz()
+  expect((await page.request.post(`/api/personames/${published.id}/publish`)).ok()).toBeTruthy()
   const count = await db.persona.count({
     where: { status: 'PUBLISHED', visibility: 'PUBLIC' },
   })
@@ -131,7 +135,7 @@ test('Explore header count covers the full public catalog and stays visible whil
     name: 'Explore quizzes',
     exact: true,
   })
-  await expect(explore.locator('svg')).toBeVisible()
+  await expect(explore.locator('.lucide-compass')).toBeVisible()
   await expect(page.locator('#header-explore-count')).toHaveAttribute(
     'title',
     `${count.toLocaleString('en')} published quizzes`,

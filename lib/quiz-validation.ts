@@ -1,5 +1,5 @@
-import type { FullQuiz } from './personas'
-export function readinessByStage(quiz: FullQuiz) {
+import type { ReadinessQuiz } from './quiz-projections'
+export function readinessByStage(quiz: ReadinessQuiz) {
   const stages = {
     name: [] as string[],
     dimensions: [] as string[],
@@ -60,6 +60,6 @@ export function readinessByStage(quiz: FullQuiz) {
   return stages
 }
 
-export function readiness(quiz: FullQuiz): string[] {
+export function readiness(quiz: ReadinessQuiz): string[] {
   return [...new Set(Object.values(readinessByStage(quiz)).flat())]
 }

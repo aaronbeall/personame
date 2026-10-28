@@ -9,7 +9,7 @@ test('Slow data loads show skeletons, and saving shows a spinner on the chosen a
   const quizzesGate = new Promise<void>((resolve) => {
     releaseQuizzes = resolve
   })
-  await page.route('**/api/me/quizzes', async (route) => {
+  await page.route('**/api/me/quizzes?**', async (route) => {
     const response = await route.fetch()
     await quizzesGate
     await route.fulfill({ response })

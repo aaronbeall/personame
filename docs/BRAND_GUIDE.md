@@ -54,6 +54,8 @@ The source illustrations and logo explorations in `art/` are working assets. The
 
 The foundation is soft lavender, warm white, deep indigo text, and restrained blue-indigo actions. Purple and pink add personality. Colorful dimension/archetype accents represent authored content, not different meanings for primary actions.
 
+Bring the logo's broader palette into navigation: teal, periwinkle, orchid, and warm gold. Pair dark readable accent ink with a pale matching wash rather than using the pastel logo colors directly for small text. These accents identify spaces (Explore, Your quizzes, Your many selves, Create), not success/warning/error states. Keep standard action and status colors consistent elsewhere. A restrained handwritten pen stroke may mark the active destination; use original vector artwork so the line remains crisp at small sizes.
+
 - Use the main action color for the next meaningful step.
 - Use the lavender canvas to frame crisp, white working surfaces.
 - Use deep ink for headlines and essential information.
@@ -85,7 +87,7 @@ Use this fixed Lucide vocabulary:
 | Category | Icon | Meaning |
 | --- | --- | --- |
 | Quiz | `BookOpen` | An authored experience containing questions |
-| Dimension | `SlidersHorizontal` | A dimension to measure and adjust |
+| Dimension | `Gem` (faceted gem) | A distinct facet of a personality or domain |
 | Archetype | `Drama` (drama masks) | Personality, character, and the different roles we embody |
 
 Use category icons in navigation, labelled section headings, add actions, and relevant empty states. Keep them paired with readable labels; they supplement meaning rather than replace it. Individual quizzes, dimensions, and archetypes retain their selected emoji or future image. A category icon is not a replacement for authored artwork. Keep standard action symbols such as pencil, plus, check, and back arrow consistent across categories.

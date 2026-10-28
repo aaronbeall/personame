@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
-import { useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 import { useParticipantProgress } from '@/hooks/use-participant-progress'
 import { removeProgress } from '@/lib/participant-progress'
@@ -15,6 +15,9 @@ import { PageIntro } from '@/components/page-intro'
 import { useProtectedPage } from '@/hooks/use-protected-page'
 import { requestJson } from '@/lib/client-api'
 import type { ResultSnapshot } from '@/lib/quiz-scoring'
+import type { ListPage } from '@/lib/pagination'
+import { CollectionPagination } from '@/components/collection-pagination'
+import { useDebouncedValue } from '@/hooks/use-debounced-value'
 import type { OwnedQuizSummary } from '@/lib/quiz-composition'
 type CompletedQuiz = {
   id: string
@@ -34,11 +37,14 @@ export default function Selves() {
   const progress = useParticipantProgress(session?.user?.email)
 
   const [search, setSearch] = useState('')
+  const [page, setPage] = useState(1)
+  const searchQuery = useDebouncedValue(search)
   const completed = useQuery({
-    queryKey: ['personal', 'completed'],
-    queryFn: () => requestJson<CompletedQuiz[]>('/api/me/discoveries'),
+    queryKey: ['personal', 'completed', searchQuery, page],
+    queryFn: ({ signal }) => requestJson<ListPage<CompletedQuiz>>(`/api/me/discoveries?${new URLSearchParams({ search: searchQuery, page: String(page) })}`, { signal }),
     enabled: status === 'authenticated',
     retry: false,
+    placeholderData: keepPreviousData,
   })
   const matches = (q: { title: string; description: string | null }) =>
     `${q.title} ${q.description ?? ''}`
@@ -70,7 +76,7 @@ export default function Selves() {
               {
                 key: 'discovered',
                 label: 'Discovered',
-                count: completed.data?.length,
+                count: completed.data?.collectionTotal,
                 icon: Drama,
               },
               {
@@ -130,11 +136,11 @@ export default function Selves() {
               type="search"
               placeholder="Find a self or quiz…"
               value={search}
-              onChange={(event) => setSearch(event.target.value)}
+              onChange={(event) => { setSearch(event.target.value); setPage(1) }}
             />
           </label>
         </div>
-        <section aria-label="Your discoveries">
+        <section id="selves-collection" className="collection-anchor" aria-label="Your discoveries">
           <div
             role="tabpanel"
             id="selves-panel"
@@ -222,15 +228,7 @@ export default function Selves() {
             ) : (
               <>
                 <div className="quiz-grid">
-                  {completed.data
-                    .filter((result) =>
-                      matches({
-                        title: `${result.persona.title} ${result.archetype?.name ?? ''}`,
-                        description:
-                          result.archetype?.description ??
-                          result.persona.description,
-                      }),
-                    )
+                  {completed.data.items
                     .map((result) => (
                       <article
                         key={result.id}
@@ -297,14 +295,7 @@ export default function Selves() {
                         </div>
                       </article>
                     ))}
-                  {!completed.data.some((result) =>
-                    matches({
-                      title: `${result.persona.title} ${result.archetype?.name ?? ''}`,
-                      description:
-                        result.archetype?.description ??
-                        result.persona.description,
-                    }),
-                  ) && (
+                  {!completed.data.items.length && (
                     <div className="dashboard-collection-empty selves-empty">
                       <p>
                         {search.trim()
@@ -324,6 +315,7 @@ export default function Selves() {
             )}
           </div>
         </section>
+        {activeTab === 'discovered' && completed.data && <CollectionPagination page={completed.data.page} total={completed.data.total} onPage={setPage} loading={completed.isFetching} itemLabel="selves" contentId="selves-collection" />}
       </div>
     </AppLayoutBackground>
   )

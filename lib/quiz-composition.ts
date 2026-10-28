@@ -1,4 +1,4 @@
-import type { FullQuiz } from './personas'
+import type { ReadinessQuiz } from './quiz-projections'
 import { readinessByStage } from './quiz-validation'
 
 const definitions = [
@@ -8,7 +8,7 @@ const definitions = [
   ['questions', 'Questions'],
   ['preview', 'Publish'],
 ] as const
-export function getQuizComposition(quiz: FullQuiz) {
+export function getQuizComposition(quiz: ReadinessQuiz) {
   const issues = readinessByStage(quiz)
   const visibleQuestions = quiz.pages
     .filter((p) => !p.hidden && p.style !== 'cover' && p.style !== 'results')

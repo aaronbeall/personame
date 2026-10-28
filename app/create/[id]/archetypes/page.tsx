@@ -95,6 +95,7 @@ export default function ArchetypesPage({
       setMessage('Changes saved.')
       queryClient.setQueryData(['archetypes', id], data)
       queryClient.invalidateQueries({ queryKey: ['review', id] })
+      queryClient.invalidateQueries({ queryKey: ['progress', id] })
       queryClient.invalidateQueries({ queryKey: ['personal'] })
       queryClient.invalidateQueries({ queryKey: ['discover'] })
       if (advance) router.push(`/create/${id}/questions`)
@@ -181,11 +182,6 @@ export default function ArchetypesPage({
     <AppLayoutBackground>
       <div className="max-w-4xl mx-auto">
         <StepProgress
-          steps={[
-            { number: 1, label: 'Dimensions', completed: true },
-            { number: 2, label: 'Archetypes', active: true },
-            { number: 3, label: 'Questions' },
-          ]}
           title="Define your archetypes"
           description="Create the personality profiles your answers will point to. Give each one a distinct mix of your dimensions."
         />

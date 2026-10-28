@@ -406,10 +406,10 @@ test(
         400,
         'incomplete quiz cannot be republished',
       )
-      const dashboard = (await call('/api/me/quizzes')).data
+      const dashboard = (await call('/api/me/quizzes')).data.items
       assert.ok(dashboard.some((q: { id: string }) => q.id === id))
       assert.ok(
-        !(await call('/api/me/quizzes', 'GET', undefined, otherToken)).data.some(
+        !(await call('/api/me/quizzes', 'GET', undefined, otherToken)).data.items.some(
           (q: { id: string }) => q.id === id,
         ),
       )

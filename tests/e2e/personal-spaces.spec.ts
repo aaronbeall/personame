@@ -88,7 +88,7 @@ test('Your quizzes separates live quizzes and drafts, and shows accurate visual 
     .fill('UNFINISHED')
   await expect(drafts.getByRole('article')).toHaveCount(1)
   await page.getByRole('searchbox', { name: 'Search quizzes' }).fill('')
-  const summaries = await (await page.request.get('/api/me/quizzes')).json()
+  const summaries = await (await page.request.get('/api/me/quizzes')).json().then(data => data.items)
   expect(
     summaries.find((q: { id: string }) => q.id === partial.id).composition.next,
   ).toBe('dimensions')
@@ -178,7 +178,7 @@ test('Your many selves is a separate space with your latest archetypes and searc
     await expect(
       panel.getByRole('link', { name: 'Revisit this self' }),
     ).toHaveAttribute('href', `/quiz/${slug}/results/${latest}`)
-    const history = await (await page.request.get('/api/me/discoveries')).json()
+    const history = await (await page.request.get('/api/me/discoveries')).json().then(data => data.items)
     expect(history).toHaveLength(1)
     await expect(page.locator('#header-selves-count')).toHaveText('1 discovery')
     expect(history[0].id).toBe(latest)

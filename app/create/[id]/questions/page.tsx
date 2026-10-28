@@ -155,6 +155,7 @@ export default function QuestionsPage({
       draft.accept(data)
       queryClient.setQueryData(['questions', id], data)
       queryClient.invalidateQueries({ queryKey: ['review', id] })
+      queryClient.invalidateQueries({ queryKey: ['progress', id] })
       queryClient.invalidateQueries({ queryKey: ['personal'] })
       queryClient.invalidateQueries({ queryKey: ['discover'] })
       router.push(`/create/${id}/preview`)
@@ -356,11 +357,6 @@ export default function QuestionsPage({
     <AppLayoutBackground>
       <div className="max-w-7xl mx-auto">
         <StepProgress
-          steps={[
-            { number: 1, label: 'Dimensions', completed: true },
-            { number: 2, label: 'Archetypes', completed: true },
-            { number: 3, label: 'Questions', active: true },
-          ]}
           title="Build your quiz"
           description="Bring your idea to life with questions. Choose a page, then add and fine-tune its questions."
         />

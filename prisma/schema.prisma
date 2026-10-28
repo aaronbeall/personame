@@ -89,6 +89,8 @@ model Persona {
   publishedAt DateTime?
 
   @@index([creatorId])
+  @@index([creatorId, updatedAt, id])
+  @@index([status, visibility, publishedAt, id])
   @@index([status])
   @@index([visibility])
   @@index([publishedAt])
@@ -301,6 +303,7 @@ model QuizResult {
   @@index([userId])
   @@index([archetypeId])
   @@index([completedAt])
+  @@index([userId, personaId, completedAt(sort: Desc), id(sort: Desc)])
 }
 
 // User's answer to a question

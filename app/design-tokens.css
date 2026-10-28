@@ -15,6 +15,15 @@
   --pn-focus: #8b75c5;
   --pn-focus-ring: #a790d822;
   --pn-header: #eee4f5;
+  /* Logo-inspired navigation accents: readable ink paired with a soft wash. */
+  --pn-brand-teal: #08777d;
+  --pn-brand-teal-soft: #e9f8f6;
+  --pn-brand-periwinkle: #4257be;
+  --pn-brand-periwinkle-soft: #edf1ff;
+  --pn-brand-orchid: #8648b8;
+  --pn-brand-orchid-soft: #f5edff;
+  --pn-brand-gold: #8b5b13;
+  --pn-brand-gold-soft: #fff4d9;
   --pn-positive: #42775d;
   --pn-positive-soft: #e8f3ed;
   --pn-warning: #885b2f;

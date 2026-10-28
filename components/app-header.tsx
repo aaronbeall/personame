@@ -14,8 +14,20 @@ import { CreateQuizLink } from './create-quiz-link'
 import { Button } from './ui/button'
 import * as Popover from '@radix-ui/react-popover'
 
+
+/** Original vector pen stroke: stays crisp and draws itself on route activation. */
+function NavFlourish() {
+  return (
+    <svg className="header-nav-flourish" viewBox="0 0 140 20" fill="none" aria-hidden="true">
+      <path className="nav-pen-main" pathLength="1" d="M5 12C30 6 78 5 117 8C134 9 138 13 129 15C121 17 112 13 117 9" />
+      <path className="nav-pen-tail" pathLength="1" d="M18 16C46 12 75 12 98 13" />
+    </svg>
+  )
+}
+
 export function AppHeader() {
   const pathname = usePathname()
+  const isCreating = pathname === '/create' || pathname.startsWith('/create/')
   const { data: session, status } = useSession()
   const [open, setOpen] = useState(false)
   const countsQuery = useQuery({
@@ -59,36 +71,119 @@ export function AppHeader() {
         </Link>
 
         <div className="site-header-actions flex items-center gap-3">
-          <Link
-            href="/explore"
-            className="header-explore"
-            aria-label="Explore quizzes"
-            aria-describedby={
-              publishedCount !== undefined ? 'header-explore-count' : undefined
-            }
-            aria-current={pathname === '/explore' ? 'page' : undefined}
-          >
-            <Compass size={17} strokeWidth={1.75} aria-hidden="true" />
-            <span className="header-explore-label">Explore</span>
-            {publishedQuery.isPending && (
-              <span className="header-quiz-count header-explore-loading">
-                <LoadingIndicator label="Loading published quiz count…" />
-              </span>
+          <nav className="header-primary-nav" aria-label="Main navigation">
+            <Link
+              href="/explore"
+              className="header-nav-item header-explore"
+              aria-label="Explore quizzes"
+              aria-describedby={
+                publishedCount !== undefined ? 'header-explore-count' : undefined
+              }
+              aria-current={
+                pathname === '/explore' || pathname.startsWith('/explore/')
+                  ? 'page'
+                  : undefined
+              }
+            >
+              <Compass size={17} strokeWidth={1.75} aria-hidden="true" />
+              <span className="header-explore-label">Explore</span>
+              {(pathname === '/explore' || pathname.startsWith('/explore/')) && <NavFlourish key={pathname} />}
+              {publishedQuery.isPending && (
+                <span className="header-quiz-count header-explore-loading">
+                  <LoadingIndicator label="Loading published quiz count…" />
+                </span>
+              )}
+              {publishedCount !== undefined && (
+                <span
+                  className="header-quiz-count"
+                  id="header-explore-count"
+                  title={`${publishedCount.toLocaleString('en')} published quizzes`}
+                >
+                  {new Intl.NumberFormat('en', {
+                    notation: 'compact',
+                    maximumFractionDigits: 1,
+                  }).format(publishedCount)}
+                  <span className="sr-only"> published quizzes</span>
+                </span>
+              )}
+            </Link>
+            {status === 'authenticated' && (
+              <>
+                <Link
+                  href="/quizzes"
+                  className="header-nav-item header-your-quizzes"
+                  aria-label="Your quizzes"
+                  aria-current={
+                    pathname === '/quizzes' ||
+                    pathname.startsWith('/quizzes/')
+                      ? 'page'
+                      : undefined
+                  }
+                  aria-describedby={
+                    quizCount !== undefined ? 'header-quiz-count' : undefined
+                  }
+                >
+                  <EntityIcon kind="quiz" size={17} />
+                  {(pathname === '/quizzes' || pathname.startsWith('/quizzes/')) && <NavFlourish key={pathname} />}
+                  <span className="header-space-label">Your quizzes</span>
+                  <span className="header-space-short" aria-hidden="true">
+                    Quizzes
+                  </span>
+                  {countsQuery.isPending && (
+                    <span className="header-quiz-count">
+                      <LoadingIndicator label="Loading your quiz count…" />
+                    </span>
+                  )}
+                  {quizCount !== undefined && (
+                    <span className="header-quiz-count" id="header-quiz-count">
+                      {quizCount > 999 ? '999+' : quizCount}
+                      <span className="sr-only"> quizzes</span>
+                    </span>
+                  )}
+                </Link>
+                <Link
+                  href="/selves"
+                  className="header-nav-item header-your-quizzes header-selves"
+                  aria-label="Your many selves"
+                  aria-describedby={
+                    selvesCount !== undefined ? 'header-selves-count' : undefined
+                  }
+                  aria-current={
+                    pathname === '/selves' || pathname.startsWith('/selves/')
+                      ? 'page'
+                      : undefined
+                  }
+                >
+                  <EntityIcon kind="archetype" size={17} />
+                  {(pathname === '/selves' || pathname.startsWith('/selves/')) && <NavFlourish key={pathname} />}
+                  <span className="header-space-label">Your many selves</span>
+                  <span className="header-space-short" aria-hidden="true">
+                    Selves
+                  </span>
+                  {countsQuery.isPending && (
+                    <span className="header-quiz-count">
+                      <LoadingIndicator label="Loading your discovery count…" />
+                    </span>
+                  )}
+                  {selvesCount !== undefined && (
+                    <span className="header-quiz-count" id="header-selves-count">
+                      {selvesCount > 999 ? '999+' : selvesCount}
+                      <span className="sr-only">
+                        {selvesCount === 1 ? ' discovery' : ' discoveries'}
+                      </span>
+                    </span>
+                  )}
+                </Link>
+              </>
             )}
-            {publishedCount !== undefined && (
-              <span
-                className="header-quiz-count"
-                id="header-explore-count"
-                title={`${publishedCount.toLocaleString('en')} published quizzes`}
-              >
-                {new Intl.NumberFormat('en', {
-                  notation: 'compact',
-                  maximumFractionDigits: 1,
-                }).format(publishedCount)}
-                <span className="sr-only"> published quizzes</span>
-              </span>
-            )}
-          </Link>
+            <CreateQuizLink
+              className="header-nav-item header-create-link"
+              aria-current={isCreating ? 'page' : undefined}
+            >
+              Create
+              {isCreating && <NavFlourish key={pathname} />}
+            </CreateQuizLink>
+          </nav>
           {status === 'loading' ? (
             <div
               className="flex items-center gap-3"
@@ -100,67 +195,6 @@ export function AppHeader() {
             </div>
           ) : status === 'authenticated' ? (
             <>
-              <Link
-                href="/quizzes"
-                className="header-your-quizzes whitespace-nowrap text-sm text-muted-600 hover:text-primary-700"
-                aria-label="Your quizzes"
-                aria-current={
-                  pathname === '/quizzes' || pathname.startsWith('/create')
-                    ? 'page'
-                    : undefined
-                }
-                aria-describedby={
-                  quizCount !== undefined ? 'header-quiz-count' : undefined
-                }
-              >
-                <EntityIcon kind="quiz" size={17} />
-                <span className="header-space-label">Your quizzes</span>
-                <span className="header-space-short" aria-hidden="true">
-                  Quizzes
-                </span>
-                {countsQuery.isPending && (
-                  <span className="header-quiz-count">
-                    <LoadingIndicator label="Loading your quiz count…" />
-                  </span>
-                )}
-                {quizCount !== undefined && (
-                  <span className="header-quiz-count" id="header-quiz-count">
-                    {quizCount > 999 ? '999+' : quizCount}
-                    <span className="sr-only"> quizzes</span>
-                  </span>
-                )}
-              </Link>
-              <Link
-                href="/selves"
-                className="header-your-quizzes header-selves whitespace-nowrap text-sm text-muted-600 hover:text-primary-700"
-                aria-label="Your many selves"
-                aria-describedby={
-                  selvesCount !== undefined ? 'header-selves-count' : undefined
-                }
-                aria-current={pathname === '/selves' ? 'page' : undefined}
-              >
-                <EntityIcon kind="archetype" size={17} />
-                <span className="header-space-label">Your many selves</span>
-                <span className="header-space-short" aria-hidden="true">
-                  Selves
-                </span>
-                {countsQuery.isPending && (
-                  <span className="header-quiz-count">
-                    <LoadingIndicator label="Loading your discovery count…" />
-                  </span>
-                )}
-                {selvesCount !== undefined && (
-                  <span className="header-quiz-count" id="header-selves-count">
-                    {selvesCount > 999 ? '999+' : selvesCount}
-                    <span className="sr-only">
-                      {selvesCount === 1 ? ' discovery' : ' discoveries'}
-                    </span>
-                  </span>
-                )}
-              </Link>
-              <CreateQuizLink className="header-create-link">
-                Create
-              </CreateQuizLink>
               <Popover.Root open={open} onOpenChange={setOpen}>
                 <Popover.Trigger asChild>
                   <button

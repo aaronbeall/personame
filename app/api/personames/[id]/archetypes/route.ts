@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server'
-import { ownedQuiz, apiError } from '@/lib/personas'
+import { ownedQuizSelect, apiError } from '@/lib/personas'
 import { saveArchetypes } from '@/lib/editor-save'
 type Context = { params: Promise<{ id: string }> }
 export async function GET(_req: Request, { params }: Context) {
   try {
-    return NextResponse.json((await ownedQuiz((await params).id)).archetypes)
+    return NextResponse.json((await ownedQuizSelect((await params).id, { archetypes: { orderBy: { order: 'asc' }, include: { dimensions: true } } })).archetypes)
   } catch (e) {
     return apiError(e)
   }

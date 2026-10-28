@@ -82,4 +82,10 @@ export const pagesInput = z.object({
       }),
     )
     .max(30),
+}).superRefine(({ pages }, context) => {
+  const questions = pages.flatMap(page => page.questions)
+  const answers = questions.flatMap(question => question.answers)
+  const weights = answers.reduce((total, answer) => total + answer.weights.length, 0)
+  if (questions.length > 250 || answers.length > 2500 || weights > 30000)
+    context.addIssue({ code: 'custom', message: 'A quiz supports up to 250 questions, 2,500 answers, and 30,000 dimension weights.' })
 })
