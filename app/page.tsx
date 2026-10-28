@@ -22,23 +22,23 @@ export default async function Home() {
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center max-w-3xl mx-auto px-4">
               <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-2xl">
-                Create Your Own Personality Quiz, or Whatever
+                Make a personality quiz that’s full of you.
               </h1>
               <p className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto drop-shadow-lg">
-                Design custom personality assessments with your own dimensions and archetypes.
-                Share them with the world and discover insights about your audience.
+                Your questions. Your wonderfully specific personality types. Create a quiz
+                for your people and give them a little “that’s so me” moment.
               </p>
               <div className="flex flex-wrap gap-4 justify-center">
                 <Link href="/create">
                   <Button size="lg" className="rounded-full bg-linear-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white shadow-lg hover:shadow-xl transition-shadow">
                     <Sparkles className="h-5 w-5 mr-2" />
-                    Start Creating
+                    Create a quiz
                   </Button>
                 </Link>
                 <Link href="#explore">
                   <Button size="lg" variant="outline" className="rounded-full bg-white/90 hover:bg-white border-2 shadow-lg">
                     <TrendingUp className="h-5 w-5 mr-2" />
-                    Explore Quizzes
+                    Explore quizzes
                   </Button>
                 </Link>
               </div>
