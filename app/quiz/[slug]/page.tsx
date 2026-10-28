@@ -28,7 +28,7 @@ export default function QuizPage({
           <div className="surface empty-state">
             <h1>Quiz unavailable</h1>
             <p className="muted">{query.error.message}</p>
-            <Link href="/" className="button-link secondary mt-5">
+            <Link href="/explore" className="button-link secondary mt-5">
               Explore other quizzes
             </Link>
           </div>

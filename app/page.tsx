@@ -36,7 +36,10 @@ export default async function Home() {
                 <CreateQuizLink className="hero-cta hero-cta-primary">
                   Create a quiz
                 </CreateQuizLink>
-                <ExploreLink className="hero-cta hero-cta-secondary">
+                <ExploreLink
+                  target="section"
+                  className="hero-cta hero-cta-secondary"
+                >
                   <ArtActionIcon kind="explore" />
                   Explore quizzes
                 </ExploreLink>

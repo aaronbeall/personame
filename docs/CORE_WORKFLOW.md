@@ -67,7 +67,7 @@ The result-preservation migration adds a result snapshot and submission key, and
 
 ## Follow-up scope
 
-Analytics, demographic comparisons, rankings, social integrations, quiz templates, and versioned simultaneous live/draft editing remain separate features. The initial dashboard manages created quizzes; it does not yet list a participant’s past results.
+Analytics, demographic comparisons, rankings, social integrations, quiz templates, and versioned simultaneous live/draft editing remain separate features. Your quizzes manages created quizzes at `/quizzes`; Your many selves at `/selves` lists discovered archetypes and unfinished attempts.
 
 ### Builder drafts
 

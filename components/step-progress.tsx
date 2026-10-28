@@ -33,7 +33,7 @@ export function StepProgress({
   )
   return (
     <>
-      <Link href="/dashboard" className="back-link">
+      <Link href="/quizzes" className="back-link">
         <ArrowLeft size={14} strokeWidth={1.75} aria-hidden="true" />
         <span>Your quizzes</span>
       </Link>

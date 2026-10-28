@@ -25,10 +25,11 @@ export function AppFooter() {
           <div>
             <h2>Create</h2>
             <Link href="/create">Make a quiz</Link>
-            <Link href="/dashboard">Your quizzes</Link>
+            <Link href="/quizzes">Your quizzes</Link>
           </div>
           <div>
             <h2>Discover</h2>
+            <Link href="/selves">Your many selves</Link>
             <ExploreLink>Explore quizzes</ExploreLink>
             <Link href="/">Home</Link>
           </div>

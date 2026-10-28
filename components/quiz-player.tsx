@@ -1,5 +1,8 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { useSession } from 'next-auth/react'
+import { saveProgress, removeProgress } from '@/lib/participant-progress'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, ArrowRight, Sparkles } from 'lucide-react'
 import { Button } from './ui/button'
@@ -19,6 +22,9 @@ export function QuizPlayer({
   preview?: boolean
 }) {
   const router = useRouter()
+  const queryClient = useQueryClient()
+  const { data: session } = useSession()
+  const owner = session?.user?.email
   const root = useRef<HTMLDivElement>(null)
   const pages = quiz.pages.filter(
     (p) => p.style !== 'results' && (p.style === 'cover' || p.questions.length),
@@ -42,6 +48,7 @@ export function QuizPlayer({
       } catch {}
   }, [storageKey, preview])
   const update = (next: QuizResponses) => {
+    rememberProgress(next)
     setResponses(next)
     setError('')
     if (!preview)
@@ -66,6 +73,22 @@ export function QuizPlayer({
     p.style === 'cover' ? [] : p.questions,
   )
   const answered = allQuestions.filter((q) => responses[q.id]).length
+  function rememberProgress(next: QuizResponses) {
+    if (preview || !owner) return
+    saveProgress(owner, {
+      quizId: quiz.id,
+      slug: quiz.slug,
+      title: quiz.title,
+      description: quiz.description,
+      emoji: quiz.emoji,
+      color: quiz.color,
+      revision: quiz.revision,
+      answered: allQuestions.filter((q) => next[q.id]).length,
+      total: allQuestions.length,
+      updatedAt: new Date().toISOString(),
+    })
+  }
+
   const next = async () => {
     if (page?.style !== 'cover') {
       const missing = page?.questions.find(
@@ -78,6 +101,7 @@ export function QuizPlayer({
       }
     }
     if (pageIndex < pages.length - 1) {
+      rememberProgress(responses)
       setPageIndex((i) => i + 1)
       setError('')
       return
@@ -110,7 +134,9 @@ export function QuizPlayer({
         )
         try {
           sessionStorage.removeItem(storageKey)
+          if (owner) removeProgress(owner, quiz.id)
         } catch {}
+        void queryClient.invalidateQueries({ queryKey: ['personal'] })
         router.push(`/quiz/${quiz.slug}/results/${data.id}`)
       }
     } catch (e) {

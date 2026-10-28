@@ -155,7 +155,7 @@ export default function QuestionsPage({
       draft.accept(data)
       queryClient.setQueryData(['questions', id], data)
       queryClient.invalidateQueries({ queryKey: ['review', id] })
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+      queryClient.invalidateQueries({ queryKey: ['personal'] })
       router.push(`/create/${id}/preview`)
     },
   })

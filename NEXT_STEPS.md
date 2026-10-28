@@ -8,7 +8,7 @@ The core create → publish → take quiz → results flow is implemented on thi
 - Edit earlier steps and verify targets/weights remain intact.
 - Try multiple choice, slider, and scale questions in the full preview.
 - Publish, open the public link, submit, and copy the result link.
-- Check the creator dashboard and editing/unpublishing behavior.
+- Check the creator quiz library and editing/unpublishing behavior.
 - Apply the new Prisma migration to each environment before deploying the code.
 
 ## Next product work

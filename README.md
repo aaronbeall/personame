@@ -19,7 +19,7 @@ A platform for creating and sharing custom personality quizzes.
 
 ## Core workflow
 
-Create a quiz, define dimensions and archetypes, build question pages, preview, and publish. Participants can answer multiple-choice, slider, and scale questions and receive a shareable archetype result. The creator dashboard lets you return to drafts and live quizzes.
+Create a quiz, define dimensions and archetypes, build question pages, preview, and publish. Participants can answer multiple-choice, slider, and scale questions and receive a shareable archetype result. Your quizzes lets you return to drafts and live quizzes.
 
 See [Core workflow and verification](docs/CORE_WORKFLOW.md) for scoring rules, migrations, and tests.
 

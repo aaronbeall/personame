@@ -30,7 +30,7 @@ YAML supports comments and multiline text. Quote hex colors: `#` starts a YAML c
 
 ## Where to see them
 
-The YAML file is source material; import it into the configured database before browsing. The original eight entries use `publication: PUBLIC`: after first import they appear on the homepage and at `/quiz/<slug>`, where anyone can take them without signing in. Reading Nook, Garden Companion, and Festival Day use `publication: PRIVATE_DRAFT` and appear only in their creator’s **Your quizzes** at `/dashboard`. Use **Preview & publish** to try or publish those drafts.
+The YAML file is source material; import it into the configured database before browsing. The original eight entries use `publication: PUBLIC`: after first import they appear on the homepage and at `/quiz/<slug>`, where anyone can take them without signing in. Reading Nook, Garden Companion, and Festival Day use `publication: PRIVATE_DRAFT` and appear only in their creator’s **Your quizzes** at `/quizzes`. Use **Preview & publish** to try or publish those drafts.
 
 `publication` defaults to `PRIVATE_DRAFT` when omitted. Imports follow this field only when creating a new quiz. Existing slugs are skipped: rerunning never changes an existing quiz’s publication status or content. Changing YAML alone does not publish an existing draft; use its normal publish action.
 

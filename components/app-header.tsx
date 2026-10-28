@@ -5,14 +5,28 @@ import Image from 'next/image'
 import { useSession, signOut } from 'next-auth/react'
 import { Skeleton } from './ui/loading'
 import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { requestJson } from '@/lib/client-api'
+import { usePathname } from 'next/navigation'
+import { EntityIcon } from './entity-icon'
 import { LogOut } from 'lucide-react'
 import { CreateQuizLink } from './create-quiz-link'
 import { Button } from './ui/button'
 import * as Popover from '@radix-ui/react-popover'
 
 export function AppHeader() {
+  const pathname = usePathname()
   const { data: session, status } = useSession()
   const [open, setOpen] = useState(false)
+  const counts = useQuery({
+    queryKey: ['personal', 'count', session?.user?.email],
+    queryFn: () =>
+      requestJson<{ count: number; selvesCount: number }>('/api/me/counts'),
+    enabled: status === 'authenticated',
+    staleTime: 60_000,
+  }).data
+  const quizCount = counts?.count
+  const selvesCount = counts?.selvesCount
 
   const userImage = session?.user?.image
   const userName = session?.user?.name ?? 'User'
@@ -37,6 +51,13 @@ export function AppHeader() {
         </Link>
 
         <div className="flex items-center gap-3">
+          <Link
+            href="/explore"
+            className="header-explore"
+            aria-current={pathname === '/explore' ? 'page' : undefined}
+          >
+            Explore
+          </Link>
           {status === 'loading' ? (
             <div
               className="flex items-center gap-3"
@@ -49,10 +70,52 @@ export function AppHeader() {
           ) : status === 'authenticated' ? (
             <>
               <Link
-                href="/dashboard"
-                className="whitespace-nowrap text-sm text-muted-600 hover:text-primary-700"
+                href="/quizzes"
+                className="header-your-quizzes whitespace-nowrap text-sm text-muted-600 hover:text-primary-700"
+                aria-label="Your quizzes"
+                aria-current={
+                  pathname === '/quizzes' || pathname.startsWith('/create')
+                    ? 'page'
+                    : undefined
+                }
+                aria-describedby={
+                  quizCount !== undefined ? 'header-quiz-count' : undefined
+                }
               >
-                Your quizzes
+                <EntityIcon kind="quiz" size={17} />
+                <span className="header-space-label">Your quizzes</span>
+                <span className="header-space-short" aria-hidden="true">
+                  Quizzes
+                </span>
+                {quizCount !== undefined && (
+                  <span className="header-quiz-count" id="header-quiz-count">
+                    {quizCount > 999 ? '999+' : quizCount}
+                    <span className="sr-only"> quizzes</span>
+                  </span>
+                )}
+              </Link>
+              <Link
+                href="/selves"
+                className="header-your-quizzes header-selves whitespace-nowrap text-sm text-muted-600 hover:text-primary-700"
+                aria-label="Your many selves"
+                aria-describedby={
+                  selvesCount !== undefined ? 'header-selves-count' : undefined
+                }
+                aria-current={pathname === '/selves' ? 'page' : undefined}
+              >
+                <EntityIcon kind="archetype" size={17} />
+                <span className="header-space-label">Your many selves</span>
+                <span className="header-space-short" aria-hidden="true">
+                  Selves
+                </span>
+                {selvesCount !== undefined && (
+                  <span className="header-quiz-count" id="header-selves-count">
+                    {selvesCount > 999 ? '999+' : selvesCount}
+                    <span className="sr-only">
+                      {selvesCount === 1 ? ' discovery' : ' discoveries'}
+                    </span>
+                  </span>
+                )}
               </Link>
               <CreateQuizLink className="header-create-link">
                 Create
@@ -91,13 +154,6 @@ export function AppHeader() {
                       </p>
                     </div>
                     <nav className="p-2 space-y-1">
-                      <Link
-                        href="/dashboard"
-                        onClick={() => setOpen(false)}
-                        className="block px-3 py-2 text-sm text-muted-700 hover:bg-muted-50 rounded transition-colors"
-                      >
-                        Dashboard
-                      </Link>
                       <button
                         onClick={() => {
                           setOpen(false)

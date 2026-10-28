@@ -207,7 +207,11 @@ function QuizShelf({
   )
 }
 
-export function DiscoverQuizzes() {
+export function DiscoverQuizzes({
+  variant = 'home',
+}: {
+  variant?: 'home' | 'page'
+}) {
   const [search, setSearch] = useState('')
   const query = useQuery({
     queryKey: ['discover'],
@@ -219,15 +223,34 @@ export function DiscoverQuizzes() {
       `${q.title} ${q.description || ''}`.toLowerCase().includes(term),
     ) ?? []
   return (
-    <section id="explore" className="discover-section" tabIndex={-1}>
+    <section
+      id="explore"
+      className={`discover-section discover-${variant}`}
+      aria-label="Explore quizzes"
+      tabIndex={-1}
+    >
       <div className="discover-heading" data-reveal>
-        <div>
-          <p className="eyebrow">Made by curious people</p>
-          <h2>Find a little more of yourself</h2>
-          <p className="discover-intro">
-            Pick a world to wander into. See who you find.
-          </p>
-        </div>
+        {variant === 'home' ? (
+          <div>
+            <p className="eyebrow">Made by curious people</p>
+            <h2>Find a little more of yourself</h2>
+            <p className="discover-intro">
+              Pick a world to wander into. See who you find.
+            </p>
+            <Link href="/explore" className="discover-view-all">
+              Explore all quizzes <ArrowUpRight size={14} aria-hidden="true" />
+            </Link>
+          </div>
+        ) : (
+          <div>
+            <h2 className="discover-browse-title">Browse quizzes</h2>
+            <p className="discover-intro" role="status">
+              {query.data
+                ? `${quizzes.length} ${quizzes.length === 1 ? 'quiz' : 'quizzes'}${term ? ' found' : ' to discover'}`
+                : 'Find your next discovery'}
+            </p>
+          </div>
+        )}
         <label className="discover-search">
           <Search size={16} aria-hidden="true" />
           <input

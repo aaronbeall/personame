@@ -5,30 +5,28 @@ test('Slow data loads show skeletons, and saving shows a spinner on the chosen a
   seedQuiz,
 }) => {
   const { id } = await seedQuiz()
-  let releaseDashboard!: () => void
-  const dashboardGate = new Promise<void>((resolve) => {
-    releaseDashboard = resolve
+  let releaseQuizzes!: () => void
+  const quizzesGate = new Promise<void>((resolve) => {
+    releaseQuizzes = resolve
   })
-  await page.route('**/api/dashboard', async (route) => {
+  await page.route('**/api/me/quizzes', async (route) => {
     const response = await route.fetch()
-    await dashboardGate
+    await quizzesGate
     await route.fulfill({ response })
   })
-  await page.goto('/dashboard')
-  const dashboardLoading = page.getByRole('status', {
+  await page.goto('/quizzes')
+  const quizzesLoading = page.getByRole('status', {
     name: 'Loading your quizzes…',
     exact: true,
   })
-  await expect(dashboardLoading).toBeVisible()
-  await expect(dashboardLoading.locator('.loading-panel')).toHaveCount(3)
-  await test
-    .info()
-    .attach('Quiz list skeletons', {
-      body: await page.screenshot({ fullPage: true }),
-      contentType: 'image/png',
-    })
-  releaseDashboard()
-  await expect(dashboardLoading).toHaveCount(0)
+  await expect(quizzesLoading).toBeVisible()
+  await expect(quizzesLoading.locator('.loading-panel')).toHaveCount(3)
+  await test.info().attach('Quiz list skeletons', {
+    body: await page.screenshot({ fullPage: true }),
+    contentType: 'image/png',
+  })
+  releaseQuizzes()
+  await expect(quizzesLoading).toHaveCount(0)
 
   let releaseDimensions!: () => void
   const dimensionsGate = new Promise<void>((resolve) => {
@@ -43,9 +41,13 @@ test('Slow data loads show skeletons, and saving shows a spinner on the chosen a
   await expect(
     page.getByRole('status', { name: 'Loading your dimensions…', exact: true }),
   ).toBeVisible()
-  await expect(page.getByRole('button', { name: 'Add Dimension' })).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Add Dimension' })).toHaveCount(
+    0,
+  )
   releaseDimensions()
-  await expect(page.getByRole('button', { name: 'Add Dimension' })).toBeEnabled()
+  await expect(
+    page.getByRole('button', { name: 'Add Dimension' }),
+  ).toBeEnabled()
   await page.unroute(`**/api/personames/${id}/dimensions`)
   const dimensions = await (
     await page.request.get(`/api/personames/${id}/dimensions`)

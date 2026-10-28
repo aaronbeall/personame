@@ -257,7 +257,7 @@ test('New quiz starts fresh and unsaved navigation can be cancelled or discarded
   account,
 }) => {
   expect(account.id).toBeTruthy()
-  await page.goto('/dashboard')
+  await page.goto('/quizzes')
   await page.evaluate(() =>
     localStorage.setItem(
       'personame-draft',
@@ -269,7 +269,7 @@ test('New quiz starts fresh and unsaved navigation can be cancelled or discarded
       }),
     ),
   )
-  await page.getByRole('button', { name: 'Create', exact: true }).click()
+  await page.getByRole('link', { name: 'Create', exact: true }).click()
   await expect(page).toHaveURL(/\/create$/)
   await expect(page.getByLabel('Quiz title', { exact: true })).toBeEmpty()
   await expect(page.getByLabel('Description (optional)')).toBeEmpty()
@@ -282,7 +282,11 @@ test('New quiz starts fresh and unsaved navigation can be cancelled or discarded
       expect(dialog.type()).toBe('confirm')
       await dialog.dismiss()
     })
-    await page.getByRole('link', { name: 'Your quizzes', exact: true }).click()
+    await page
+      .locator('header')
+      .first()
+      .getByRole('link', { name: 'Your quizzes', exact: true })
+      .click()
     await expect(page).toHaveURL(/\/create$/)
     await expect(page.getByLabel('Quiz title', { exact: true })).toHaveValue(
       'An unsaved idea',
@@ -311,9 +315,13 @@ test('New quiz starts fresh and unsaved navigation can be cancelled or discarded
   })
   await test.step('Confirm leaving and return to a completely fresh quiz', async () => {
     page.once('dialog', async (dialog) => dialog.accept())
-    await page.getByRole('link', { name: 'Your quizzes', exact: true }).click()
-    await expect(page).toHaveURL(/\/dashboard$/)
-    await page.getByRole('button', { name: 'Create', exact: true }).click()
+    await page
+      .locator('header')
+      .first()
+      .getByRole('link', { name: 'Your quizzes', exact: true })
+      .click()
+    await expect(page).toHaveURL(/\/quizzes$/)
+    await page.getByRole('link', { name: 'Create', exact: true }).click()
     await expect(page.getByLabel('Quiz title', { exact: true })).toBeEmpty()
   })
 })
@@ -502,21 +510,17 @@ test('Editor footers explain required fields and clear feedback as fields are co
     await expect(record.getByRole('status')).toHaveText(
       'Enter a name, a low end label, and a high end label.',
     )
-    await test
-      .info()
-      .attach('Validation footer — desktop', {
-        body: await page.screenshot({ fullPage: true }),
-        contentType: 'image/png',
-      })
+    await test.info().attach('Validation footer — desktop', {
+      body: await page.screenshot({ fullPage: true }),
+      contentType: 'image/png',
+    })
     await page.setViewportSize({ width: 390, height: 844 })
     await expect
       .poll(() => page.locator('body').evaluate((el) => el.scrollWidth))
       .toBeLessThanOrEqual(390)
-    await record
-      .locator('.item-editor-actions')
-      .screenshot({
-        path: test.info().outputPath('validation-actions-mobile.png'),
-      })
+    await record.locator('.item-editor-actions').screenshot({
+      path: test.info().outputPath('validation-actions-mobile.png'),
+    })
     await page.setViewportSize({ width: 1440, height: 1000 })
     await record.getByPlaceholder('e.g., Extraversion').fill('Curiosity')
     await expect(record.getByRole('status')).toHaveText(

@@ -40,7 +40,7 @@ const palette = [
 const artwork = [
   ['creation', 'A new idea', 'Setup and questions'],
   ['science', 'Curiosity at work', 'Dimensions and quiz-taking'],
-  ['tree-house', 'Room to grow', 'Dashboard'],
+  ['tree-house', 'Room to grow', 'Your quizzes'],
   ['galaxy-expansion', 'Out into the world', 'Review and publishing'],
   ['party', 'A little celebration', 'Results'],
   ['islands', 'A warm welcome', 'Archetypes, sign-in and covers'],

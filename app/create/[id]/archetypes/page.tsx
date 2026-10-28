@@ -95,7 +95,7 @@ export default function ArchetypesPage({
       setMessage('Changes saved.')
       queryClient.setQueryData(['archetypes', id], data)
       queryClient.invalidateQueries({ queryKey: ['review', id] })
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+      queryClient.invalidateQueries({ queryKey: ['personal'] })
       if (advance) router.push(`/create/${id}/questions`)
     },
   })

@@ -76,7 +76,7 @@ export function NameStep({ quizId }: { quizId?: string }) {
       emoji: starterEmojis[Math.floor(Math.random() * starterEmojis.length)],
       color: COLOR_THEME[Math.floor(Math.random() * COLOR_THEME.length)].hex,
     }
-    // Discard the former autosaved naming draft. New means new; saved quizzes live in the dashboard.
+    // Discard the former autosaved naming draft. New means new; saved quizzes live in Your quizzes.
     try {
       localStorage.removeItem('personame-draft')
     } catch {}
@@ -120,7 +120,7 @@ export function NameStep({ quizId }: { quizId?: string }) {
       draft.accept(canonical)
       cache.setQueryData(['quiz-details', saved.id], canonical)
       cache.invalidateQueries({ queryKey: ['review', saved.id] })
-      cache.invalidateQueries({ queryKey: ['dashboard'] })
+      cache.invalidateQueries({ queryKey: ['personal'] })
       if (advance) router.push(`/create/${saved.id}/dimensions`)
       else if (!quizId) router.replace(`/create/${saved.id}/name`)
       else setMessage('Saved. Your changes are in the draft.')

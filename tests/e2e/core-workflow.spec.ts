@@ -197,7 +197,7 @@ test('Create, grade, preview, publish, and complete a quiz through the UI', asyn
     ).toBeVisible()
     expect(await db.quizResult.count({ where: { personaId: quizId } })).toBe(0)
   })
-  await test.step('Publish and verify the creator dashboard', async () => {
+  await test.step('Publish and verify the creator quiz library', async () => {
     await page.getByRole('tab', { name: 'Review & publish' }).click()
     await page
       .getByRole('button', { name: 'Publish quiz', exact: true })
@@ -212,14 +212,15 @@ test('Create, grade, preview, publish, and complete a quiz through the UI', asyn
     await expect(page.getByRole('link', { name: 'Open quiz' })).toBeVisible()
     const quiz = await db.persona.findUniqueOrThrow({ where: { id: quizId } })
     slug = quiz.slug
-    await page.goto('/dashboard')
+    await page.goto('/quizzes')
+    await page.getByRole('tab', { name: /^Published/ }).click()
     await expect(
       page.getByRole('heading', { name: 'The browser adventure' }),
     ).toBeVisible()
-    await test.info().attach('Creator dashboard', {
+    await test.info().attach('Your quizzes', {
       body: await page.screenshot({
         fullPage: true,
-        path: test.info().outputPath('dashboard.png'),
+        path: test.info().outputPath('your-quizzes.png'),
       }),
       contentType: 'image/png',
     })

@@ -4,20 +4,23 @@ import Link from 'next/link'
 import { ArtActionIcon } from './art-action-icon'
 import type { ReactNode } from 'react'
 
-/** Repeated hash clicks should scroll again, even when the URL already has #explore. */
+/** The homepage can opt into its local shelf; other Explore actions open the full discovery page. */
 export function ExploreLink({
   children,
   className,
+  target = 'page',
 }: {
   children: ReactNode
   className?: string
+  target?: 'page' | 'section'
 }) {
   return (
     <Link
-      href="/#explore"
+      href={target === 'section' ? '/#explore' : '/explore'}
       className={className}
       onClick={(event) => {
         if (
+          target !== 'section' ||
           event.defaultPrevented ||
           event.button !== 0 ||
           event.metaKey ||

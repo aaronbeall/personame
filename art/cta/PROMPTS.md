@@ -10,6 +10,10 @@ Whimsical hand-inked psychedelic storybook doodles matching Personame's existing
 
 One compact, isolated illustration for a Create quiz button: a short, charming lavender-and-butter-yellow pencil angled upward, its drawing tip giving life to a small mint squiggly four-point imagination star. One clear bold silhouette with minimal detail; generous transparent padding, centered, occupies about 80% of a square image. Designed to remain recognizable at 28–32px. The pencil is the dominant object; expressive handmade plum outlines and restrained pastel shading.
 
+### Curved-line revision (`create-curvy.png`)
+
+Preserve the lavender and butter-yellow pencil, diagonal angle, dark plum outlines, and pastel texture. Replace the small mint star and droplets with one long, bold mint drawn stroke flowing continuously from the tip through two sweeping S-curves. Use a clear thick silhouette readable at 30–40px, no detached confetti, and actual transparent alpha. The shared Create action icon uses this revision; `create.png` retains the original artwork.
+
 ## Explore
 
 One compact, isolated illustration for an Explore quizzes button: a playful hand-drawn mint magnifying glass with a slightly curled lilac handle and a small butter-yellow star in its lens. Organic irregular silhouette, bold plum outlines, minimal detail; centered, occupies about 80% of a square image. Designed to remain recognizable at 28–32px. Match the Create icon's material, outline weight, and muted pastel palette.
