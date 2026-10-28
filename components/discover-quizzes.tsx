@@ -98,7 +98,7 @@ function QuizShelf({
   }
   return (
     <section className="quiz-shelf" aria-labelledby={`shelf-${id}`}>
-      <header className="quiz-shelf-heading">
+      <header className="quiz-shelf-heading" data-reveal="slide">
         <div>
           <h3 id={`shelf-${id}`}>{title}</h3>
           <p>{description}</p>
@@ -134,7 +134,11 @@ function QuizShelf({
         {quizzes.map((quiz, index) => {
           const theme = getColorTheme(quiz.color)
           return (
-            <li key={`${quiz.id}-${index}`}>
+            <li
+              key={`${quiz.id}-${index}`}
+              data-reveal="slide"
+              style={{ animationDelay: `${(index % 5) * 85 + 90}ms` }}
+            >
               <Link className="shelf-quiz" href={`/quiz/${quiz.slug}`}>
                 <div
                   className="shelf-quiz-art"
@@ -191,7 +195,7 @@ export function DiscoverQuizzes() {
     ) ?? []
   return (
     <section id="explore" className="discover-section">
-      <div className="discover-heading">
+      <div className="discover-heading" data-reveal>
         <div>
           <p className="eyebrow">Made by curious people</p>
           <h2>Find a little more of yourself</h2>

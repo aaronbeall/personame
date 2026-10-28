@@ -1,3 +1,5 @@
+import './home-motion.css'
+import { HomeMotion } from '@/components/home-motion'
 import { HomeClosingCta } from '@/components/home-closing-cta'
 import { DiscoverQuizzes } from '@/components/discover-quizzes'
 import { Button } from '@/components/ui/button'
@@ -8,7 +10,7 @@ import Link from 'next/link'
 
 export default async function Home() {
   return (
-    <div className="home-page min-h-screen">
+    <HomeMotion>
       {/* Hero Section */}
       <div className="relative w-full overflow-hidden">
         <div className="relative h-[600px] w-full">
@@ -21,7 +23,7 @@ export default async function Home() {
           />
           <div className="absolute inset-0 bg-linear-to-b from-black/40 to-black/60" />
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center max-w-3xl mx-auto px-4">
+            <div className="home-hero-copy text-center max-w-3xl mx-auto px-4">
               <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-2xl">
                 Make a personality quiz that’s full of you.
               </h1>
@@ -57,6 +59,6 @@ export default async function Home() {
 
         <HomeClosingCta />
       </div>
-    </div>
+    </HomeMotion>
   )
 }

@@ -13,7 +13,7 @@ export function HomeClosingCta() {
         alt=""
         className="home-closing-art"
       />
-      <div className="home-closing-copy">
+      <div className="home-closing-copy" data-reveal>
         <p className="eyebrow">Your turn to make something</p>
         <h2 id="closing-cta-title">
           What will your

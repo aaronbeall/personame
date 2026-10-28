@@ -1,0 +1,160 @@
+/* One-shot scroll reveals: short sequences, no scroll-jacking or looping motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .home-page [data-reveal] {
+    transition:
+      opacity 580ms ease,
+      transform 580ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .home-page [data-reveal-state='pending'] {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  .home-page [data-reveal-state='visible'] {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .home-page [data-reveal='step'] {
+    transition: none;
+    transform-origin: 50% 70%;
+  }
+  .home-page [data-reveal='step'][data-reveal-state='pending'] {
+    opacity: 0;
+    transform: translateY(38px) scale(0.72) rotate(-3deg);
+  }
+  .home-page [data-reveal='step'][data-reveal-state='visible'] {
+    animation: home-step-pop 900ms both;
+  }
+  .quiz-shelf {
+    --reveal-x: -46px;
+  }
+  .quiz-shelf:nth-of-type(even) {
+    --reveal-x: 46px;
+  }
+  .home-page [data-reveal='slide'] {
+    transition: none;
+  }
+  .home-page [data-reveal='slide'][data-reveal-state='pending'] {
+    opacity: 0;
+    transform: translateX(var(--reveal-x));
+  }
+  .home-page [data-reveal='slide'][data-reveal-state='visible'] {
+    animation: home-shelf-slide 680ms cubic-bezier(0.2, 0.75, 0.2, 1) both;
+  }
+  .home-hero-copy > * {
+    animation: home-hero-enter 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .home-hero-copy > :nth-child(1) {
+    animation-delay: 40ms;
+  }
+  .home-hero-copy > :nth-child(2) {
+    animation-delay: 140ms;
+  }
+  .home-hero-copy > :nth-child(3) {
+    animation-delay: 240ms;
+  }
+  .walkthrough-stage-art {
+    transition:
+      translate 240ms cubic-bezier(0.2, 0.7, 0.2, 1),
+      box-shadow 240ms,
+      border-color 240ms;
+  }
+  .walkthrough-stage-art > .walkthrough-artwork {
+    transition:
+      scale 350ms ease,
+      opacity 240ms;
+  }
+  .quiz-walkthrough-stages h3 {
+    transition: color 180ms;
+  }
+  .home-page [data-reveal]:focus-within {
+    opacity: 1;
+    transform: none;
+    transition-delay: 0ms !important;
+    animation: none !important;
+  }
+}
+@keyframes home-step-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(38px) scale(0.72) rotate(-3deg);
+    animation-timing-function: cubic-bezier(0.2, 0.8, 0.25, 1);
+  }
+  48% {
+    opacity: 1;
+    transform: translateY(-8px) scale(1.045) rotate(0.8deg);
+    animation-timing-function: ease-in-out;
+  }
+  70% {
+    transform: translateY(3px) scale(0.985) rotate(-0.3deg);
+    animation-timing-function: ease-in-out;
+  }
+  86% {
+    transform: translateY(-1px) scale(1.008);
+    animation-timing-function: ease-out;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0);
+  }
+}
+@keyframes home-shelf-slide {
+  from {
+    opacity: 0;
+    transform: translateX(var(--reveal-x));
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes home-hero-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .quiz-walkthrough-stages > li:hover .walkthrough-stage-art {
+    translate: 0 -6px;
+    border-color: #c8b7df;
+    box-shadow: 0 12px 24px #59417812;
+  }
+  .quiz-walkthrough-stages > li:hover .walkthrough-artwork {
+    scale: 1.04;
+    opacity: 0.74;
+  }
+  .quiz-walkthrough-stages > li:hover h3 {
+    color: #6546b5;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-page [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    transition-delay: 0ms !important;
+    animation: none !important;
+  }
+  .quiz-walkthrough-stages > li:hover .walkthrough-stage-art {
+    translate: none;
+  }
+  .quiz-walkthrough-stages > li:hover .walkthrough-artwork {
+    scale: 1;
+  }
+}
+
+@media (max-width: 600px) and (prefers-reduced-motion: no-preference) {
+  .home-page [data-reveal='step'] {
+    animation-delay: 0ms !important;
+  }
+  .quiz-shelf {
+    --reveal-x: -28px;
+  }
+  .quiz-shelf:nth-of-type(even) {
+    --reveal-x: 28px;
+  }
+}

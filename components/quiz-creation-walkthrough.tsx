@@ -150,19 +150,29 @@ export function QuizCreationWalkthrough() {
       aria-labelledby="quiz-walkthrough-title"
     >
       <header className="quiz-walkthrough-intro">
-        <p className="eyebrow">How it comes together</p>
-        <h2 id="quiz-walkthrough-title">
+        <p className="eyebrow" data-reveal>
+          How it comes together
+        </p>
+        <h2
+          id="quiz-walkthrough-title"
+          data-reveal
+          style={{ transitionDelay: '90ms' }}
+        >
           A spark of an idea.
           <br />A quiz only you could make.
         </h2>
-        <p>
+        <p data-reveal style={{ transitionDelay: '170ms' }}>
           You bring the perspective. Build the questions and personalities
           around it, one step at a time.
         </p>
       </header>
       <ol className="quiz-walkthrough-stages">
         {stages.map((stage, index) => (
-          <li key={stage.title}>
+          <li
+            key={stage.title}
+            data-reveal="step"
+            style={{ animationDelay: `${index * 180}ms` }}
+          >
             <div className="walkthrough-stage-art" aria-hidden="true">
               <Image
                 src={`/images/decor/${stage.art}.webp`}
