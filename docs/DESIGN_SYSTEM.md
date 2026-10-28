@@ -251,3 +251,7 @@ Use `DimensionValueLabel` for the shared raw-score and qualitative endpoint desc
 Archetype displays show the persistent marker callout instead of a separate Target heading. Only the two outer endpoint labels have width constraints; never apply percentage widths to their nested icon/text spans. Long labels wrap naturally.
 
 Archetype target editors align target and importance controls on shared grid rows. Show the live `DimensionValueLabel` between the dimension tag and target rail. Matching importance uses a muted segmented rail with Ignore/Essential endpoints and its own influence descriptor, keeping it distinct from the dimension-colored target slider. On narrow screens the weight section stacks beneath the target.
+
+## Homepage creation walkthrough
+
+`QuizCreationWalkthrough` introduces the five builder stages with one space-themed example. Use the shared quiz cover, diamond dimension, and circular archetype badge identities in read-only miniature scenes, layered over the existing generated artwork. Let the artwork extend above and around the illustration frames at moderate opacity, with a soft fade at its lower edge; foreground miniatures stay crisp. Keep explanatory text outside the illustration. The ordered sequence uses five columns on desktop, three on intermediate widths, and compact illustration/text rows on mobile. Decorative previews are hidden from assistive technology and never impersonate interactive form controls.

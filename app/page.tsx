@@ -1,7 +1,7 @@
 import { DiscoverQuizzes } from '@/components/discover-quizzes'
 import { Button } from '@/components/ui/button'
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Sparkles, TrendingUp, Users } from 'lucide-react'
+import { QuizCreationWalkthrough } from '@/components/quiz-creation-walkthrough'
+import { Sparkles, TrendingUp } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -49,44 +49,7 @@ export default async function Home() {
 
       <div className="container mx-auto px-4 py-16">
 
-        {/* Features */}
-        <div className="grid md:grid-cols-3 gap-8 mb-20">
-          <Card className="border-2 border-primary-200 bg-primary-50/70 hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="h-12 w-12 bg-primary-100 rounded-lg flex items-center justify-center mb-4">
-                <Sparkles className="h-6 w-6 text-primary-600" />
-              </div>
-              <CardTitle className="text-primary-900 drop-shadow-sm">Custom Dimensions</CardTitle>
-              <CardDescription className="text-primary-800 drop-shadow-sm">
-                Define your own personality dimensions and scales to measure what matters to you
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card className="border-2 border-secondary-200 bg-secondary-50/70 hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="h-12 w-12 bg-secondary-100 rounded-lg flex items-center justify-center mb-4">
-                <Users className="h-6 w-6 text-secondary-600" />
-              </div>
-              <CardTitle className="text-secondary-900 drop-shadow-sm">Rich Archetypes</CardTitle>
-              <CardDescription className="text-secondary-800 drop-shadow-sm">
-                Create compelling personality types with emojis, colors, and detailed descriptions
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card className="border-2 border-accent-200 bg-accent-50/70 hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="h-12 w-12 bg-accent-100 rounded-lg flex items-center justify-center mb-4">
-                <TrendingUp className="h-6 w-6 text-accent-600" />
-              </div>
-              <CardTitle className="text-accent-900 drop-shadow-sm">Deep Insights</CardTitle>
-              <CardDescription className="text-accent-800 drop-shadow-sm">
-                Give participants a thoughtful archetype result with a visual breakdown of their personality dimensions
-              </CardDescription>
-            </CardHeader>
-          </Card>
-        </div>
+        <QuizCreationWalkthrough />
 
         {/* Live published quizzes, in place of the old sample listings. */}
         <div className="mb-20"><DiscoverQuizzes /></div>
