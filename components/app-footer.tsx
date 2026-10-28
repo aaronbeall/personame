@@ -1,3 +1,4 @@
+import { ExploreLink } from './explore-link'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -28,7 +29,7 @@ export function AppFooter() {
           </div>
           <div>
             <h2>Discover</h2>
-            <Link href="/#explore">Explore quizzes</Link>
+            <ExploreLink>Explore quizzes</ExploreLink>
             <Link href="/">Home</Link>
           </div>
         </nav>

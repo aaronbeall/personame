@@ -5,8 +5,9 @@ import Image from 'next/image'
 import { useSession, signOut } from 'next-auth/react'
 import { Skeleton } from './ui/loading'
 import { useState } from 'react'
-import { Sparkles, LogOut } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { LogOut } from 'lucide-react'
+import { CreateQuizLink } from './create-quiz-link'
+import { Button } from './ui/button'
 import * as Popover from '@radix-ui/react-popover'
 
 export function AppHeader() {
@@ -53,12 +54,9 @@ export function AppHeader() {
               >
                 Your quizzes
               </Link>
-              <Link href="/create">
-                <Button className="bg-linear-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white shadow-md hover:shadow-lg transition-shadow px-4 h-9 text-sm font-semibold">
-                  <Sparkles className="h-4 w-4 mr-1.5" />
-                  Create
-                </Button>
-              </Link>
+              <CreateQuizLink className="header-create-link">
+                Create
+              </CreateQuizLink>
               <Popover.Root open={open} onOpenChange={setOpen}>
                 <Popover.Trigger asChild>
                   <button

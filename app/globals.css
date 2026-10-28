@@ -2264,7 +2264,10 @@ button[aria-busy='true'] > svg {display:none;}
 .shelf-quiz:hover .shelf-quiz-art {border-color:#baa1d2;box-shadow:0 6px 18px #35234d10;}
 .shelf-quiz:hover .quiz-cover-mark {transform:rotate(-5deg) scale(1.43);}
 .shelf-quiz-copy {padding:14px 2px 0;}
-.shelf-quiz-copy > span {font-size:10px;font-weight:500;color:#8c7c9b;}
+.shelf-quiz-meta {display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
+.shelf-type-tag {display:inline-flex;align-items:center;gap:5px;padding:4px 7px;border:1px solid #ddd1eb;border-radius:6px;background:#f5effbbf;color:#78618e;font-size:10px;font-weight:550;line-height:1.3;white-space:nowrap;}
+.shelf-completions {display:inline-flex;align-items:center;gap:4px;color:#8c7c9b;font-size:10px;font-variant-numeric:tabular-nums;white-space:nowrap;}
+.shelf-completions svg {flex-shrink:0;}
 .shelf-quiz-copy h4 {margin-top:5px;font-size:16px;line-height:1.4;font-weight:650;letter-spacing:-.015em;color:var(--pn-ink-strong);}
 .shelf-quiz-copy p {margin-top:7px;font-size:12px;line-height:1.65;color:var(--pn-text-secondary);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 @media(max-width:640px){.discover-heading {align-items:stretch;margin-bottom:30px;}.quiz-shelf-heading h3 {font-size:18px;}.quiz-shelf-heading p {font-size:12px;}.quiz-shelf-rail {gap:14px;}.quiz-shelf-rail > li {flex-basis:240px;}.quiz-shelf-controls button {width:29px;height:29px;}.quiz-shelf-controls {gap:4px;}.quiz-shelf + .quiz-shelf {margin-top:30px;}}
@@ -2323,4 +2326,38 @@ button[aria-busy='true'] > svg {display:none;}
   .home-page .discover-heading {padding-top:32px;padding-bottom:28px;}
   .home-page .quiz-shelf {padding-top:25px;padding-bottom:26px;}
   .home-page .home-closing-cta {margin-bottom:58px;}
+}
+
+/* Hero actions share geometry across native and section links. */
+.hero-cta {display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:46px;padding:11px 25px;border:1px solid transparent;border-radius:999px;font-size:14px;font-weight:600;line-height:1.5;white-space:nowrap;transition:background 160ms,box-shadow 160ms;}
+.hero-cta-primary {color:white;background:linear-gradient(110deg,#4b48db,#9333ea);box-shadow:0 4px 14px #24174426;}
+.hero-cta-primary:hover {background:linear-gradient(110deg,#403bcc,#8126d5);box-shadow:0 6px 18px #24174433;}
+.hero-cta-secondary {color:#42337a;border-color:#ffffffc9;background:#fffffff2;box-shadow:0 3px 12px #24174414;}
+.hero-cta-secondary:hover {background:white;box-shadow:0 5px 16px #24174424;}
+.hero-cta:focus-visible {outline:2px solid white;outline-offset:4px;}
+@media(prefers-reduced-motion:reduce){.hero-cta {transition:none;}}
+
+/* Generated hand-inked action artwork and a finite, physics-driven sprite burst. */
+.art-action-icon {display:block;flex-shrink:0;width:36px;height:36px;object-fit:contain;}
+.art-create-link {position:relative;isolation:isolate;overflow:visible;}
+.art-create-link > .art-action-icon,.art-create-label {position:relative;z-index:1;}
+.art-create-link .art-action-icon {margin:-6px 0;}
+.hero-cta .art-action-icon {width:38px;height:38px;margin:-7px 0;}
+.art-confetti {position:fixed;left:0;top:0;width:600px;height:500px;z-index:60;pointer-events:none;}
+.header-create-link {display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:7px 13px;border-radius:10px;background:linear-gradient(110deg,#4b48db,#9333ea);color:white;font-size:13px;font-weight:600;box-shadow:0 2px 5px #35234d16;}
+.header-create-link .art-action-icon {width:30px;height:30px;}
+.header-create-link:hover {box-shadow:0 4px 9px #35234d24;}
+.header-create-link:focus-visible {outline:2px solid var(--pn-focus);outline-offset:3px;}
+.home-closing-secondary {display:inline-flex;align-items:center;gap:6px;}
+.home-closing-secondary .art-action-icon {width:30px;height:30px;}
+@media(prefers-reduced-motion:reduce){.art-confetti {display:none;}}
+
+@media(prefers-reduced-motion:no-preference){
+  .art-action-icon {transition:transform 320ms cubic-bezier(.2,1.6,.4,1);transform-origin:50% 65%;}
+  a:focus-visible .art-action-icon[data-art-action=create] {transform:scale(1.18) rotate(-12deg);}
+  a:focus-visible .art-action-icon[data-art-action=explore] {transform:scale(1.15) rotate(10deg);}
+}
+@media(hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
+  a:hover .art-action-icon[data-art-action=create] {transform:scale(1.18) rotate(-12deg);}
+  a:hover .art-action-icon[data-art-action=explore] {transform:scale(1.15) rotate(10deg);}
 }

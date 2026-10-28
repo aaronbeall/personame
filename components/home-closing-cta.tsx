@@ -1,6 +1,6 @@
+import { ExploreLink } from './explore-link'
 import Image from 'next/image'
-import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
+import { CreateQuizLink } from './create-quiz-link'
 
 export function HomeClosingCta() {
   return (
@@ -25,12 +25,12 @@ export function HomeClosingCta() {
           a time.
         </p>
         <div className="home-closing-actions">
-          <Link href="/create" className="walkthrough-create-link">
-            Create your quiz <ArrowRight size={16} aria-hidden="true" />
-          </Link>
-          <Link href="#explore" className="home-closing-secondary">
+          <CreateQuizLink className="walkthrough-create-link">
+            Create your quiz
+          </CreateQuizLink>
+          <ExploreLink className="home-closing-secondary">
             Explore a little first
-          </Link>
+          </ExploreLink>
         </div>
       </div>
     </section>

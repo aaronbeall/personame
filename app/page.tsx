@@ -2,11 +2,11 @@ import './home-motion.css'
 import { HomeMotion } from '@/components/home-motion'
 import { HomeClosingCta } from '@/components/home-closing-cta'
 import { DiscoverQuizzes } from '@/components/discover-quizzes'
-import { Button } from '@/components/ui/button'
+import { ExploreLink } from '@/components/explore-link'
 import { QuizCreationWalkthrough } from '@/components/quiz-creation-walkthrough'
-import { Sparkles, TrendingUp } from 'lucide-react'
+import { CreateQuizLink } from '@/components/create-quiz-link'
+import { ArtActionIcon } from '@/components/art-action-icon'
 import Image from 'next/image'
-import Link from 'next/link'
 
 export default async function Home() {
   return (
@@ -28,22 +28,18 @@ export default async function Home() {
                 Make a personality quiz that’s full of you.
               </h1>
               <p className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto drop-shadow-lg">
-                Your questions. Your wonderfully specific personality types. Create a quiz
-                for your people and give them a little “that’s so me” moment.
+                Your questions. Your wonderfully specific personality types.
+                Create a quiz for your people and give them a little “that’s so
+                me” moment.
               </p>
               <div className="flex flex-wrap gap-4 justify-center">
-                <Link href="/create">
-                  <Button size="lg" className="rounded-full bg-linear-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white shadow-lg hover:shadow-xl transition-shadow">
-                    <Sparkles className="h-5 w-5 mr-2" />
-                    Create a quiz
-                  </Button>
-                </Link>
-                <Link href="#explore">
-                  <Button size="lg" variant="outline" className="rounded-full bg-white/90 hover:bg-white border-2 shadow-lg">
-                    <TrendingUp className="h-5 w-5 mr-2" />
-                    Explore quizzes
-                  </Button>
-                </Link>
+                <CreateQuizLink className="hero-cta hero-cta-primary">
+                  Create a quiz
+                </CreateQuizLink>
+                <ExploreLink className="hero-cta hero-cta-secondary">
+                  <ArtActionIcon kind="explore" />
+                  Explore quizzes
+                </ExploreLink>
               </div>
             </div>
           </div>
@@ -51,11 +47,12 @@ export default async function Home() {
       </div>
 
       <div className="home-content container mx-auto px-4">
-
         <QuizCreationWalkthrough />
 
         {/* Editorial shelves of published quizzes. */}
-        <div className="mb-20"><DiscoverQuizzes /></div>
+        <div className="mb-20">
+          <DiscoverQuizzes />
+        </div>
 
         <HomeClosingCta />
       </div>

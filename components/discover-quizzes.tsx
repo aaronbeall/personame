@@ -1,4 +1,5 @@
 'use client'
+import { EntityIcon } from '@/components/entity-icon'
 import { QuizCoverMark } from '@/components/quiz-cover-mark'
 import { LoadingState } from '@/components/ui/loading'
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
@@ -7,7 +8,18 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { requestJson } from '@/lib/client-api'
 import { getColorTheme } from '@/lib/colors'
-import { ArrowUpRight, ChevronLeft, ChevronRight, Search } from 'lucide-react'
+import {
+  ArrowUpRight,
+  ChevronLeft,
+  ChevronRight,
+  CircleCheck,
+  Search,
+} from 'lucide-react'
+
+const completionFormat = new Intl.NumberFormat('en', {
+  notation: 'compact',
+  maximumFractionDigits: 1,
+})
 
 type Listing = {
   id: string
@@ -164,9 +176,22 @@ function QuizShelf({
                   </span>
                 </div>
                 <div className="shelf-quiz-copy">
-                  <span>
-                    {quiz._count.archetypes} personality types to discover
-                  </span>
+                  <div className="shelf-quiz-meta">
+                    <span className="shelf-type-tag">
+                      <EntityIcon kind="archetype" size={12} />
+                      {quiz._count.archetypes} personality types
+                    </span>
+                    <span
+                      className="shelf-completions"
+                      aria-label={`${quiz.completions.toLocaleString('en')} completions`}
+                      title={`${quiz.completions.toLocaleString('en')} completions`}
+                    >
+                      <CircleCheck size={12} aria-hidden="true" />
+                      <span aria-hidden="true">
+                        {completionFormat.format(quiz.completions)} completions
+                      </span>
+                    </span>
+                  </div>
                   <h4>{quiz.title}</h4>
                   <p>
                     {quiz.description ||
@@ -194,7 +219,7 @@ export function DiscoverQuizzes() {
       `${q.title} ${q.description || ''}`.toLowerCase().includes(term),
     ) ?? []
   return (
-    <section id="explore" className="discover-section">
+    <section id="explore" className="discover-section" tabIndex={-1}>
       <div className="discover-heading" data-reveal>
         <div>
           <p className="eyebrow">Made by curious people</p>

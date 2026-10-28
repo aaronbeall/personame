@@ -1,6 +1,6 @@
 import Image from 'next/image'
-import Link from 'next/link'
-import { ArrowRight, Check, Link2 } from 'lucide-react'
+import { CreateQuizLink } from './create-quiz-link'
+import { Check, Link2 } from 'lucide-react'
 import { ArchetypeBadge, DimensionSymbol } from './entity-identity'
 import { QuizCoverMark } from './quiz-cover-mark'
 
@@ -191,9 +191,9 @@ export function QuizCreationWalkthrough() {
           </li>
         ))}
       </ol>
-      <Link href="/create" className="walkthrough-create-link">
-        Make your first quiz <ArrowRight size={16} aria-hidden="true" />
-      </Link>
+      <CreateQuizLink className="walkthrough-create-link">
+        Make your first quiz
+      </CreateQuizLink>
     </section>
   )
 }
