@@ -87,3 +87,85 @@ test('Homepage keeps its local explore section and links to the full discovery p
       .getByRole('link', { name: 'Explore quizzes', exact: true }),
   ).toHaveAttribute('href', '/explore')
 })
+
+test('Explore header count covers the full public catalog and stays visible while scrolling', async ({
+  page,
+  account,
+  db,
+  context,
+}) => {
+  await db.persona.createMany({
+    data: Array.from({ length: 31 }, (_, i) => ({
+      title: `Catalog count ${i}`,
+      slug: `count-${account.id}-${i}`,
+      creatorId: account.id,
+      status: 'PUBLISHED' as const,
+      visibility: 'PUBLIC' as const,
+      publishedAt: new Date(),
+    })),
+  })
+  await db.persona.createMany({
+    data: [
+      {
+        title: 'Private published quiz',
+        slug: `private-${account.id}`,
+        creatorId: account.id,
+        status: 'PUBLISHED',
+        visibility: 'PRIVATE',
+      },
+      {
+        title: 'Closed quiz',
+        slug: `closed-${account.id}`,
+        creatorId: account.id,
+        status: 'CLOSED',
+        visibility: 'PUBLIC',
+      },
+    ],
+  })
+  const count = await db.persona.count({
+    where: { status: 'PUBLISHED', visibility: 'PUBLIC' },
+  })
+  await page.goto('/explore')
+  const header = page.locator('.site-header')
+  const explore = header.getByRole('link', {
+    name: 'Explore quizzes',
+    exact: true,
+  })
+  await expect(explore.locator('svg')).toBeVisible()
+  await expect(page.locator('#header-explore-count')).toHaveAttribute(
+    'title',
+    `${count.toLocaleString('en')} published quizzes`,
+  )
+  expect(
+    await (await page.request.get('/api/personames/count')).json(),
+  ).toEqual({ count })
+  const listing = await (await page.request.get('/api/personames')).json()
+  expect(listing).toHaveLength(30)
+  await page.evaluate(() => window.scrollTo(0, 600))
+  await expect
+    .poll(() =>
+      header.evaluate((el) => Math.round(el.getBoundingClientRect().top)),
+    )
+    .toBe(0)
+  await page.setViewportSize({ width: 320, height: 844 })
+  await expect(explore).toBeVisible()
+  await expect(page.locator('#header-explore-count')).toBeVisible()
+  await expect(
+    header.getByRole('link', { name: 'Your quizzes', exact: true }),
+  ).toBeVisible()
+  await expect(
+    header.getByRole('link', { name: 'Create', exact: true }),
+  ).toBeVisible()
+  await expect
+    .poll(() => page.locator('body').evaluate((el) => el.scrollWidth))
+    .toBeLessThanOrEqual(320)
+  await page.screenshot({
+    path: test.info().outputPath('sticky-header-mobile.png'),
+  })
+  await context.clearCookies()
+  await page.goto('/explore')
+  await expect(page.locator('#header-explore-count')).toHaveAttribute(
+    'title',
+    `${count.toLocaleString('en')} published quizzes`,
+  )
+})

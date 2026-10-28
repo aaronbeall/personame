@@ -156,6 +156,7 @@ export default function QuestionsPage({
       queryClient.setQueryData(['questions', id], data)
       queryClient.invalidateQueries({ queryKey: ['review', id] })
       queryClient.invalidateQueries({ queryKey: ['personal'] })
+      queryClient.invalidateQueries({ queryKey: ['discover'] })
       router.push(`/create/${id}/preview`)
     },
   })

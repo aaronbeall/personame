@@ -282,3 +282,6 @@ Personal navigation has two direct destinations: Your quizzes (`/quizzes`, book 
 ## Public discovery
 
 `/explore` is the dedicated public quiz discovery page. Reuse `DiscoverQuizzes` (page variant), including the same editorial shelves, illustrated quiz cards, search, error/retry and loading states as the homepage. Use the galaxy-expansion page header and the existing alternating textured shelves and reduced-motion-aware reveals. Footer and personal-space Explore links open `/explore`; the homepage hero retains its local smooth-scroll behavior through `ExploreLink`'s section target. The homepage shelf includes an Explore all quizzes link. Only published public quizzes appear in either listing.
+
+
+The global header is sticky, with a quiet shadow and enough scroll padding to keep anchored content clear. Explore uses a simple compass icon in navigation (the illustrated icon remains for content CTAs) and a public, uncapped count of live public quizzes (excluding drafts, closed, and private quizzes). The count refreshes after publishing or editing. At mobile widths, Explore keeps its icon and count; the Create action uses its artwork with a visually hidden accessible label to preserve room for both personal-space links.

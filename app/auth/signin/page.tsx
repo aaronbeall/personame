@@ -20,7 +20,6 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { LoadingIndicator } from '@/components/ui/loading'
-import { Sparkles } from 'lucide-react'
 
 export default function SignInPage() {
   return (
@@ -91,11 +90,14 @@ function SignInForm() {
       />
       <Card className="signin-panel w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            <div className="h-16 w-16 bg-primary-100 rounded-2xl flex items-center justify-center">
-              <Sparkles className="h-7 w-7 text-primary-600" />
-            </div>
-          </div>
+          <Image
+            src="/images/decor/creation.webp"
+            width={144}
+            height={154}
+            alt=""
+            className="signin-welcome-art"
+            priority
+          />
           <CardTitle className="text-2xl">Welcome to Personame</CardTitle>
           <CardDescription>
             Sign in to create and save your personality quizzes

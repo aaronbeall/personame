@@ -121,6 +121,7 @@ export function NameStep({ quizId }: { quizId?: string }) {
       cache.setQueryData(['quiz-details', saved.id], canonical)
       cache.invalidateQueries({ queryKey: ['review', saved.id] })
       cache.invalidateQueries({ queryKey: ['personal'] })
+      cache.invalidateQueries({ queryKey: ['discover'] })
       if (advance) router.push(`/create/${saved.id}/dimensions`)
       else if (!quizId) router.replace(`/create/${saved.id}/name`)
       else setMessage('Saved. Your changes are in the draft.')

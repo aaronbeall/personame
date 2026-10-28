@@ -49,6 +49,7 @@ export default function ReviewPage({
       await requestJson(`/api/personames/${id}/publish`, { method: 'POST' })
       await refresh()
       cache.invalidateQueries({ queryKey: ['personal'] })
+      cache.invalidateQueries({ queryKey: ['discover'] })
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Unable to publish.')
     } finally {

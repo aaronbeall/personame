@@ -14,6 +14,13 @@ test('Slow data loads show skeletons, and saving shows a spinner on the chosen a
     await quizzesGate
     await route.fulfill({ response })
   })
+  for (const path of ['/api/me/counts', '/api/personames/count']) {
+    await page.route(`**${path}`, async (route) => {
+      const response = await route.fetch()
+      await quizzesGate
+      await route.fulfill({ response })
+    })
+  }
   await page.goto('/quizzes')
   const quizzesLoading = page.getByRole('status', {
     name: 'Loading your quizzes…',
@@ -21,12 +28,24 @@ test('Slow data loads show skeletons, and saving shows a spinner on the chosen a
   })
   await expect(quizzesLoading).toBeVisible()
   await expect(quizzesLoading.locator('.loading-panel')).toHaveCount(3)
+  await expect(
+    page.locator('.dashboard-tab-count .loading-spinner'),
+  ).toHaveCount(2)
+  await expect(
+    page.locator('.site-header .header-quiz-count .loading-spinner'),
+  ).toHaveCount(3)
   await test.info().attach('Quiz list skeletons', {
     body: await page.screenshot({ fullPage: true }),
     contentType: 'image/png',
   })
   releaseQuizzes()
   await expect(quizzesLoading).toHaveCount(0)
+  await expect(
+    page.locator('.dashboard-tab-count .loading-spinner'),
+  ).toHaveCount(0)
+  await expect(page.locator('#header-explore-count')).toBeVisible()
+  await expect(page.locator('#header-quiz-count')).toBeVisible()
+  await expect(page.locator('#header-selves-count')).toBeVisible()
 
   let releaseDimensions!: () => void
   const dimensionsGate = new Promise<void>((resolve) => {

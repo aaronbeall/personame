@@ -9,7 +9,7 @@ import { ArrowRight, Eye, Search, Compass, Drama } from 'lucide-react'
 import { EntityIcon } from '@/components/entity-icon'
 import { QuizCoverMark } from '@/components/quiz-cover-mark'
 import { ArchetypeBadge } from '@/components/entity-identity'
-import { LoadingState } from '@/components/ui/loading'
+import { LoadingIndicator, LoadingState } from '@/components/ui/loading'
 import { AppLayoutBackground } from '@/components/app-layout-background'
 import { PageIntro } from '@/components/page-intro'
 import { useProtectedPage } from '@/hooks/use-protected-page'
@@ -111,7 +111,15 @@ export default function Selves() {
               >
                 <Icon size={16} aria-hidden="true" />
                 {label}
-                <span className="dashboard-tab-count">{count ?? '—'}</span>
+                <span className="dashboard-tab-count">
+                  {count === undefined && completed.isPending ? (
+                    <LoadingIndicator
+                      label={`Loading ${label.toLowerCase()} count…`}
+                    />
+                  ) : (
+                    (count ?? '—')
+                  )}
+                </span>
               </button>
             ))}
           </div>
@@ -193,10 +201,7 @@ export default function Selves() {
                           : 'No unfinished discoveries. Start a quiz and come back whenever curiosity calls.'}
                       </p>
                       {!search.trim() && (
-                        <Link
-                          href="/explore"
-                          className="button-link secondary"
-                        >
+                        <Link href="/explore" className="button-link secondary">
                           Explore quizzes
                           <ArrowRight size={14} />
                         </Link>
@@ -307,10 +312,7 @@ export default function Selves() {
                           : 'There’s more than one way to be you. Take a quiz to discover your first archetype.'}
                       </p>
                       {!search.trim() && (
-                        <Link
-                          href="/explore"
-                          className="button-link secondary"
-                        >
+                        <Link href="/explore" className="button-link secondary">
                           Explore quizzes
                           <ArrowRight size={14} />
                         </Link>

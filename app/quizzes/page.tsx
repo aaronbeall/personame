@@ -4,7 +4,7 @@ import { useState, type CSSProperties } from 'react'
 import { getColorTheme } from '@/lib/colors'
 import { EntityIcon } from '@/components/entity-icon'
 import { QuizCoverMark } from '@/components/quiz-cover-mark'
-import { LoadingState } from '@/components/ui/loading'
+import { LoadingIndicator, LoadingState } from '@/components/ui/loading'
 import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
 import {
@@ -97,7 +97,15 @@ export default function YourQuizzes() {
                 <Icon size={16} aria-hidden="true" />
                 {label}
                 <span className="dashboard-tab-count">
-                  {query.isPending || query.error ? '—' : counts[key]}
+                  {query.isPending ? (
+                    <LoadingIndicator
+                      label={`Loading ${label.toLowerCase()} count…`}
+                    />
+                  ) : query.error ? (
+                    '—'
+                  ) : (
+                    counts[key]
+                  )}
                 </span>
               </button>
             ))}

@@ -121,6 +121,7 @@ export default function DimensionsPage({
       queryClient.invalidateQueries({ queryKey: ['questions', id] })
       queryClient.invalidateQueries({ queryKey: ['review', id] })
       queryClient.invalidateQueries({ queryKey: ['personal'] })
+      queryClient.invalidateQueries({ queryKey: ['discover'] })
       if (advance) router.push(`/create/${id}/archetypes`)
     },
   })

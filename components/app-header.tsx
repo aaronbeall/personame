@@ -3,13 +3,13 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useSession, signOut } from 'next-auth/react'
-import { Skeleton } from './ui/loading'
+import { LoadingIndicator, Skeleton } from './ui/loading'
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { requestJson } from '@/lib/client-api'
 import { usePathname } from 'next/navigation'
 import { EntityIcon } from './entity-icon'
-import { LogOut } from 'lucide-react'
+import { Compass, LogOut } from 'lucide-react'
 import { CreateQuizLink } from './create-quiz-link'
 import { Button } from './ui/button'
 import * as Popover from '@radix-ui/react-popover'
@@ -18,23 +18,31 @@ export function AppHeader() {
   const pathname = usePathname()
   const { data: session, status } = useSession()
   const [open, setOpen] = useState(false)
-  const counts = useQuery({
+  const countsQuery = useQuery({
     queryKey: ['personal', 'count', session?.user?.email],
     queryFn: () =>
       requestJson<{ count: number; selvesCount: number }>('/api/me/counts'),
     enabled: status === 'authenticated',
     staleTime: 60_000,
-  }).data
+  })
+  const counts = countsQuery.data
   const quizCount = counts?.count
   const selvesCount = counts?.selvesCount
+
+  const publishedQuery = useQuery({
+    queryKey: ['discover', 'count'],
+    queryFn: () => requestJson<{ count: number }>('/api/personames/count'),
+    staleTime: 60_000,
+  })
+  const publishedCount = publishedQuery.data?.count
 
   const userImage = session?.user?.image
   const userName = session?.user?.name ?? 'User'
   const initial = userName.charAt(0).toUpperCase()
 
   return (
-    <header className="w-full border-b border-muted-200 bg-white/95 backdrop-blur-sm">
-      <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+    <header className="site-header w-full border-b border-muted-200 bg-white/95 backdrop-blur-sm">
+      <div className="site-header-inner container mx-auto px-4 py-3 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <div className="h-9 w-9 relative">
             <Image
@@ -50,13 +58,36 @@ export function AppHeader() {
           </span>
         </Link>
 
-        <div className="flex items-center gap-3">
+        <div className="site-header-actions flex items-center gap-3">
           <Link
             href="/explore"
             className="header-explore"
+            aria-label="Explore quizzes"
+            aria-describedby={
+              publishedCount !== undefined ? 'header-explore-count' : undefined
+            }
             aria-current={pathname === '/explore' ? 'page' : undefined}
           >
-            Explore
+            <Compass size={17} strokeWidth={1.75} aria-hidden="true" />
+            <span className="header-explore-label">Explore</span>
+            {publishedQuery.isPending && (
+              <span className="header-quiz-count header-explore-loading">
+                <LoadingIndicator label="Loading published quiz count…" />
+              </span>
+            )}
+            {publishedCount !== undefined && (
+              <span
+                className="header-quiz-count"
+                id="header-explore-count"
+                title={`${publishedCount.toLocaleString('en')} published quizzes`}
+              >
+                {new Intl.NumberFormat('en', {
+                  notation: 'compact',
+                  maximumFractionDigits: 1,
+                }).format(publishedCount)}
+                <span className="sr-only"> published quizzes</span>
+              </span>
+            )}
           </Link>
           {status === 'loading' ? (
             <div
@@ -87,6 +118,11 @@ export function AppHeader() {
                 <span className="header-space-short" aria-hidden="true">
                   Quizzes
                 </span>
+                {countsQuery.isPending && (
+                  <span className="header-quiz-count">
+                    <LoadingIndicator label="Loading your quiz count…" />
+                  </span>
+                )}
                 {quizCount !== undefined && (
                   <span className="header-quiz-count" id="header-quiz-count">
                     {quizCount > 999 ? '999+' : quizCount}
@@ -108,6 +144,11 @@ export function AppHeader() {
                 <span className="header-space-short" aria-hidden="true">
                   Selves
                 </span>
+                {countsQuery.isPending && (
+                  <span className="header-quiz-count">
+                    <LoadingIndicator label="Loading your discovery count…" />
+                  </span>
+                )}
                 {selvesCount !== undefined && (
                   <span className="header-quiz-count" id="header-selves-count">
                     {selvesCount > 999 ? '999+' : selvesCount}
