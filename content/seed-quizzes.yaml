@@ -1,6 +1,6 @@
 # Editable starter quizzes. Validate with: npm run catalog:validate
-# Dimensions use solid hex colors; archetypes use distinct ordered hex themes.
-# Scores always remain 0–100.
+# publication: PUBLIC publishes on first import; PRIVATE_DRAFT stays private.
+# Dimensions use solids; archetypes use distinct hex themes. Scores remain 0–100.
 version: 1
 quizzes:
   - slug: weekend-wanderer
@@ -168,6 +168,7 @@ quizzes:
             weights: {}
         emoji: 👥
     color: "#2563eb,#7c3aed"
+    publication: PUBLIC
   - slug: creative-sidekick
     title: Which creative sidekick are you?
     description: Meet the part of you that helps an idea escape the notebook. For fun and reflection;
@@ -414,6 +415,7 @@ quizzes:
           - text: Very much
             weights: {}
     color: "#7c3aed,#db2777"
+    publication: PUBLIC
   - slug: dinner-party
     title: What is your dinner-party superpower?
     description: There is more than one way to keep a table happy. Find the role you naturally bring.
@@ -635,6 +637,7 @@ quizzes:
           - text: Very much
             weights: {}
     color: "#c2410c,#f59e0b"
+    publication: PUBLIC
   - slug: fantasy-tavern
     title: Who are you at the fantasy tavern?
     description: Your quest can wait five minutes. There is a mysterious noticeboard and suspiciously
@@ -964,6 +967,7 @@ quizzes:
           - text: Very much
             weights: {}
     color: "#0f766e,#38bdf8"
+    publication: PUBLIC
   - slug: city-after-dark
     title: What kind of city explorer are you?
     description: Side streets, bright lights, and the place that only serves one excellent thing. For
@@ -1119,6 +1123,7 @@ quizzes:
             weights: {}
         emoji: 🌃
     color: "#475569,#a5b4fc"
+    publication: PUBLIC
   - slug: space-crew
     title: What is your space-crew assignment?
     description: The ship is held together by good intentions. Luckily, you have a useful kind of weird.
@@ -1537,6 +1542,7 @@ quizzes:
           - text: Very much
             weights: {}
     color: "#be185d,#fb7185"
+    publication: PUBLIC
   - slug: team-project
     title: What do you bring to a team project?
     description: A playful look at your collaboration style, without turning your coworkers into a
@@ -1853,6 +1859,7 @@ quizzes:
           - text: Very much
             weights: {}
     color: "#166534,#84cc16"
+    publication: PUBLIC
   - slug: rainy-day
     title: What is your rainy-day alter ego?
     description: The forecast says stay inside. Your ideal indoor world says a little more. For fun and
@@ -2086,3 +2093,662 @@ quizzes:
           - text: Very much
             weights: {}
     color: "#c2410c,#a855f7"
+    publication: PUBLIC
+  - slug: reading-nook
+    title: What is your reading-nook personality?
+    description: Find the reading ritual and fictional company that feel like home. For fun and
+      reflection; not a validated assessment.
+    emoji: 📚
+    color: "#7c3aed,#db2777"
+    publication: PRIVATE_DRAFT
+    dimensions:
+      - key: escape
+        name: Escape
+        emoji: 🗝️
+        minLabel: Grounded
+        maxLabel: Fantastical
+        minEmoji: 🪴
+        maxEmoji: 🐉
+        description: The kinds of worlds you like to visit on the page.
+        color: "#14b8a6"
+        displayScale: PERCENT_ASCENDING
+      - key: ritual
+        name: Ritual
+        emoji: 🕯️
+        minLabel: Spontaneous
+        maxLabel: Ritual-loving
+        minEmoji: 🎒
+        maxEmoji: ☕
+        description: How much a familiar setting is part of your reading pleasure.
+        color: "#8b5cf6"
+        displayScale: PERCENT_ASCENDING
+    archetypes:
+      - name: The Window-Seat Observer
+        emoji: 🚆
+        description: You find whole worlds in ordinary lives and can settle into a story anywhere.
+        color: "#2563eb,#7c3aed"
+        targets:
+          escape: 15
+          ritual: 15
+        relevance:
+          escape: 1
+          ritual: 0.8
+      - name: The Pocket Portal
+        emoji: 🗝️
+        description: You carry an escape hatch in your bag and open it whenever the day allows.
+        color: "#7c3aed,#db2777"
+        targets:
+          escape: 85
+          ritual: 15
+        relevance:
+          escape: 0.8
+          ritual: 1
+      - name: The Fireside Familiar
+        emoji: 🫖
+        description: You enjoy recognizable lives from a reading corner arranged just so.
+        color: "#0f766e,#38bdf8"
+        targets:
+          escape: 15
+          ritual: 85
+        relevance:
+          escape: 1
+          ritual: 0.8
+      - name: The Candlelit Dreamer
+        emoji: 🕯️
+        description: You make a familiar nest before stepping into an unfamiliar world.
+        color: "#c2410c,#f59e0b"
+        targets:
+          escape: 85
+          ritual: 85
+        relevance:
+          escape: 0.8
+          ritual: 1
+    questions:
+      - type: MULTIPLE_CHOICE
+        text: You can borrow one book for a long train ride.
+        emoji: 🗝️
+        answers:
+          - text: A close look at an ordinary life.
+            emoji: 🪴
+            weights:
+              escape: -12
+          - text: A little of both, depending on the day.
+            emoji: ⚖️
+            weights:
+              escape: 0
+          - text: A world with rules I have never imagined.
+            emoji: 🐉
+            weights:
+              escape: 12
+      - type: SLIDER
+        text: The setting of your ideal story feels…
+        emoji: 🗝️
+        answers:
+          - text: Like a place I could visit tomorrow.
+            emoji: 🪴
+            weights:
+              escape: -12
+          - text: Like a place that exists only in a dream.
+            emoji: 🐉
+            weights:
+              escape: 12
+      - type: SCALE
+        text: How much do you enjoy a story that asks you to believe in the impossible?
+        emoji: 🗝️
+        answers:
+          - text: I prefer the wonder of everyday life.
+            emoji: 🪴
+            weights:
+              escape: -16
+          - text: The stranger the world, the more I want to explore it.
+            emoji: 🐉
+            weights:
+              escape: 16
+          - text: Not at all
+            weights: {}
+          - text: A little
+            weights: {}
+          - text: Somewhat
+            weights: {}
+          - text: Quite a bit
+            weights: {}
+          - text: Very much
+            weights: {}
+      - type: MULTIPLE_CHOICE
+        text: An unexpected free hour appears.
+        emoji: 🕯️
+        answers:
+          - text: Read wherever I happen to be.
+            emoji: 🎒
+            weights:
+              ritual: -12
+          - text: A little of both, depending on the day.
+            emoji: ⚖️
+            weights:
+              ritual: 0
+          - text: Settle into my favorite spot with a drink.
+            emoji: ☕
+            weights:
+              ritual: 12
+      - type: SLIDER
+        text: Your book travels with you…
+        emoji: 🕯️
+        answers:
+          - text: Loose in my bag, ready for any spare moment.
+            emoji: 🎒
+            weights:
+              ritual: -12
+          - text: Between carefully protected reading sessions.
+            emoji: ☕
+            weights:
+              ritual: 12
+      - type: SCALE
+        text: How much does your favorite chair, drink, or soundtrack add to a book?
+        emoji: 🕯️
+        answers:
+          - text: The story is enough wherever I am.
+            emoji: 🎒
+            weights:
+              ritual: -16
+          - text: My little reading ritual makes it complete.
+            emoji: ☕
+            weights:
+              ritual: 16
+          - text: Not at all
+            weights: {}
+          - text: A little
+            weights: {}
+          - text: Somewhat
+            weights: {}
+          - text: Quite a bit
+            weights: {}
+          - text: Very much
+            weights: {}
+  - slug: garden-companion
+    title: What kind of garden companion are you?
+    description: Discover how you bring a patch of green to life. For fun and reflection; not a
+      validated assessment.
+    emoji: 🌻
+    color: "#7c3aed,#db2777"
+    publication: PRIVATE_DRAFT
+    dimensions:
+      - key: planning
+        name: Planning
+        emoji: 📐
+        minLabel: Free-form
+        maxLabel: Orderly
+        minEmoji: 🌱
+        maxEmoji: 📏
+        description: How much structure you enjoy in a growing space.
+        color: "#14b8a6"
+        displayScale: PERCENT_ASCENDING
+      - key: purpose
+        name: Purpose
+        emoji: 🍅
+        minLabel: Decorative
+        maxLabel: Practical
+        minEmoji: 🌸
+        maxEmoji: 🥕
+        description: Whether beauty or everyday usefulness draws you to growing things.
+        color: "#8b5cf6"
+        displayScale: PERCENT_ASCENDING
+      - key: sharing
+        name: Sharing
+        emoji: 🧺
+        minLabel: Personal
+        maxLabel: Communal
+        minEmoji: 🪴
+        maxEmoji: 🤝
+        description: How much your growing space connects you with other people.
+        color: "#f97316"
+        displayScale: PERCENT_ASCENDING
+    archetypes:
+      - name: The Wildflower Wanderer
+        emoji: 🌼
+        description: You leave room for surprise and grow a quiet place to pause.
+        color: "#2563eb,#7c3aed"
+        targets:
+          planning: 15
+          purpose: 15
+          sharing: 15
+        relevance:
+          planning: 1
+          purpose: 0.8
+          sharing: 0.8
+      - name: The Courtyard Curator
+        emoji: 🏺
+        description: You arrange a personal sanctuary with a careful eye for beauty.
+        color: "#7c3aed,#db2777"
+        targets:
+          planning: 85
+          purpose: 15
+          sharing: 15
+        relevance:
+          planning: 0.8
+          purpose: 1
+          sharing: 0.8
+      - name: The Kitchen-Garden Keeper
+        emoji: 🥕
+        description: You make a useful harvest part of a calm and thoughtful routine.
+        color: "#0f766e,#38bdf8"
+        targets:
+          planning: 85
+          purpose: 85
+          sharing: 15
+        relevance:
+          planning: 0.8
+          purpose: 0.8
+          sharing: 1
+      - name: The Neighborhood Seed-Swapper
+        emoji: 🤝
+        description: You enjoy practical growing, shared discoveries, and room to improvise.
+        color: "#c2410c,#f59e0b"
+        targets:
+          planning: 15
+          purpose: 85
+          sharing: 85
+        relevance:
+          planning: 1
+          purpose: 0.8
+          sharing: 0.8
+      - name: The Community Cultivator
+        emoji: 🌻
+        description: You turn a clear plan into a useful harvest that brings people together.
+        color: "#166534,#84cc16"
+        targets:
+          planning: 85
+          purpose: 85
+          sharing: 85
+        relevance:
+          planning: 0.8
+          purpose: 1
+          sharing: 0.8
+    questions:
+      - type: MULTIPLE_CHOICE
+        text: A bare patch of soil is ready.
+        emoji: 📐
+        answers:
+          - text: Scatter a few seeds and see what thrives.
+            emoji: 🌱
+            weights:
+              planning: -12
+          - text: A little of both, depending on the day.
+            emoji: ⚖️
+            weights:
+              planning: 0
+          - text: Sketch a layout before planting.
+            emoji: 📏
+            weights:
+              planning: 12
+      - type: SLIDER
+        text: Your garden paths would be…
+        emoji: 📐
+        answers:
+          - text: A little winding and full of surprises.
+            emoji: 🌱
+            weights:
+              planning: -12
+          - text: Clear, practical, and easy to follow.
+            emoji: 📏
+            weights:
+              planning: 12
+      - type: SCALE
+        text: How satisfying is a neatly planned planting calendar?
+        emoji: 📐
+        answers:
+          - text: I prefer following the season as it unfolds.
+            emoji: 🌱
+            weights:
+              planning: -16
+          - text: I love knowing what is coming next.
+            emoji: 📏
+            weights:
+              planning: 16
+          - text: Not at all
+            weights: {}
+          - text: A little
+            weights: {}
+          - text: Somewhat
+            weights: {}
+          - text: Quite a bit
+            weights: {}
+          - text: Very much
+            weights: {}
+      - type: MULTIPLE_CHOICE
+        text: There is room for one more planter.
+        emoji: 🍅
+        answers:
+          - text: Choose flowers with an unforgettable color.
+            emoji: 🌸
+            weights:
+              purpose: -12
+          - text: A little of both, depending on the day.
+            emoji: ⚖️
+            weights:
+              purpose: 0
+          - text: Grow something I can cook with.
+            emoji: 🥕
+            weights:
+              purpose: 12
+      - type: SLIDER
+        text: The best gift from a garden is…
+        emoji: 🍅
+        answers:
+          - text: A little beauty to stop and notice.
+            emoji: 🌸
+            weights:
+              purpose: -12
+          - text: Something useful to bring into the kitchen.
+            emoji: 🥕
+            weights:
+              purpose: 12
+      - type: SCALE
+        text: How much do you like a garden that helps fill your plate?
+        emoji: 🍅
+        answers:
+          - text: I mostly want a lovely place to spend time.
+            emoji: 🌸
+            weights:
+              purpose: -16
+          - text: Harvesting is a big part of the pleasure.
+            emoji: 🥕
+            weights:
+              purpose: 16
+          - text: Not at all
+            weights: {}
+          - text: A little
+            weights: {}
+          - text: Somewhat
+            weights: {}
+          - text: Quite a bit
+            weights: {}
+          - text: Very much
+            weights: {}
+      - type: MULTIPLE_CHOICE
+        text: Your plants produce more than expected.
+        emoji: 🧺
+        answers:
+          - text: Preserve a little for my own future meals.
+            emoji: 🪴
+            weights:
+              sharing: -12
+          - text: A little of both, depending on the day.
+            emoji: ⚖️
+            weights:
+              sharing: 0
+          - text: Start leaving surprise baskets with neighbors.
+            emoji: 🤝
+            weights:
+              sharing: 12
+      - type: SLIDER
+        text: A perfect garden afternoon includes…
+        emoji: 🧺
+        answers:
+          - text: Quiet time among my plants.
+            emoji: 🪴
+            weights:
+              sharing: -12
+          - text: Someone to chat and work alongside.
+            emoji: 🤝
+            weights:
+              sharing: 12
+      - type: SCALE
+        text: How appealing is helping care for a shared neighborhood plot?
+        emoji: 🧺
+        answers:
+          - text: I prefer tending a small space of my own.
+            emoji: 🪴
+            weights:
+              sharing: -16
+          - text: Growing things together sounds wonderful.
+            emoji: 🤝
+            weights:
+              sharing: 16
+          - text: Not at all
+            weights: {}
+          - text: A little
+            weights: {}
+          - text: Somewhat
+            weights: {}
+          - text: Quite a bit
+            weights: {}
+          - text: Very much
+            weights: {}
+  - slug: festival-day
+    title: Who are you on a festival day?
+    description: Find your rhythm in a field full of possibilities. For fun and reflection; not a
+      validated assessment.
+    emoji: 🎪
+    color: "#7c3aed,#db2777"
+    publication: PRIVATE_DRAFT
+    dimensions:
+      - key: discovery
+        name: Discovery
+        emoji: 🎵
+        minLabel: Familiar
+        maxLabel: Exploratory
+        minEmoji: 🎧
+        maxEmoji: 🎲
+        description: How much of your day you give to acts you already know or unexpected finds.
+        color: "#14b8a6"
+        displayScale: PERCENT_ASCENDING
+      - key: energy
+        name: Energy
+        emoji: ⚡
+        minLabel: Unhurried
+        maxLabel: High-energy
+        minEmoji: 🌳
+        maxEmoji: 💃
+        description: The pace that makes a full day of music feel good to you.
+        color: "#8b5cf6"
+        displayScale: PERCENT_ASCENDING
+      - key: coordination
+        name: Coordination
+        emoji: 📍
+        minLabel: Independent
+        maxLabel: Group-minded
+        minEmoji: 🧭
+        maxEmoji: 🫂
+        description: How closely you like to coordinate the day with your people.
+        color: "#f97316"
+        displayScale: PERCENT_ASCENDING
+    archetypes:
+      - name: The Meadow Listener
+        emoji: 🌳
+        description: You enjoy familiar music at your own pace, with space to hear yourself think.
+        color: "#2563eb,#7c3aed"
+        targets:
+          discovery: 15
+          energy: 15
+          coordination: 15
+        relevance:
+          discovery: 1
+          energy: 0.8
+          coordination: 0.8
+      - name: The Hidden-Stage Hunter
+        emoji: 🔎
+        description: You follow unfamiliar sounds with enough energy to make one more detour.
+        color: "#7c3aed,#db2777"
+        targets:
+          discovery: 85
+          energy: 85
+          coordination: 15
+        relevance:
+          discovery: 0.8
+          energy: 1
+          coordination: 0.8
+      - name: The Picnic Reunion
+        emoji: 🧺
+        description: You make favorite songs and comfortable pauses into time with your people.
+        color: "#0f766e,#38bdf8"
+        targets:
+          discovery: 15
+          energy: 15
+          coordination: 85
+        relevance:
+          discovery: 0.8
+          energy: 0.8
+          coordination: 1
+      - name: The Front-Row Connector
+        emoji: 🎤
+        description: You bring your people into the movement and keep finding the next shared discovery.
+        color: "#c2410c,#f59e0b"
+        targets:
+          discovery: 85
+          energy: 85
+          coordination: 85
+        relevance:
+          discovery: 1
+          energy: 0.8
+          coordination: 0.8
+    questions:
+      - type: MULTIPLE_CHOICE
+        text: Two sets overlap on the schedule.
+        emoji: 🎵
+        answers:
+          - text: Choose the artist I came to see.
+            emoji: 🎧
+            weights:
+              discovery: -12
+          - text: A little of both, depending on the day.
+            emoji: ⚖️
+            weights:
+              discovery: 0
+          - text: Try the intriguing name I have never heard.
+            emoji: 🎲
+            weights:
+              discovery: 12
+      - type: SLIDER
+        text: Walking past a tiny stage, you hear something unusual.
+        emoji: 🎵
+        answers:
+          - text: Keep heading toward the set I planned.
+            emoji: 🎧
+            weights:
+              discovery: -12
+          - text: Stop and see where this goes.
+            emoji: 🎲
+            weights:
+              discovery: 12
+      - type: SCALE
+        text: How much do you enjoy leaving a festival with a new favorite?
+        emoji: 🎵
+        answers:
+          - text: I mainly want time with my existing favorites.
+            emoji: 🎧
+            weights:
+              discovery: -16
+          - text: Finding something new is a highlight.
+            emoji: 🎲
+            weights:
+              discovery: 16
+          - text: Not at all
+            weights: {}
+          - text: A little
+            weights: {}
+          - text: Somewhat
+            weights: {}
+          - text: Quite a bit
+            weights: {}
+          - text: Very much
+            weights: {}
+      - type: MULTIPLE_CHOICE
+        text: There is an hour between your must-see acts.
+        emoji: ⚡
+        answers:
+          - text: Find a shady spot and settle in.
+            emoji: 🌳
+            weights:
+              energy: -12
+          - text: A little of both, depending on the day.
+            emoji: ⚖️
+            weights:
+              energy: 0
+          - text: Catch parts of two other sets.
+            emoji: 💃
+            weights:
+              energy: 12
+      - type: SLIDER
+        text: Your ideal place in the crowd is…
+        emoji: ⚡
+        answers:
+          - text: Somewhere comfortable with room to breathe.
+            emoji: 🌳
+            weights:
+              energy: -12
+          - text: Close enough to feel the whole crowd moving.
+            emoji: 💃
+            weights:
+              energy: 12
+      - type: SCALE
+        text: How much do you enjoy staying on your feet from the first set to the last?
+        emoji: ⚡
+        answers:
+          - text: I need pauses to savor the day.
+            emoji: 🌳
+            weights:
+              energy: -16
+          - text: Keeping the momentum feels great.
+            emoji: 💃
+            weights:
+              energy: 16
+          - text: Not at all
+            weights: {}
+          - text: A little
+            weights: {}
+          - text: Somewhat
+            weights: {}
+          - text: Quite a bit
+            weights: {}
+          - text: Very much
+            weights: {}
+      - type: MULTIPLE_CHOICE
+        text: Your friends want a different stage.
+        emoji: 📍
+        answers:
+          - text: Agree on a meeting point and follow my own ears.
+            emoji: 🧭
+            weights:
+              coordination: -12
+          - text: A little of both, depending on the day.
+            emoji: ⚖️
+            weights:
+              coordination: 0
+          - text: Find a set we can all enjoy together.
+            emoji: 🫂
+            weights:
+              coordination: 12
+      - type: SLIDER
+        text: Your festival messages look like…
+        emoji: 📍
+        answers:
+          - text: See you at the meeting spot later.
+            emoji: 🧭
+            weights:
+              coordination: -12
+          - text: Who is coming to the next set with me?
+            emoji: 🫂
+            weights:
+              coordination: 12
+      - type: SCALE
+        text: How important is sharing most of the day with the same people?
+        emoji: 📍
+        answers:
+          - text: Wandering on my own is part of the fun.
+            emoji: 🧭
+            weights:
+              coordination: -16
+          - text: The shared memories are what I came for.
+            emoji: 🫂
+            weights:
+              coordination: 16
+          - text: Not at all
+            weights: {}
+          - text: A little
+            weights: {}
+          - text: Somewhat
+            weights: {}
+          - text: Quite a bit
+            weights: {}
+          - text: Very much
+            weights: {}

@@ -11,7 +11,7 @@ async function main() {
   const email = process.env.SEED_CREATOR_EMAIL
   if (!email)
     throw new Error(
-      'Set SEED_CREATOR_EMAIL to an existing creator account. Quizzes are imported as private drafts.',
+      'Set SEED_CREATOR_EMAIL to an existing creator account. Publication follows each catalog entry.',
     )
   const user = await db.user.findUniqueOrThrow({ where: { email } })
   for (const definition of catalog.quizzes) {
@@ -29,6 +29,10 @@ async function main() {
           emoji: definition.emoji,
           color: definition.color,
           creatorId: user.id,
+          status: definition.publication === 'PUBLIC' ? 'PUBLISHED' : 'DRAFT',
+          visibility:
+            definition.publication === 'PUBLIC' ? 'PUBLIC' : 'PRIVATE',
+          publishedAt: definition.publication === 'PUBLIC' ? new Date() : null,
         },
       })
       const ids = new Map<string, string>()
@@ -103,7 +107,9 @@ async function main() {
           },
         })
     })
-    console.log(`Created private draft: ${quiz.title}`)
+    console.log(
+      `Created ${definition.publication === 'PUBLIC' ? 'public quiz' : 'private draft'}: ${quiz.title}`,
+    )
   }
 }
 main()

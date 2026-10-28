@@ -10,6 +10,9 @@ export const catalogSchema = z.object({
     .array(
       z.object({
         slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+        publication: z
+          .enum(['PUBLIC', 'PRIVATE_DRAFT'])
+          .default('PRIVATE_DRAFT'),
         title: label.max(200),
         description: label,
         emoji: label,

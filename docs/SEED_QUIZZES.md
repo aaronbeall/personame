@@ -1,6 +1,6 @@
 # Editable starter quizzes
 
-Edit **`content/seed-quizzes.yaml`** in any text editor. It contains eight complete, original quizzes: weekend travel, creativity, dinner parties, fantasy taverns, city exploring, space crews, teamwork, and rainy days. They range from 2–5 dimensions, 3–7 archetypes, and 6–15 questions, covering multiple choice, slider, and scale. These are playful reflections, not validated psychological assessments.
+Edit **`content/seed-quizzes.yaml`** in any text editor. It contains eleven complete, original quizzes. The eight public samples cover weekend travel, creativity, dinner parties, fantasy taverns, city exploring, space crews, teamwork, and rainy days; three private drafts explore reading nooks, gardening, and festival days. They range from 2–5 dimensions, 3–7 archetypes, and 6–15 questions, covering multiple choice, slider, and scale. These are playful reflections, not validated psychological assessments.
 
 | Quiz | Dimensions | Archetypes | Questions |
 | --- | ---: | ---: | ---: |
@@ -12,6 +12,9 @@ Edit **`content/seed-quizzes.yaml`** in any text editor. It contains eight compl
 | Space crew | 5 | 7 | 15 |
 | Team project | 4 | 5 | 12 |
 | Rainy day | 3 | 4 | 9 |
+| Reading nook (private draft) | 2 | 4 | 6 |
+| Garden companion (private draft) | 3 | 5 | 9 |
+| Festival day (private draft) | 3 | 4 | 9 |
 
 The longer quizzes add distinct dimensions such as persistence, presentation, allegiance, wonder, stewardship, time horizon, collaboration, and nostalgia. Archetypes have individually authored profiles; they do not require every possible combination of high/low scores to become a separate result.
 
@@ -27,9 +30,11 @@ YAML supports comments and multiline text. Quote hex colors: `#` starts a YAML c
 
 ## Where to see them
 
-The YAML file is source material, not an automatically visible gallery. After importing, sign into the same creator account and visit **Your quizzes** at `/dashboard`. Open a draft to inspect its Name, Dimensions, Archetypes, and Questions, then use **Preview & publish** to try the participant flow. The eight titles cover weekend wandering, creative sidekicks, dinner parties, fantasy taverns, city nights, space crews, team projects, and rainy days.
+The YAML file is source material; import it into the configured database before browsing. The original eight entries use `publication: PUBLIC`: after first import they appear on the homepage and at `/quiz/<slug>`, where anyone can take them without signing in. Reading Nook, Garden Companion, and Festival Day use `publication: PRIVATE_DRAFT` and appear only in their creator’s **Your quizzes** at `/dashboard`. Use **Preview & publish** to try or publish those drafts.
 
-Imports are local to the database configured in `.env`. They do not deploy or publish anything. Drafts do not appear in the public Explore section. Publish a quiz through its normal workflow to make it public and get its `/quiz/<slug>` link. A deployed environment needs its own import with that environment’s database and creator account.
+`publication` defaults to `PRIVATE_DRAFT` when omitted. Imports follow this field only when creating a new quiz. Existing slugs are skipped: rerunning never changes an existing quiz’s publication status or content. Changing YAML alone does not publish an existing draft; use its normal publish action.
+
+Imports affect only the database configured in `.env`. Local publication does not deploy anything. A deployed environment needs its own import with that environment’s database and creator account.
 
 ## Changing the grading
 
@@ -52,8 +57,8 @@ npm run test:unit
 SEED_CREATOR_EMAIL=you@example.com npm run catalog:seed
 ```
 
-Sign in once first so your creator account exists. Importing requires the configured database and applies each new quiz in a transaction. Quizzes are **private drafts** owned by that account: review them in Your quizzes, then publish from the normal workflow. Existing slugs are skipped, never overwritten; rerunning does not duplicate quizzes or change results.
+Sign in once first so your creator account exists. Importing requires the configured database and applies each new quiz in a transaction. Quizzes are owned by that account. Entries marked `PUBLIC` are published immediately; `PRIVATE_DRAFT` entries remain private for review. Existing slugs are skipped, never overwritten; rerunning does not duplicate quizzes or change results.
 
 Edits to this file affect future imports, not existing database records. To revise an imported quiz, use its editor. To import a separate variation, use a new slug. The older `db:seed` remains a separate development fixture script; use `catalog:seed` for this catalog.
 
-`tests/catalog.unit.test.ts` validates references and scoring rules and checks every low/high response combination to ensure all 37 supplied archetypes can be reached. Changing targets can intentionally make that reachability test fail; adjust questions and targets together.
+`tests/catalog.unit.test.ts` validates references and scoring rules and checks every low/high response combination to ensure all 50 supplied archetypes can be reached. Changing targets can intentionally make that reachability test fail; adjust questions and targets together.

@@ -181,3 +181,22 @@ test('catalog varies dimension counts, archetype counts and question lengths', (
     [6, 9, 12, 15],
   )
 })
+
+test('catalog explicitly separates eight public samples from three private drafts', () => {
+  assert.equal(
+    catalog.quizzes.filter((q) => q.publication === 'PUBLIC').length,
+    8,
+  )
+  assert.deepEqual(
+    catalog.quizzes
+      .filter((q) => q.publication === 'PRIVATE_DRAFT')
+      .map((q) => q.slug),
+    ['reading-nook', 'garden-companion', 'festival-day'],
+  )
+  const unspecified = structuredClone(raw)
+  delete unspecified.quizzes[0].publication
+  assert.equal(
+    parseCatalog(unspecified).quizzes[0].publication,
+    'PRIVATE_DRAFT',
+  )
+})
