@@ -258,7 +258,7 @@ export function NameStep({ quizId }: { quizId?: string }) {
                 'Dimensions',
                 'Archetypes',
                 'Questions',
-                'Preview & publish',
+                'Review & publish',
               ].map((step, i) => (
                 <li key={step} aria-current={i === 0 ? 'step' : undefined}>
                   <span className="quiz-setup-step-number">{i + 1}</span>

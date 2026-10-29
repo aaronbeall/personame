@@ -48,7 +48,7 @@ test('Your quizzes separates live quizzes and drafts, and shows accurate visual 
   await expect(partialCard.locator('li[data-state=incomplete]')).toHaveCount(3)
   const readyCard = drafts
     .getByRole('article')
-    .filter({ has: page.locator(`a[href="/create/${ready.id}/preview"]`) })
+    .filter({ has: page.locator(`a[href="/create/${ready.id}/preview?tab=publish"]`) })
   await expect(
     readyCard.getByRole('link', { name: 'Review & publish', exact: true }),
   ).toBeVisible()

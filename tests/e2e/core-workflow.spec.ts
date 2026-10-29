@@ -174,11 +174,11 @@ test('Create, grade, preview, publish, and complete a quiz through the UI', asyn
       contentType: 'image/png',
     })
     await page.setViewportSize({ width: 1440, height: 1000 })
-    await page.getByRole('button', { name: 'Continue to Preview' }).click()
+    await page.getByRole('button', { name: 'Continue to Review' }).click()
     await expect(page).toHaveURL(/\/preview$/)
   })
   await test.step('Try the complete participant preview without recording a result', async () => {
-    await page.getByRole('tab', { name: 'Try the quiz' }).click()
+    await page.getByRole('button', { name: 'Try the quiz', exact: true }).click()
     await page.getByRole('button', { name: 'Let’s find out' }).click()
     await page
       .getByRole('group', { name: 'Which path do you choose?' })
@@ -196,9 +196,10 @@ test('Create, grade, preview, publish, and complete a quiz through the UI', asyn
       page.getByRole('heading', { name: 'Explorer', exact: true }),
     ).toBeVisible()
     expect(await db.quizResult.count({ where: { personaId: quizId } })).toBe(0)
+    await page.getByRole('button', { name: 'Close preview', exact: true }).click()
   })
   await test.step('Publish and verify the creator quiz library', async () => {
-    await page.getByRole('tab', { name: 'Review & publish' }).click()
+    await page.getByRole('tab', { name: 'Publish', exact: true }).click()
     await page
       .getByRole('button', { name: 'Publish quiz', exact: true })
       .waitFor()
@@ -210,6 +211,7 @@ test('Create, grade, preview, publish, and complete a quiz through the UI', asyn
       .getByRole('button', { name: 'Publish quiz', exact: true })
       .click()
     await expect(page.getByRole('link', { name: 'Open quiz' })).toBeVisible()
+    await expect(page.locator('.review-todos')).toHaveCount(0)
     const quiz = await db.persona.findUniqueOrThrow({ where: { id: quizId } })
     slug = quiz.slug
     await page.goto('/quizzes')

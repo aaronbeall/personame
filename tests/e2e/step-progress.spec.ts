@@ -60,7 +60,7 @@ test('builder progress reflects saved readiness, not which page was visited', as
     await expect(step).toHaveAttribute('data-completion', 'complete')
     await expect(step.locator('.lucide-check')).toHaveCount(1)
   }
-  await expect(steps.getByRole('link', { name: /Preview/ })).toHaveAttribute('data-completion', 'pending')
+  await expect(steps.getByRole('link', { name: /Review/ })).toHaveAttribute('data-completion', 'pending')
   await page.goto(`/create/${id}/name`)
   // Even already-complete future stages retain their numbers, not checks.
   for (const [label, number] of [['Dimensions', '2'], ['Archetypes', '3'], ['Questions', '4']]) {

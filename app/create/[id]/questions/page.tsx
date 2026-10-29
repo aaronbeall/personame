@@ -509,7 +509,7 @@ export default function QuestionsPage({
             disabled={pages.length < 2 || savePagesMutation.isPending}
             className="builder-primary-action"
           >
-            {savePagesMutation.isPending ? 'Saving...' : 'Continue to Preview'}
+            {savePagesMutation.isPending ? 'Saving...' : 'Continue to Review'}
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </BuilderFooter>

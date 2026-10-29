@@ -1,4 +1,5 @@
 'use client'
+import { reviewWorkspaceHref } from '@/lib/review-workspace'
 
 import { useState, type CSSProperties } from 'react'
 import { getColorTheme } from '@/lib/colors'
@@ -251,7 +252,7 @@ export default function YourQuizzes() {
                               <div className="page-actions">
                                 <Link
                                   className={`button-link ${q.status === 'DRAFT' ? '' : 'secondary'}`}
-                                  href={`/create/${q.id}/${q.status === 'DRAFT' ? q.composition.next : 'name'}`}
+                                  href={q.status === 'DRAFT' && q.composition.readyToPublish ? reviewWorkspaceHref(q.id, 'publish') : `/create/${q.id}/${q.status === 'DRAFT' ? q.composition.next : 'name'}`}
                                 >
                                   {q.status === 'DRAFT' ? (
                                     <ArrowRight size={14} />

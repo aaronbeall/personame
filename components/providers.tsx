@@ -3,6 +3,7 @@
 import { SessionProvider } from 'next-auth/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useState } from 'react'
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import { UnsavedChangesGuard } from '@/hooks/use-unsaved-changes'
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -20,10 +21,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <SessionProvider>
-      <QueryClientProvider client={queryClient}>
+      <NuqsAdapter><QueryClientProvider client={queryClient}>
         <UnsavedChangesGuard />
         {children}
-      </QueryClientProvider>
+      </QueryClientProvider></NuqsAdapter>
     </SessionProvider>
   )
 }

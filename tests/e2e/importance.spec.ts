@@ -1,0 +1,41 @@
+import { test, expect } from './fixtures'
+import type { FullQuiz } from '../../lib/personas'
+
+test('Importance heatmap uses relative shares, descriptive focus and conditional setup warnings', async ({ page, seedQuiz }) => {
+  const { id } = await seedQuiz()
+  const path = `/api/personames/${id}`
+  const quiz: FullQuiz = await (await page.request.get(path)).json()
+  await page.goto(`/create/${id}/preview?tab=analyze`)
+  const card = page.getByRole('region', { name: 'Targets & importance', exact: true })
+  await expect(card.locator('.importance-setup')).toHaveCount(0)
+  const priorities = [[.2, 0], [0, .8], [.5, .5], [0, 0]]
+  const archetypes = quiz.archetypes.map((a, index) => ({ ...a, dimensions: a.dimensions.map(d => ({ ...d, relevance: priorities[index][quiz.dimensions.findIndex(axis => axis.id === d.dimensionId)] })) }))
+  archetypes[3].dimensions = archetypes[3].dimensions.filter(d => d.dimensionId !== quiz.dimensions[0].id)
+  expect((await page.request.post(`${path}/archetypes`, { data: { archetypes } })).ok()).toBeTruthy()
+  await page.reload()
+  const metrics = card.getByRole('group', { name: 'Target space metrics', exact: true })
+  await expect(metrics.locator('.space-metric-label')).toHaveText(['Dimension influenceⓘ', 'Archetype focusⓘ', 'Importance varietyⓘ'])
+  await expect(metrics.locator('.space-metric-result > strong')).toHaveText(['100.0%', '1.0 of 2', '66.7%'])
+  await expect(metrics.locator('.space-diagnostic').nth(1)).toHaveAttribute('data-status', 'neutral')
+  const influence = card.getByRole('group', { name: 'Overall dimension influence' })
+  await expect(influence.locator('li b')).toHaveText(['50.0%', '50.0%'])
+  await card.locator('.importance-setup summary').click()
+  await expect(card.locator('.importance-setup')).toContainText('1 target setting is missing')
+  await expect(card.locator('.importance-setup')).toContainText(archetypes[3].name)
+  const cells = card.locator('tbody tr').first().locator('td')
+  await expect(cells.nth(0)).toHaveAttribute('data-share', '1.000000')
+  await expect(cells.nth(1)).toHaveAttribute('data-share', '0.000000')
+  await expect(cells.nth(0)).toContainText('Set importance: 20%')
+  expect(await cells.nth(0).evaluate(el => getComputedStyle(el).backgroundColor)).not.toBe(await cells.nth(1).evaluate(el => getComputedStyle(el).backgroundColor))
+  await expect(card.locator('tbody tr').last().locator('td').first()).toHaveText('Not set')
+  await expect(card.locator('tbody tr').nth(2)).toContainText('Focus: 2.0 of 2 dimensions')
+  await card.screenshot({ path: test.info().outputPath('importance-heatmap.png'), style: '.site-header { visibility: hidden !important; }' })
+  // Increasing every weight in an archetype equally changes no normalized share or metric.
+  archetypes[0].dimensions.forEach(d => { d.relevance *= 2 })
+  expect((await page.request.post(`${path}/archetypes`, { data: { archetypes } })).ok()).toBeTruthy()
+  await page.reload()
+  await expect(metrics.locator('.space-metric-result > strong')).toHaveText(['100.0%', '1.0 of 2', '66.7%'])
+  await page.setViewportSize({ width: 390, height: 844 })
+  await expect.poll(() => page.locator('body').evaluate(el => el.scrollWidth)).toBeLessThanOrEqual(390)
+  await card.screenshot({ path: test.info().outputPath('importance-mobile.png'), style: '.site-header { visibility: hidden !important; }' })
+})

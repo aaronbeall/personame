@@ -6,7 +6,7 @@ const definitions = [
   ['dimensions', 'Dimensions'],
   ['archetypes', 'Archetypes'],
   ['questions', 'Questions'],
-  ['preview', 'Publish'],
+  ['preview', 'Review & publish'],
 ] as const
 export function getQuizComposition(quiz: ReadinessQuiz) {
   const issues = readinessByStage(quiz)

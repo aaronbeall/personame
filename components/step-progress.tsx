@@ -31,7 +31,7 @@ export function StepProgress({
     ['dimensions', 'Dimensions', 'science'],
     ['archetypes', 'Archetypes', 'islands'],
     ['questions', 'Questions', 'creation'],
-    ['preview', 'Preview & publish', 'galaxy-expansion'],
+    ['preview', 'Review & publish', 'galaxy-expansion'],
   ]
   const active = Math.max(
     0,
