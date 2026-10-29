@@ -35,6 +35,7 @@ import { PageOptionsPanel } from './page-options-panel'
 import { QuestionOptionsPanel } from './question-options-panel'
 import { DimensionsArchetypesSummary } from './dimensions-archetypes-summary'
 import { createDefaultAnswers } from './question-defaults'
+import { withQuizBookends } from '@/lib/quiz-page-defaults'
 
 type QuizPageWithQuestions = QuizPage & {
   questions: (Question & {
@@ -89,47 +90,24 @@ export default function QuestionsPage({
     },
   })
 
-  // Initialize pages with cover and results if empty
+  // Existing quizzes can have question pages but still lack one of the bookends.
   const sourcePages = useMemo(() => {
-    if (pagesQuery.data) {
-      if (pagesQuery.data.length === 0) {
-        // Initialize with cover and results pages
-        return [
-          {
-            id: getTempId(),
-            title: 'Welcome',
-            description: 'Start your quiz journey',
-            order: 0,
-            hidden: false,
-            emoji: null,
-            color: null,
-            style: 'cover',
-            icon: null,
-            personaId: id,
-            questions: [],
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          },
-          {
-            id: getTempId(),
-            title: 'Your Results',
-            description: 'Discover your personality type',
-            order: 1,
-            hidden: false,
-            emoji: null,
-            color: null,
-            style: 'results',
-            icon: null,
-            personaId: id,
-            questions: [],
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          },
-        ]
-      } else {
-        return pagesQuery.data
-      }
-    }
+    if (!pagesQuery.data) return undefined
+    return withQuizBookends(pagesQuery.data, style => ({
+      id: getTempId(),
+      title: style === 'cover' ? 'Welcome' : 'Your Results',
+      description: style === 'cover' ? 'Start your quiz journey' : 'Discover your personality type',
+      order: 0,
+      hidden: false,
+      emoji: null,
+      color: null,
+      style,
+      icon: null,
+      personaId: id,
+      questions: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }))
   }, [pagesQuery.data, id])
 
   const draft = useBuilderDraft(sourcePages, id)
@@ -223,6 +201,7 @@ export default function QuestionsPage({
       type: 'MULTIPLE_CHOICE',
       order: currentPage.questions.length,
       required: true,
+      dimensionInfluences: {},
       emoji: null,
       color: null,
       style: null,
@@ -273,6 +252,7 @@ export default function QuestionsPage({
       type,
       order: currentPage.questions.length,
       required: true,
+      dimensionInfluences: {},
       emoji: null,
       color: null,
       style: null,

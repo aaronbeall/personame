@@ -41,7 +41,7 @@ function QuestionFlow({ quiz, analysis }: { quiz: Quiz; analysis: QuestionSpaceA
         {quiz.archetypes.map((a, index) => <g key={a.id}><title>{a.name}</title><rect x={630} y={y(index, quiz.archetypes.length) - 13} width={240} height={27} rx={7} fill="white" stroke="#e2deec" /><circle cx={642} cy={y(index, quiz.archetypes.length)} r={4} fill={getArchetypeTheme(a.color, a.name).hex} /><text x={653} y={y(index, quiz.archetypes.length) + 4}>{short(a.name, 31)}</text></g>)}
       </svg>
     </div>
-    {active && <div className="question-trace-detail"><strong>{active.text}</strong><span>{active.type === 'MULTIPLE_CHOICE' ? `${active.options} choices` : active.type === 'SLIDER' ? '101 slider positions' : `${active.options} scale points`} · {active.axes.filter(a => a.span > 0).length} dimensions vary</span><div>{active.axes.filter(a => a.span > 0 || a.mean !== 0).map(a => <span key={a.id}>{quiz.dimensions.find(d => d.id === a.id)?.name}: <b>{a.min > 0 ? '+' : ''}{a.min.toFixed(0)} → {a.max > 0 ? '+' : ''}{a.max.toFixed(0)}</b></span>)}</div></div>}
+    {active && <div className="question-trace-detail"><strong>{active.text}</strong><span>{active.type === 'MULTIPLE_CHOICE' ? `${active.options} choices` : active.type === 'SLIDER' ? '101 slider positions' : `${active.options} scale points`} · {active.axes.filter(a => a.span > 0).length} dimensions vary</span><div>{active.axes.filter(a => a.mapped).map(a => <span key={a.id}>{quiz.dimensions.find(d => d.id === a.id)?.name}: <b>{a.min.toFixed(0)} → {a.max.toFixed(0)}</b></span>)}</div></div>}
     <p className="question-space-note">Left: how much answers can change a score. Right: how much each dimension matters to an archetype. Thicker lines mean a stronger link on that side.</p>
   </div>
 }
@@ -55,8 +55,8 @@ function AnalysisContent({ quiz, analysis: a }: { quiz: Quiz; analysis: Question
     <SpaceMetrics label="Question space metrics" metrics={questionSpaceMetrics(a)} note={`${a.questions.length} questions · ${a.axes.filter(d => d.questions).length}/${quiz.dimensions.length} dimensions change with the answers. These checks assume every answer has an equal chance, not that real people choose at random.`} />
     {!!(unmapped.length || unmeasured.length || outside.length || inactive.length || a.invalid.length) && <details className="question-space-findings"><summary>{[a.invalid.length && `${a.invalid.length} invalid questions`, unmapped.length && `${unmapped.length} constant questions`, unmeasured.length && `${unmeasured.length} fixed dimensions`, outside.length && `${outside.length} targets outside axis ranges`, inactive.length && `${inactive.length} archetypes without active targets`].filter(Boolean).join(' · ')}</summary><ul>
       {a.invalid.length > 0 && <li>Fix questions without valid answer options before outcome estimates can run.</li>}
-      {unmapped.map(q => <li key={q.id}>“{q.text}” gives the same scores for every answer. It won’t help tell people apart, though it can shift everyone’s scores.</li>)}
-      {unmeasured.map(axis => <li key={axis.id}>{quiz.dimensions.find(d => d.id === axis.id)?.name} stays at {axis.min.toFixed(0)} across all answers.</li>)}
+      {unmapped.map(q => <li key={q.id}>“{q.text}” gives the same scores for every answer. It won’t help tell people apart, though it can pull everyone toward a fixed position.</li>)}
+      {unmeasured.map(axis => <li key={axis.id}>{quiz.dimensions.find(d => d.id === axis.id)?.name}: {axis.evidenceQuestions ? `stays at ${axis.min.toFixed(0)} across all answers.` : 'no question measures this dimension; it is excluded from matching.'}</li>)}
       {outside.map(o => <li key={o.id}>{quiz.archetypes.find(ar => ar.id === o.id)?.name}: {o.outside.map(id => quiz.dimensions.find(d => d.id === id)?.name).join(', ')} setting is outside the scores your questions can reach. People can still get this result if it is the closest match.</li>)}
       {inactive.map(o => <li key={o.id}>{quiz.archetypes.find(ar => ar.id === o.id)?.name} has no dimensions with importance above zero. Add one so it can be matched properly.</li>)}
     </ul><Link href={`/create/${quiz.id}/questions`}>Edit question scoring →</Link></details>}
@@ -64,15 +64,15 @@ function AnalysisContent({ quiz, analysis: a }: { quiz: Quiz; analysis: Question
     <div className="question-space-results">
       <section aria-labelledby="question-reach-title"><div className="question-space-subheading"><div><h3 id="question-reach-title">Where answers can take you</h3><p>The scores your questions can produce, and where results tend to gather.</p></div></div>
         {a.axes.map((axis, i) => { const d = quiz.dimensions[i], color = getColorTheme(d.color).hex, peak = Math.max(1, ...axis.bins)
-          return <div className="question-reach" key={axis.id}><div><strong>{d.emoji} {d.name}</strong><span>{axis.questions} varying questions · {axis.min.toFixed(0)}–{axis.max.toFixed(0)}</span></div>
-            <svg viewBox="0 0 400 58" role="img" aria-label={`${d.name}: reachable from ${axis.min.toFixed(1)} to ${axis.max.toFixed(1)}; ${a.count ? `${percent(axis.clipped / a.count)} of answer paths clipped beyond 0 or 100` : 'outcome distribution unavailable'}`}>
+          return <div className="question-reach" key={axis.id}><div><strong>{d.emoji} {d.name}</strong><span>{axis.evidenceQuestions ? `${axis.questions} varying questions · ${axis.min.toFixed(0)}–${axis.max.toFixed(0)}` : 'Not measured'}</span></div>
+            <svg viewBox="0 0 400 58" role="img" aria-label={`${d.name}: reachable from ${axis.min.toFixed(1)} to ${axis.max.toFixed(1)}; ${a.count ? `weighted-average scores; ${axis.evidenceQuestions} mapped questions` : 'outcome distribution unavailable'}`}>
               <rect x={10} y={38} width={380} height={4} rx={2} fill="#eeebf4" />
               {a.count > 0 && axis.bins.map((count, bin) => <rect key={bin} x={10 + bin * 38} y={35 - count / peak * 25} width={35} height={count / peak * 25} rx={2} fill={color} opacity={.38}><title>{bin * 10} ≤ score {bin === 9 ? '≤ 100' : `< ${(bin + 1) * 10}`}: {percent(count / a.count)} of paths</title></rect>)}
               <line x1={10 + axis.min * 3.8} x2={10 + axis.max * 3.8} y1={40} y2={40} stroke={color} strokeWidth={4} strokeLinecap="round" />
               {quiz.archetypes.map(ar => { const t = ar.dimensions.find(t => t.dimensionId === d.id && t.relevance > 0); return t ? <path key={ar.id} d={`M ${10 + t.targetValue * 3.8} 34 l 5 6 l -5 6 l -5 -6 Z`} fill={getArchetypeTheme(ar.color, ar.name).hex} stroke="white" strokeWidth={1}><title>{ar.name}: {t.targetValue} target</title></path> : null })}
               <text x={10} y={57}>0</text><text x={390} y={57} textAnchor="end">100</text>
             </svg><div className="question-reach-ends"><span>{d.minEmoji} {d.minLabel || 'Low'}</span><span>{d.maxEmoji} {d.maxLabel || 'High'}</span></div>
-            {a.count > 0 && <small>Mean {axis.mean.toFixed(1)} · {percent(axis.clipped / a.count)} of scores stopped at the limit</small>}
+            {a.count > 0 && axis.evidenceQuestions > 0 && <small>Mean {axis.mean.toFixed(1)} · {axis.evidenceQuestions} mapped questions</small>}
           </div>
         })}
         <p className="question-space-note">Diamonds mark your archetype settings. The bars show where scores gather when every answer gets an equal chance. Reaching one end of a dimension may rule out reaching another.</p>

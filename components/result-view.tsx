@@ -52,13 +52,18 @@ export function ResultView({
         <div>
           <h2 className="entity-heading">
             <EntityIcon kind="archetype" size={18} />
-            Your closest archetype
+            {result.alternatives?.some(a => a.tied) ? 'One of your closest archetypes' : 'Your closest archetype'}
           </h2>
           <p className="muted">
             A reflection of your answers, not a diagnosis or a box to fit into.
           </p>
         </div>
       </div>
+      {!!result.alternatives?.length && <section className="surface result-alternatives" aria-labelledby="result-alternatives-title">
+        <h2 id="result-alternatives-title">{result.ambiguous ? 'A little of both' : 'Other sides of you'}</h2>
+        <p className="muted">{result.ambiguous ? 'Your closest results are less than 5 match points apart. The headline is a close call, rather than a clear separation.' : 'These archetypes also share something with your answers.'} Match points describe closeness, not probability or confidence.</p>
+        <ul>{result.alternatives.map((a, index) => <li key={`${a.name}-${index}`}><ArchetypeBadge name={a.name} emoji={a.emoji} color={a.color} size={38} label={false} /><div><strong>{a.name}</strong><span>{a.tied ? 'Equally close · ' : ''}{a.matchScore.toFixed(1)} match points</span></div></li>)}</ul>
+      </section>}
       <section className="surface result-dimensions">
         <h2 className="entity-heading">
           <EntityIcon kind="dimension" size={18} />
@@ -82,9 +87,9 @@ export function ResultView({
               <strong>
                 <DimensionTag name={m.dimensionName} color={m.color} />
               </strong>
-              <span>{Math.round(m.score)} / 100</span>
+              <span>{m.evidenceCount === 0 ? 'Not measured' : `${Math.round(m.score)} / 100`}</span>
             </div>
-            <div className="result-dimension-track">
+            {m.evidenceCount === 0 ? <p className="muted">You haven’t answered a question measuring this dimension. It wasn’t used to match your result.</p> : <div className="result-dimension-track">
               <meter
                 min={0}
                 max={100}
@@ -96,7 +101,8 @@ export function ResultView({
                 aria-hidden="true"
                 style={{ left: `${Math.max(0, Math.min(100, m.score))}%` }}
               />
-            </div>
+            </div>}
+            {m.evidenceCount !== undefined && m.evidenceCount > 0 && <small className="result-evidence">{m.evidenceCount} {m.evidenceCount === 1 ? 'answer · limited evidence' : 'answers used'}</small>}
             <div className="range-labels">
               <DimensionEndpointLabel
                 label={m.minLabel || 'Low'}

@@ -11,7 +11,7 @@ test('Question space computes in a worker and exposes scoring flow, coverage and
   await expect(card.getByRole('heading', { name: 'Who might you become?' })).toBeVisible()
   for (const label of ['Archetype space metrics', 'Target space metrics', 'Question space metrics']) {
     const metrics = page.getByRole('group', { name: label, exact: true })
-    await expect(metrics.locator('.space-diagnostic')).toHaveCount(3)
+    await expect(metrics.locator('.space-diagnostic')).toHaveCount(label === 'Question space metrics' ? 4 : 3)
     await expect(metrics.locator('.space-metric-result > strong').first()).not.toHaveText('—')
   }
   const geometry = page.getByRole('group', { name: 'Archetype space metrics', exact: true })
@@ -80,7 +80,7 @@ test('Question space pages long quizzes and reveals fixed scoring diagnostics', 
   await expect(card.getByRole('button', { name: 'Next questions' })).toBeDisabled()
   await expect(card.locator('.question-trace-detail')).toContainText('0 dimensions vary')
   await card.locator('.question-space-findings summary').click()
-  await expect(card.getByText('Unmeasured stays at 50 across all answers.')).toBeVisible()
+  await expect(card.getByText('Unmeasured: no question measures this dimension; it is excluded from matching.')).toBeVisible()
   await expect(card.getByText(/“Constant question 1” gives the same scores for every answer/)).toBeVisible()
 })
 
@@ -90,9 +90,9 @@ test('Analysis technical reference is available separately with working metric a
   await expect(page.getByRole('heading', { name: 'Space metrics: technical reference', exact: true })).toBeAttached()
   await expect(page.locator('#minimum-separation')).toHaveCount(1)
   await expect(page.locator('#minimum-separation')).toContainText('Exact closest-pair RMS distance')
-  await page.getByRole('link', { name: 'Scores at the limit', exact: true }).click()
-  await expect(page).toHaveURL(/#clamped-scores$/)
-  await expect(page.locator('#clamped-scores')).toBeInViewport()
+  await page.getByRole('link', { name: 'One-answer sensitivity', exact: true }).click()
+  await expect(page).toHaveURL(/#one-answer-sensitivity$/)
+  await expect(page.locator('#one-answer-sensitivity')).toBeInViewport()
   await page.setViewportSize({ width: 390, height: 844 })
   await expect.poll(() => page.locator('body').evaluate(el => el.scrollWidth)).toBeLessThanOrEqual(390)
 })

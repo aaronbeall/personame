@@ -50,12 +50,12 @@ export function readinessByStage(quiz: ReadinessQuiz) {
     if (
       !questions.some((q) =>
         (q.type === 'MULTIPLE_CHOICE' ? q.answers : q.answers.slice(0, 2)).some(
-          (a) => a.weights.some((w) => w.dimensionId === m.id && w.value !== 0),
+          (a) => a.weights.some((w) => w.dimensionId === m.id && Number.isFinite(w.value)),
         ),
       )
     )
       stages.questions.push(
-        `Give at least one answer a non-zero weight for ${m.name}.`,
+        `Map at least one question to ${m.name}.`,
       )
   return stages
 }

@@ -1,3 +1,4 @@
+import { questionInfluence, questionInfluences } from '@/lib/question-influence'
 import { Question, Answer, AnswerWeight, Dimension } from '@prisma/client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -13,12 +14,12 @@ import {
   CheckSquare,
   Sliders,
   BarChart3,
-  ChevronDown,
 } from 'lucide-react'
 import { getTempId, cn } from '@/lib/utils'
 import { DimensionTag } from '@/components/entity-identity'
-import { getBarGradient } from '@/lib/colors'
-import { useState } from 'react'
+import { DimensionEndpointLabel } from '@/components/dimension-endpoint-label'
+import { useState, type CSSProperties } from 'react'
+import { getColorTheme } from '@/lib/colors'
 import { createDefaultAnswers } from './question-defaults'
 
 interface QuestionOptionsPanelProps {
@@ -64,10 +65,10 @@ export function QuestionOptionsPanel({
       style: null,
       icon: null,
       questionId: question.id,
-      weights: dimensions.map((m) => ({
+      weights: dimensions.filter(m => question.answers.some(a => a.weights.some(w => w.dimensionId === m.id))).map((m) => ({
         id: getTempId(),
         dimensionId: m.id,
-        value: 0,
+        value: 50,
         answerId,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -116,6 +117,7 @@ export function QuestionOptionsPanel({
     })
   }
 
+  const mappedDimensions = dimensions.filter(d => question.answers.some(a => a.weights.some(w => w.dimensionId === d.id)))
   return (
     <Card>
       <CardHeader>
@@ -219,6 +221,19 @@ export function QuestionOptionsPanel({
           }
         />
 
+        <fieldset className="question-scoring-settings">
+          <legend>What does this question measure?</legend>
+          <div className="question-dimension-toggles" role="group" aria-label="Measured dimensions">{dimensions.map(d => {
+            const active = mappedDimensions.some(m => m.id === d.id)
+            return <div className="question-dimension-option" key={d.id} data-active={active} style={{ '--dimension-accent': getColorTheme(d.color).hex } as CSSProperties}><button type="button" className="question-dimension-toggle" aria-label={d.name} aria-pressed={active} onClick={() => onUpdate({ ...question,
+              dimensionInfluences: active ? Object.fromEntries(Object.entries(questionInfluences(question)).filter(([key]) => key !== d.id)) : { ...questionInfluences(question), [d.id]: 1 },
+              answers: question.answers.map((a, i) => ({ ...a, weights: active || (question.type === 'SCALE' && i >= 2) ? a.weights.filter(w => w.dimensionId !== d.id) : a.weights.some(w => w.dimensionId === d.id) ? a.weights : [...a.weights, { id: getTempId(), answerId: a.id, dimensionId: d.id, value: 50, createdAt: new Date(), updatedAt: new Date() }] })) })}>
+              <DimensionTag name={d.name} emoji={d.emoji} color={d.color} />
+            </button>{active && <label className="question-dimension-influence"><Input type="number" aria-label={`${d.name} influence`} min={0.1} max={100} step={0.1} value={questionInfluence(question, d.id)} onChange={event => { const value = event.target.valueAsNumber; if (Number.isFinite(value) && value > 0 && value <= 100) onUpdate({ ...question, dimensionInfluences: { ...questionInfluences(question), [d.id]: value } }) }} /><span aria-hidden="true">×</span></label>}</div>
+          })}</div>
+          <p>Influence is per dimension. 2× counts twice as much as 1× for that dimension.</p>
+        </fieldset>
+
         {question.type === 'MULTIPLE_CHOICE' && (
           <div>
             <div className="flex items-center justify-between mb-2">
@@ -265,7 +280,7 @@ export function QuestionOptionsPanel({
 
                   <AnswerWeightsEditor
                     answer={answer}
-                    dimensions={dimensions}
+                    dimensions={mappedDimensions}
                     onUpdateWeight={handleUpdateWeight}
                   />
                 </div>
@@ -325,7 +340,7 @@ export function QuestionOptionsPanel({
 
                       <AnswerWeightsEditor
                         answer={answer}
-                        dimensions={dimensions}
+                        dimensions={mappedDimensions}
                         onUpdateWeight={handleUpdateWeight}
                       />
                     </div>
@@ -337,7 +352,7 @@ export function QuestionOptionsPanel({
             {question.type === 'SCALE' && (
               <ScaleEditor
                 question={question}
-                dimensions={dimensions}
+                dimensions={mappedDimensions}
                 onUpdateAnswer={handleUpdateAnswer}
                 onUpdateWeight={handleUpdateWeight}
                 onUpdateAnswers={(answers) =>
@@ -353,112 +368,26 @@ export function QuestionOptionsPanel({
 }
 
 const AnswerWeightsEditor = ({
-  label = 'Dimension Weights',
-  answer,
-  dimensions,
-  onUpdateWeight,
+  label = 'Answer positions', answer, dimensions, onUpdateWeight,
 }: {
   label?: string
   answer: Answer & { weights: AnswerWeight[] }
   dimensions: Dimension[]
   onUpdateWeight: (answerId: string, dimensionId: string, value: number) => void
 }) => {
-  const [expanded, setExpanded] = useState(true)
-
-  return (
-    <fieldset className="rounded-lg border border-muted-200 bg-white/70 shadow-sm">
-      <legend className="px-2 text-[11px] font-semibold uppercase tracking-wide text-muted-600">
-        <button
-          className="hover:text-primary-600"
-          onClick={() => setExpanded((prev) => !prev)}
-        >
-          <ChevronDown
-            className={cn(
-              'inline-block mr-1 h-4 w-4 transition-transform',
-              expanded ? 'rotate-0' : '-rotate-90',
-            )}
-          />{' '}
-          {label}
-        </button>
-      </legend>
-      {expanded ? (
-        <div className="divide-y divide-muted-100">
-          {dimensions.map((dimension) => {
-            const weight = answer.weights.find(
-              (w) => w.dimensionId === dimension.id,
-            )
-            const weightValue = weight?.value ?? 0
-            return (
-              <div
-                key={dimension.id}
-                className={cn(
-                  'flex items-center gap-2 px-2 py-2',
-                  weightValue === 0 ? 'opacity-60' : '',
-                )}
-              >
-                <div
-                  className="w-2 h-2 rounded-sm"
-                  style={{ background: getBarGradient(dimension.color) }}
-                />
-                <span className="text-xs w-28 truncate">{dimension.name}</span>
-                <Slider
-                  color={dimension.color ?? undefined}
-                  center={0}
-                  min={-100}
-                  max={100}
-                  step={1}
-                  value={[weightValue]}
-                  onValueChange={(vals) =>
-                    onUpdateWeight(answer.id, dimension.id, vals?.[0] ?? 0)
-                  }
-                  className="flex-1"
-                />
-                <Input
-                  type="number"
-                  aria-label={`${answer.text}: ${dimension.name} weight`}
-                  value={weightValue}
-                  onChange={(e) =>
-                    onUpdateWeight(
-                      answer.id,
-                      dimension.id,
-                      parseFloat(e.target.value) || 0,
-                    )
-                  }
-                  min={-100}
-                  max={100}
-                  step={1}
-                  className="w-16 h-8 px-1.5 py-1 text-xs"
-                />
-              </div>
-            )
-          })}
+  if (!dimensions.length) return null
+  return <fieldset className="answer-positions"><legend>{label}</legend>
+    {dimensions.map(dimension => {
+      const value = answer.weights.find(w => w.dimensionId === dimension.id)?.value ?? 50
+      return <div className="answer-position" key={dimension.id}>
+        <div className="answer-position-heading"><DimensionTag name={dimension.name} emoji={dimension.emoji} color={dimension.color} />
+          <Input type="number" aria-label={`${answer.text}: ${dimension.name} position`} min={0} max={100} step={1} value={value} onChange={event => { const next = event.target.valueAsNumber; if (Number.isFinite(next)) onUpdateWeight(answer.id, dimension.id, Math.max(0, Math.min(100, next))) }} />
         </div>
-      ) : (
-        <div className="px-2 py-2 flex flex-wrap gap-2">
-          {(() => {
-            const nonZeroWeights = answer.weights.filter((w) => w.value !== 0)
-            return nonZeroWeights.map((w) => {
-              const dimension = dimensions.find((m) => m.id === w.dimensionId)
-              if (!dimension) return null
-              return (
-                <DimensionTag
-                  key={w.dimensionId}
-                  name={`${dimension.name} ${w.value >= 0 ? '+' : ''}${w.value}`}
-                  emoji={dimension.emoji}
-                  color={dimension.color}
-                />
-              )
-            })
-          })()}
-          {answer.weights.every((w) => w.value === 0) && (
-            <span className="text-xs text-muted-400 italic">
-              No weights set
-            </span>
-          )}
-        </div>
-      )}
-    </fieldset>
-  )
+        <Slider className="answer-position-slider" color={dimension.color ?? undefined} min={0} max={100} step={1} value={[value]} aria-label={`${answer.text}: ${dimension.name} scale`} aria-valuetext={`${Math.round(value)} out of 100; ${dimension.minLabel || 'Low'} to ${dimension.maxLabel || 'High'}`} onValueChange={values => onUpdateWeight(answer.id, dimension.id, values[0])} />
+        <div className="answer-position-endpoints"><DimensionEndpointLabel label={dimension.minLabel || 'Low'} emoji={dimension.minEmoji} end="low" /><DimensionEndpointLabel label={dimension.maxLabel || 'High'} emoji={dimension.maxEmoji} end="high" /></div>
+      </div>
+    })}
+  </fieldset>
 }
 
 interface ScaleEditorProps {
@@ -561,10 +490,10 @@ function ScaleEditor({
         style: null,
         icon: null,
         questionId: question.id,
-        weights: dimensions.map((m) => ({
+        weights: dimensions.filter(m => question.answers.some(a => a.weights.some(w => w.dimensionId === m.id))).map((m) => ({
           id: getTempId(),
           dimensionId: m.id,
-          value: 0,
+          value: 50,
           answerId: newAnswerId,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -588,10 +517,10 @@ function ScaleEditor({
       style: null,
       icon: null,
       questionId: question.id,
-      weights: dimensions.map((m) => ({
+      weights: dimensions.filter(m => question.answers.some(a => a.weights.some(w => w.dimensionId === m.id))).map((m) => ({
         id: getTempId(),
         dimensionId: m.id,
-        value: 0,
+        value: 50,
         answerId: newAnswerId,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -651,7 +580,7 @@ function ScaleEditor({
 
       <div className="space-y-2">
         <AnswerWeightsEditor
-          label="Min Endpoint Weights"
+          label="Low endpoint positions"
           answer={question.answers[0]}
           dimensions={dimensions}
           onUpdateWeight={onUpdateWeight}
@@ -660,7 +589,7 @@ function ScaleEditor({
 
       <div className="space-y-2">
         <AnswerWeightsEditor
-          label="Max Endpoint Weights"
+          label="High endpoint positions"
           answer={question.answers[1]}
           dimensions={dimensions}
           onUpdateWeight={onUpdateWeight}

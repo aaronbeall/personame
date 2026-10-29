@@ -26,7 +26,7 @@ export const SPACE_METRIC_REFERENCE = {
   "Active archetypes": {
     "id": "active-archetypes",
     "title": "Ready archetypes",
-    "detail": "Fraction of archetypes with at least one valid, positive-importance target on a known dimension. Every archetype should have one: the current scorer otherwise assigns zero distance. This is a scoring integrity check.",
+    "detail": "Fraction of archetypes with at least one valid, positive-importance target on a known dimension. Every archetype should have one: the scorer excludes archetypes without observed, positive-importance targets. This is a scoring integrity check.",
     "ranges": "100% all active · <100% needs attention"
   },
   "Dimension participation": {
@@ -47,11 +47,15 @@ export const SPACE_METRIC_REFERENCE = {
     "detail": "Effective outcome diversity divided by archetype count. Higher means more even outcomes under independent, equally likely answers. Uses the same exact enumeration or fixed-seed estimate as the outcome bars. Rare outcomes can be intentional.",
     "ranges": "≥80% even · 50–<80% uneven · <50% concentrated"
   },
-  "Clamped scores": {
-    "id": "clamped-scores",
-    "title": "Scores at the limit",
-    "detail": "Mean share of paths per dimension whose raw score exceeds 0–100. Lower preserves more score variation; high clamping may make different answers indistinguishable. Exact or fixed-seed estimated with the outcome bars; deliberate endpoint emphasis is allowed.",
-    "ranges": "≤10% low · >10–30% elevated · >30% high"
+  "Close results": {
+    "id": "close-results", "title": "Close results",
+    "detail": "Share of enumerated or sampled answer paths whose two nearest eligible archetypes are less than 5 RMS-distance points apart. The 5-point margin and verdict bands are product heuristics, not calibrated confidence or evidence of validity. Exact ties use stable archetype IDs for a reproducible headline and are exposed in saved results.",
+    "ranges": "≤20% distinct · >20–50% some overlap · >50% much overlap. Overlap can be intentional."
+  },
+  "One-answer sensitivity": {
+    "id": "one-answer-sensitivity", "title": "One-answer sensitivity",
+    "detail": "Omit one question per answer path, cycling through authored questions by path index, and compare the winner with the full path. Divide changed winners by comparisons with an eligible winner after omission. This bounded deterministic stress test is not a complete leave-one-out enumeration and is not empirical test–retest reliability. Unmeasured dimensions are excluded in both matches.",
+    "ranges": "≤10% steady · >10–30% some changes · >30% sensitive. Product heuristics, not validated cutoffs."
   },
   "Dimension influence": {
     "id": "dimension-influence",

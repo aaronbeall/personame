@@ -1,3 +1,5 @@
+> Current scoring is version 2: weighted-average answer positions with relative question influence. See [SCORING.md](SCORING.md) and the in-app technical reference for current calculations. The initial additive/clamping design described below is historical.
+
 # Question-space diagnostics
 
 Research and implementation notes, 28 October 2026.

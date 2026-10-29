@@ -64,7 +64,6 @@ export default function ReviewPage({ params }: { params: Promise<{ id: string }>
     ]} />
     <div role="tabpanel" id={`review-workspace-panel-${tab}`} aria-labelledby={`review-workspace-tab-${tab}`} tabIndex={0}>
     {tab === 'review' && <>
-    <div className="review-workspace-tools"><p>A final look at the world you’ve built.</p><QuizPreviewDialog quiz={playerQuiz} /></div>
     {quiz.status === 'DRAFT' && <section className="review-todos" data-ready={todoCount === 0} aria-labelledby="review-todos-title">
       {todoCount === 0 ? <header className="review-ready-header">
         <CheckCircle2 className="review-ready-icon" size={24} aria-hidden="true" />
@@ -88,7 +87,7 @@ export default function ReviewPage({ params }: { params: Promise<{ id: string }>
       </ul>
     </section>}
     {quiz.status !== 'DRAFT' && <div className="review-live" role="status"><CheckCircle2 size={20} /><div><strong>{quiz.status === 'CLOSED' ? 'Your quiz is closed' : 'Your quiz is live'}</strong><p>{quiz.status === 'CLOSED' ? 'Past results are still available.' : 'Ready for your people.'}</p></div><Link href={hrefFor('publish')} className="review-edit-link">Manage publishing →</Link></div>}
-    <ReviewSummary quiz={quiz} />
+    <ReviewSummary quiz={quiz} preview={<QuizPreviewDialog quiz={playerQuiz} />} />
     {todoCount > 0 && quiz.status === 'DRAFT' && <p className="review-publish-guidance">Finish the to-do items above to unlock publishing. <Link href={hrefFor('publish')}>Publish settings →</Link></p>}
     </>}
     {tab === 'analyze' && <div className="review-analysis-stack" key={quiz.updatedAt.toString()}><ArchetypeSpace dimensions={quiz.dimensions} archetypes={quiz.archetypes} /><TargetsImportance dimensions={quiz.dimensions} archetypes={quiz.archetypes} /><QuestionSpace quiz={quiz} /></div>}

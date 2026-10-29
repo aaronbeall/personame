@@ -28,11 +28,11 @@ test('composition uses actual readiness, not record counts, and excludes hidden 
   const quiz = compileCatalogQuiz(definition)
   quiz.status = 'DRAFT'
   quiz.pages[1].questions.forEach((q) =>
-    q.answers.forEach((a) => a.weights.forEach((w) => (w.value = 0))),
+    q.answers.forEach((a) => (a.weights = [])),
   )
   assert.equal(getQuizComposition(quiz).next, 'questions')
   assert.equal(getQuizComposition(quiz).readyToPublish, false)
-  assert.ok(readiness(quiz).some((issue) => issue.includes('non-zero')))
+  assert.ok(readiness(quiz).some((issue) => issue.includes('Map at least')))
   quiz.pages[1].hidden = true
   assert.equal(
     getQuizComposition(quiz).stages.find((s) => s.key === 'questions')?.count,

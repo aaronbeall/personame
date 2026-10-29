@@ -81,7 +81,7 @@ export default function DemoPage() {
                       </div>
                       <p className="text-xs text-muted-700 mt-1">High extraversion, high conscientiousness</p>
                     </div>
-                    <div className="p-3 border-l-4 border-green-400 bg-green-50 rounded">
+                    <div className="p-3 border-l-4 border-[var(--pn-positive-accent)] bg-[var(--pn-positive-soft)] rounded">
                       <div className="flex items-center gap-2">
                         <span className="text-2xl">🦉</span>
                         <span className="font-semibold">The Thinker</span>

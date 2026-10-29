@@ -26,7 +26,7 @@ export function PublishWorkspace({ quiz, todoCount, busy, copied, onPublish, onC
         <h3>{quiz.title}</h3>
         {quiz.description && <p>{quiz.description}</p>}
         <div className="publish-quiz-stats"><span><EntityIcon kind="dimension" size={13} />{quiz.dimensions.length} dimensions</span><span><EntityIcon kind="archetype" size={13} />{quiz.archetypes.length} types</span><span>{questionCount} questions</span></div>
-        {preview}
+        <div className="publish-preview-invite"><h4>{released ? 'Take your quiz for a spin' : 'Try it before you publish'}</h4><p>Check the questions and your result. Preview answers aren’t saved.</p>{preview}</div>
       </div>
       <section className="publish-settings" aria-labelledby="publish-settings-title"><header className="review-section-heading"><div><h2 id="publish-settings-title">Publish settings<span className="publish-future-label">Coming later</span></h2><p>A peek at what’s next. These settings aren’t saved or applied yet.</p></div></header>
         <fieldset disabled className="publish-settings-grid"><legend className="sr-only">Future publishing controls</legend>

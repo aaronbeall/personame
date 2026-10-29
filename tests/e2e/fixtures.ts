@@ -110,6 +110,7 @@ export const test = base.extend<{
                 id: `temp-${p.id}`,
                 questions: p.questions.map((q) => ({
                   ...q,
+                  dimensionInfluences: Object.fromEntries(Object.entries(q.dimensionInfluences as Record<string, number>).map(([key, value]) => [remap.get(key)!, value])),
                   id: `temp-${q.id}`,
                   answers: q.answers.map((a) => ({
                     ...a,

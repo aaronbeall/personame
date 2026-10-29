@@ -3,9 +3,9 @@ import { storedColorSchema } from './colors'
 import { readiness } from './quiz-validation'
 import type { FullQuiz } from './personas'
 const label = z.string().trim().min(1)
-const weights = z.record(z.string(), z.number().min(-100).max(100))
+const weights = z.record(z.string(), z.number().min(0).max(100))
 export const catalogSchema = z.object({
-  version: z.literal(1),
+  version: z.literal(2),
   quizzes: z
     .array(
       z.object({
@@ -58,6 +58,7 @@ export const catalogSchema = z.object({
               emoji: label.optional(),
               color: storedColorSchema,
               required: z.boolean().default(true),
+              dimensionInfluences: z.record(z.string(), z.number().positive().max(100)).default({}),
               answers: z
                 .array(
                   z.object({
@@ -101,6 +102,7 @@ export function compileCatalogQuiz(definition: CatalogQuiz): FullQuiz {
       )
   }
   for (const q of definition.questions) {
+    if (Object.keys(q.dimensionInfluences).some(key => !keys.includes(key))) throw new Error(`${definition.slug}: unknown dimension in question influence`)
     if (q.type === 'SLIDER' && q.answers.length !== 2)
       throw new Error(`${definition.slug}: sliders need exactly two endpoints`)
     for (const a of q.answers)
@@ -169,6 +171,15 @@ export function compileCatalogQuiz(definition: CatalogQuiz): FullQuiz {
             })),
           })),
         })),
+      },
+      {
+        id: 'results',
+        title: 'Your Results',
+        description: 'Discover your personality type',
+        style: 'results',
+        hidden: false,
+        order: 2,
+        questions: [],
       },
     ],
   } as unknown as FullQuiz

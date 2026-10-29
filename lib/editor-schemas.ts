@@ -56,7 +56,7 @@ const answerInput = z.object({
     .array(
       z.object({
         dimensionId: z.string(),
-        value: z.number().min(-100).max(100),
+        value: z.number().min(0).max(100),
       }),
     )
     .max(30),
@@ -67,6 +67,7 @@ const questionInput = z.object({
   type: z.enum(['MULTIPLE_CHOICE', 'SLIDER', 'SCALE']),
   order: z.number().int(),
   required: z.boolean().default(true),
+  dimensionInfluences: z.record(z.string(), z.number().positive().max(100)).default({}),
   answers: z.array(answerInput).max(30),
 })
 export const pagesInput = z.object({

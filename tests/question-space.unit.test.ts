@@ -13,7 +13,7 @@ function fixture() {
       { id: 'low', name: 'Grounded', dimensions: [{ dimensionId: 'd', targetValue: 0, relevance: 1 }] },
       { id: 'high', name: 'Explorer', dimensions: [{ dimensionId: 'd', targetValue: 100, relevance: 1 }] },
     ],
-    pages: [{ hidden: false, style: null, questions: [{ id: 'q', text: 'Explore?', type: 'MULTIPLE_CHOICE', required: true, answers: [answer('no', -50), answer('yes', 50)] }] }],
+    pages: [{ hidden: false, style: null, questions: [{ id: 'q', text: 'Explore?', type: 'MULTIPLE_CHOICE', required: true, answers: [answer('no', 0), answer('yes', 100)] }] }],
   } as unknown as FullQuiz
 }
 
@@ -21,8 +21,8 @@ test('exact outcome counts agree with production across choice, scale and slider
   const quiz = fixture()
   const base = quiz.pages[0].questions[0]
   quiz.pages[0].questions = [base,
-    { ...base, id: 'scale', type: 'SCALE', answers: [answer('low', -20), answer('high', 20), answer('p1', 1000), answer('p2', 1000), answer('p3', 1000)] as typeof base.answers },
-    { ...base, id: 'slider', type: 'SLIDER', answers: [answer('low', -10), answer('high', 10)] as typeof base.answers },
+    { ...base, id: 'scale', type: 'SCALE', answers: [answer('low', 0), answer('high', 100), answer('p1', 1000), answer('p2', 1000), answer('p3', 1000)] as typeof base.answers },
+    { ...base, id: 'slider', type: 'SLIDER', answers: [answer('low', 0), answer('high', 100)] as typeof base.answers },
   ]
   const expected = { low: 0, high: 0 }
   for (const answerId of ['no', 'yes']) for (const scaleId of ['p1', 'p2', 'p3']) for (let value = 0; value <= 100; value++) {
@@ -35,7 +35,7 @@ test('exact outcome counts agree with production across choice, scale and slider
   for (const outcome of analysis.outcomes) assert.equal(outcome.wins, expected[outcome.id as keyof typeof expected])
   assert.equal(analysis.axes[0].min, 0)
   assert.equal(analysis.axes[0].max, 100)
-  assert.ok(analysis.axes[0].clipped > 0)
+  assert.ok(analysis.closeMatchShare !== null)
 })
 
 test('slider integers, scale endpoint interpolation and missing weights match the player', () => {
@@ -43,13 +43,13 @@ test('slider integers, scale endpoint interpolation and missing weights match th
   q.type = 'SLIDER'
   const options = questionSpaceOptions(q, quiz.dimensions)
   assert.equal(options.length, 101)
-  assert.deepEqual(options[50], [0])
-  assert.equal(analyzeQuestionSpace(quiz).outcomes[0].wins, 51) // midpoint ties go to the first archetype
+  assert.deepEqual(options[50], [50])
+  assert.equal(analyzeQuestionSpace(quiz).outcomes[0].wins, 50) // midpoint ties use stable IDs
   q.type = 'SCALE'
   q.answers.push(answer('one', 999) as typeof q.answers[number], answer('two', 999) as typeof q.answers[number])
-  assert.deepEqual(questionSpaceOptions(q, quiz.dimensions), [[-50], [50]])
+  assert.deepEqual(questionSpaceOptions(q, quiz.dimensions), [[0], [100]])
   q.answers[0].weights = []
-  assert.deepEqual(questionSpaceOptions(q, quiz.dimensions), [[0], [50]])
+  assert.deepEqual(questionSpaceOptions(q, quiz.dimensions), [[50], [100]])
 })
 
 test('hidden, cover and result pages are excluded; optional questions are answered', () => {
@@ -68,8 +68,8 @@ test('constant shifts, unmeasured axes and weighted target coverage are diagnose
   const quiz = fixture()
   quiz.pages[0].questions[0].answers = [answer('a', 10), answer('b', 10)] as FullQuiz['pages'][number]['questions'][number]['answers']
   const a = analyzeQuestionSpace(quiz)
-  assert.equal(a.axes[0].min, 60)
-  assert.equal(a.axes[0].max, 60)
+  assert.equal(a.axes[0].min, 10)
+  assert.equal(a.axes[0].max, 10)
   assert.equal(a.axes[0].questions, 0)
   assert.equal(a.questions[0].axes[0].span, 0)
   assert.equal(a.questions[0].axes[0].mean, 10)
@@ -79,7 +79,7 @@ test('constant shifts, unmeasured axes and weighted target coverage are diagnose
   const inactive = analyzeQuestionSpace(quiz).outcomes[0]
   assert.equal(inactive.coverage, null)
   assert.equal(inactive.active, 0)
-  assert.equal(inactive.probability, 1) // production's zero-distance no-target behavior
+  assert.equal(inactive.probability, 0) // no active target is ineligible
 })
 
 test('individual reachable bounds do not claim joint target reachability', () => {
@@ -107,8 +107,8 @@ test('large spaces use deterministic bounded sampling with plausible equal-answe
   assert.equal(a.paths, 2 ** 20)
   assert.deepEqual(a, b)
   assert.equal(a.outcomes.reduce((sum, o) => sum + o.wins, 0), a.count)
-  // Symmetric binomial responses, with the central tie mass assigned to the first archetype.
-  const expectedLow = .5 + 184756 / 2 ** 21
+  // Symmetric binomial responses, with the central tie mass assigned by stable IDs.
+  const expectedLow = .5 - 184756 / 2 ** 21
   assert.ok(Math.abs(a.outcomes[0].probability - expectedLow) < .03)
   assert.ok(a.outcomes[0].interval[0] < a.outcomes[0].probability)
   assert.ok(a.outcomes[0].interval[1] > a.outcomes[0].probability)
@@ -132,4 +132,20 @@ test('incomplete and empty models do not fabricate results', () => {
   quiz.dimensions = []
   quiz.archetypes = []
   assert.equal(analyzeQuestionSpace(quiz).count, 0)
+})
+
+test('per-dimension influence is shared by production scoring, reachable bounds and flow links', () => {
+  const quiz = fixture()
+  quiz.dimensions.push({ ...quiz.dimensions[0], id: 'd2', name: 'Company' })
+  quiz.archetypes.forEach(a => a.dimensions.push({ ...a.dimensions[0], dimensionId: 'd2' }))
+  const first = quiz.pages[0].questions[0]
+  first.answers.forEach(a => a.weights.push({ ...a.weights[0], dimensionId: 'd2' }))
+  first.dimensionInfluences = { d: 3, d2: 1 }
+  const second = { ...first, id: 'constant', dimensionInfluences: { d: 1, d2: 3 }, answers: first.answers.map(a => ({ ...a, weights: a.weights.map(w => ({ ...w, value: 20 })) })) }
+  quiz.pages[0].questions.push(second)
+  const scores = scoreQuiz(quiz, { q: { answerId: 'yes' }, constant: { answerId: 'no' } }).scores
+  assert.deepEqual(scores.map(s => s.score), [80, 40])
+  const analysis = analyzeQuestionSpace(quiz)
+  assert.deepEqual(analysis.axes.map(a => [a.min, a.max]), [[5, 80], [15, 40]])
+  assert.deepEqual(analysis.questions[0].axes.map(a => a.span), [75, 25])
 })

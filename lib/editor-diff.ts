@@ -1,7 +1,9 @@
+import { isDeepStrictEqual } from 'node:util'
+
 /** Undefined optional fields mean leave existing values alone. */
 export function fieldsChanged(before: object, after: object) {
   const original = before as Record<string, unknown>
-  return Object.entries(after).some(([key, value]) => value !== undefined && original[key] !== value)
+  return Object.entries(after).some(([key, value]) => value !== undefined && !isDeepStrictEqual(original[key], value))
 }
 export function relationshipsChanged(before: object[], after: object[], fields: string[]) {
   const canonical = (rows: object[]) => rows.map(row => fields.map(field => (row as Record<string, unknown>)[field])).sort((a, b) => String(a[0]).localeCompare(String(b[0])))

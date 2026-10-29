@@ -6,6 +6,7 @@ test('Create, grade, preview, publish, and complete a quiz through the UI', asyn
   db,
   context,
 }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
   let quizId = '',
     slug = ''
   await test.step('Name a new quiz and create its first dimension', async () => {
@@ -126,12 +127,17 @@ test('Create, grade, preview, publish, and complete a quiz through the UI', asyn
       .fill('Which path do you choose?')
     await page.getByPlaceholder('Answer text').nth(0).fill('The familiar path')
     await page.getByPlaceholder('Answer text').nth(1).fill('The unmarked path')
+    await page.getByRole('button', { name: 'Curiosity', exact: true }).click()
+    await page.getByRole('spinbutton', { name: 'Curiosity influence' }).fill('2')
+    await expect(page.getByRole('button', { name: 'Curiosity', exact: true })).toHaveAttribute('aria-pressed', 'true')
+    await expect(page.locator('.answer-position-endpoints').first()).toContainText('Grounded')
+    await expect(page.locator('.answer-position-endpoints').first()).toContainText('Exploratory')
     await page
-      .getByRole('spinbutton', { name: 'The familiar path: Curiosity weight' })
-      .fill('-20')
+      .getByRole('spinbutton', { name: 'The familiar path: Curiosity position' })
+      .fill('0')
     await page
-      .getByRole('spinbutton', { name: 'The unmarked path: Curiosity weight' })
-      .fill('20')
+      .getByRole('spinbutton', { name: 'The unmarked path: Curiosity position' })
+      .fill('100')
     await page
       .getByRole('button', { name: 'Add Question', exact: true })
       .click()
@@ -139,12 +145,13 @@ test('Create, grade, preview, publish, and complete a quiz through the UI', asyn
       .getByPlaceholder('Enter your question')
       .fill('How curious are you today?')
     await page.getByRole('button', { name: 'Slider', exact: true }).click()
+    await page.getByRole('button', { name: 'Curiosity', exact: true }).click()
     await page
-      .getByRole('spinbutton', { name: 'Min: Curiosity weight' })
-      .fill('-20')
+      .getByRole('spinbutton', { name: 'Min: Curiosity position' })
+      .fill('0')
     await page
-      .getByRole('spinbutton', { name: 'Max: Curiosity weight' })
-      .fill('20')
+      .getByRole('spinbutton', { name: 'Max: Curiosity position' })
+      .fill('100')
     await page
       .getByRole('button', { name: 'Add Question', exact: true })
       .click()
@@ -152,12 +159,13 @@ test('Create, grade, preview, publish, and complete a quiz through the UI', asyn
       .getByPlaceholder('Enter your question')
       .fill('How much do you like surprises?')
     await page.getByRole('button', { name: 'Scale', exact: true }).click()
+    await page.getByRole('button', { name: 'Curiosity', exact: true }).click()
     await page
-      .getByRole('spinbutton', { name: 'Low: Curiosity weight' })
-      .fill('-20')
+      .getByRole('spinbutton', { name: 'Low: Curiosity position' })
+      .fill('0')
     await page
-      .getByRole('spinbutton', { name: 'High: Curiosity weight' })
-      .fill('20')
+      .getByRole('spinbutton', { name: 'High: Curiosity position' })
+      .fill('100')
     await test.info().attach('Question editor — desktop', {
       body: await page.screenshot({
         fullPage: true,

@@ -557,3 +557,23 @@ test('Editor footers explain required fields and clear feedback as fields are co
     await editor.getByRole('button', { name: 'Cancel', exact: true }).click()
   })
 })
+
+test('Legacy quizzes with existing question pages regain an editable Results page and save it once', async ({ page, seedQuiz, db }) => {
+  const { id } = await seedQuiz()
+  // Reproduce the old catalog shape: existing cover/questions, no results record.
+  await db.quizPage.deleteMany({ where: { personaId: id, style: 'results' } })
+  const before = await db.question.findMany({ where: { page: { personaId: id } }, orderBy: { id: 'asc' }, select: { id: true, text: true } })
+  await page.goto(`/create/${id}/questions`)
+  await page.getByRole('button', { name: 'Your Results Results Page', exact: true }).click()
+  await expect(page.getByRole('heading', { name: 'Your Results', exact: true })).toBeVisible()
+  await page.getByPlaceholder('Page title').fill('Meet your many selves')
+  await page.getByRole('button', { name: 'Continue to Review', exact: true }).click()
+  await expect(page).toHaveURL(/\/preview$/)
+  expect(await db.quizPage.count({ where: { personaId: id, style: 'results' } })).toBe(1)
+  expect(await db.question.findMany({ where: { page: { personaId: id } }, orderBy: { id: 'asc' }, select: { id: true, text: true } })).toEqual(before)
+  await page.goto(`/create/${id}/questions`)
+  const results = page.getByRole('button', { name: 'Meet your many selves Results Page', exact: true })
+  await expect(results).toHaveCount(1)
+  await results.click()
+  await expect(page.getByPlaceholder('Page title')).toHaveValue('Meet your many selves')
+})

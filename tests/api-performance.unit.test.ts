@@ -20,6 +20,8 @@ test('serialization retries restart the complete operation, stop at the bound, a
 test('unchanged editor data ignores database metadata and relationship order while detecting removals', () => {
   assert.equal(fieldsChanged({ name: 'A', description: null, updatedAt: new Date() }, { name: 'A', description: undefined }), false)
   assert.equal(fieldsChanged({ name: 'A' }, { name: 'B' }), true)
+  assert.equal(fieldsChanged({ dimensionInfluences: { x: 2, y: 1 } }, { dimensionInfluences: { y: 1, x: 2 } }), false)
+  assert.equal(fieldsChanged({ dimensionInfluences: { x: 2 } }, { dimensionInfluences: { x: 3 } }), true)
   const before = [{ id: 'one', dimensionId: 'x', value: 1 }, { id: 'two', dimensionId: 'y', value: 2 }]
   assert.equal(relationshipsChanged(before, [{ dimensionId: 'y', value: 2 }, { dimensionId: 'x', value: 1 }], ['dimensionId', 'value']), false)
   assert.equal(relationshipsChanged(before, [{ dimensionId: 'x', value: 1 }], ['dimensionId', 'value']), true)

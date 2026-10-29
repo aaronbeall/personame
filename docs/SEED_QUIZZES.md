@@ -39,15 +39,15 @@ Imports affect only the database configured in `.env`. Local publication does no
 ## Changing the grading
 
 - A dimension's `key` is its reference in `targets` and `weights`. Rename every reference if you change it.
-- Scores begin at **50**. Selected answer weights add or subtract points; the final total is clamped to **0–100**.
+- Catalog version **2** stores answer positions in `weights` from **0–100**, combined as a weighted average using each question’s positive per-dimension `dimensionInfluences` entries (default 1). See [scoring](SCORING.md).
 - Each archetype has a target of **0–100 for every dimension**. The closest profile wins. Equal distances use the order in this file. The optional `relevance` map assigns each dimension an importance from 0 to 1 (omitted entries default to 1). At least one dimension must matter.
 - Multiple-choice questions score the selected answer's `weights`.
 - A slider has exactly two answers: low and high endpoints. The engine interpolates their weights.
 - A scale has two weighted endpoints, **followed by** the visible scale choices. Choice positions interpolate the endpoint weights; visible choices have empty `weights`.
-- Omitted dimension weights contribute zero. Questions default to required; add `required: false` to make one optional.
+- Omitted dimensions are unrelated and excluded; a missing position within an otherwise mapped question defaults to 50. Questions default to required; add `required: false` to make one optional.
 - Array order determines presentation. Slugs must be unique.
 
-Each dimension receives three scored prompts. Their maximum contributions are 12, 12, and 16 points in either direction, giving a total range of 10–90. Archetype targets at 15/85 remain reachable without one answer deciding everything. Longer quizzes introduce additional dimensions rather than simply repeating more questions on the same two scales.
+Each dimension receives three scored prompts. The legacy 12/12/16 contribution strengths are now relative question influences, with answer positions scaled around 50. Scores are weighted averages on 0–100, so authors do not shrink answer values when adding questions. Longer quizzes introduce additional dimensions rather than simply repeating more questions on the same two scales. The catalog reachability test checks the supplied archetypes under the normalized model.
 
 ## Validate and import
 

@@ -131,11 +131,11 @@ test('direction bands have explicit boundaries and reverse correctly for clampin
   for (const [separation, status] of [[9, 'concern'], [10, 'watch'], [19, 'watch'], [20, 'good']] as const)
     assert.equal(archetypeSpaceMetrics(model([[0], [separation]])).metrics[0].status, status)
   const m = model([[0], [100]])
-  const q = { ...m, pages: [{ style: null, hidden: false, questions: [{ id: 'q', type: 'MULTIPLE_CHOICE', text: 'Choose', answers: [{ weights: [{ dimensionId: 'd0', value: -50 }] }, { weights: [{ dimensionId: 'd0', value: 50 }] }] }] }] } as unknown as FullQuiz
+  const q = { ...m, pages: [{ style: null, hidden: false, questions: [{ id: 'q', type: 'MULTIPLE_CHOICE', text: 'Choose', answers: [{ weights: [{ dimensionId: 'd0', value: 0 }] }, { weights: [{ dimensionId: 'd0', value: 100 }] }] }] }] } as unknown as FullQuiz
   const analysis = analyzeQuestionSpace(q)
-  assert.deepEqual(questionSpaceMetrics(analysis).map(m => m.value), [100, 100, 0])
-  for (const [share, status] of [[.1, 'good'], [.1001, 'watch'], [.3, 'watch'], [.3001, 'concern']] as const) {
-    analysis.axes[0].clipped = analysis.count * share
+  assert.deepEqual(questionSpaceMetrics(analysis).map(m => m.value), [100, 100, 0, null])
+  for (const [share, status] of [[.2, 'good'], [.2001, 'watch'], [.5, 'watch'], [.5001, 'concern']] as const) {
+    analysis.closeMatchShare = share
     assert.equal(questionSpaceMetrics(analysis)[2].status, status)
   }
 })

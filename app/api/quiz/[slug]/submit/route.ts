@@ -66,7 +66,7 @@ export async function POST(
             snapshot: JSON.parse(JSON.stringify(scored.snapshot)),
             answers: { create: scored.answers },
             dimensionScores: {
-              create: scored.scores.map((s) => ({
+              create: scored.scores.filter(s => s.evidenceCount !== 0).map((s) => ({
                 dimensionName: s.dimensionName,
                 score: s.score
               }))

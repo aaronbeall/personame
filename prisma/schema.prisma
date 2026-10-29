@@ -216,6 +216,7 @@ model Question {
   type     QuestionType
   order    Int          @default(0)
   required Boolean      @default(true)
+  dimensionInfluences Json @default("{}") // Relative question influence keyed by dimension ID; omitted = 1
   emoji    String?
   color    String?
   style    String?
@@ -263,7 +264,7 @@ model Answer {
 // How each answer affects dimensions
 model AnswerWeight {
   id    String @id @default(cuid())
-  value Float // Points added to dimension (-100 to +100)
+  value Float // Suggested position on a dimension (0 to 100); absent = unrelated
 
   answerId String
   answer   Answer @relation(fields: [answerId], references: [id], onDelete: Cascade)

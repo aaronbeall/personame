@@ -87,6 +87,7 @@ async function main() {
                 color: q.color,
                 type: q.type,
                 required: q.required,
+                dimensionInfluences: Object.fromEntries(Object.entries(q.dimensionInfluences as Record<string, number>).map(([key, value]) => [ids.get(key)!, value])),
                 order: q.order,
                 answers: {
                   create: q.answers.map((a) => ({

@@ -9,14 +9,8 @@ export function createDefaultAnswers(
   dimensions: Dimension[]
 ): (Answer & { weights: AnswerWeight[] })[] {
   const createWeights = (answerId: string): AnswerWeight[] => {
-    return dimensions.map(m => ({
-      id: getTempId(),
-      dimensionId: m.id,
-      value: 0,
-      answerId,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }))
+    void answerId; void dimensions
+    return []
   }
 
   const createAnswer = (text: string, order: number, questionId: string = getTempId()): Answer & { weights: AnswerWeight[] } => {

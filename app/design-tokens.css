@@ -24,8 +24,15 @@
   --pn-brand-orchid-soft: #f5edff;
   --pn-brand-gold: #8b5b13;
   --pn-brand-gold-soft: #fff4d9;
-  --pn-positive: #42775d;
-  --pn-positive-soft: #e8f3ed;
+  /* Sampled artwork seafoam (#c0e1da), with muted tones for readable UI states. */
+  --pn-positive-base: #c0e1da;
+  --pn-positive: #47655f;
+  --pn-positive-soft: #edf6f4;
+  --pn-positive-border: #b0d2cb;
+  --pn-positive-accent: #81a099;
+  --pn-positive-action: var(--pn-positive-base);
+  --pn-positive-action-hover: #aacfc6;
+  --pn-positive-action-text: #37544e;
   --pn-warning: #885b2f;
   --pn-warning-soft: #fff4e5;
   --pn-negative: #a64050;

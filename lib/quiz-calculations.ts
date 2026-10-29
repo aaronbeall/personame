@@ -1,93 +1,53 @@
-// Scores start neutral; answer contributions are additive and clamp once at the end.
-
+/** Bounded answer positions are averaged per dimension using question influence. */
 export interface DimensionScore {
   dimensionId: string
   dimensionName: string
   score: number
+  evidenceCount?: number
+  evidenceWeight?: number
 }
-
 export interface ArchetypeMatch {
   archetypeId: string
   archetypeName: string
   matchScore: number
   distance: number
+  evidenceCoverage: number
 }
-
-/**
- * Calculate dimension scores from user answers
- */
-export function calculateDimensionScores(
-  answers: Array<{ weights: Array<{ dimensionId: string; value: number }> }>,
-  dimensions: Array<{ id: string; name: string }>
-): DimensionScore[] {
-  const scores: Record<string, number> = {}
-
-  // Initialize all dimensions to 50 (neutral)
-  dimensions.forEach((dimension) => {
-    scores[dimension.id] = 50
-  })
-
-  // Add weights from answers
-  answers.forEach((answer) => {
-    answer.weights.forEach((weight) => {
-      scores[weight.dimensionId] = (scores[weight.dimensionId] ?? 50) + weight.value
-    })
-  })
-
-  // Normalize to 0-100 range
-  return dimensions.map((dimension) => ({
-    dimensionId: dimension.id,
-    dimensionName: dimension.name,
-    score: Math.max(0, Math.min(100, scores[dimension.id]))
-  }))
-}
-
-/**
- * Find the best matching archetype based on dimension scores
- */
-export function findBestArchetype(
-  dimensionScores: DimensionScore[],
-  archetypes: Array<{
-    id: string
-    name: string
-    dimensions: Array<{ dimensionId: string; targetValue: number; relevance: number }>
-  }>
-): ArchetypeMatch | null {
-  if (archetypes.length === 0) return null
-
-  const matches = archetypes.map((archetype) => {
-    // Calculate weighted Euclidean distance
-    let distance = 0
-    let totalWeight = 0
-
-    archetype.dimensions.forEach((archetypeDimension) => {
-      const userScore = dimensionScores.find(
-        (s) => s.dimensionId === archetypeDimension.dimensionId
-      )
-      if (userScore) {
-        const diff = userScore.score - archetypeDimension.targetValue
-        distance += Math.pow(diff, 2) * archetypeDimension.relevance
-        totalWeight += archetypeDimension.relevance
-      }
-    })
-
-    distance = Math.sqrt(distance / (totalWeight || 1))
-
-    // Convert distance to match score (0-100, where 100 is perfect match)
-    const matchScore = Math.max(0, 100 - distance)
-
-    return {
-      archetypeId: archetype.id,
-      archetypeName: archetype.name,
-      matchScore,
-      distance
+export type Contribution = { influence?: number; weights: { dimensionId: string; value: number; influence?: number }[] }
+export function calculateDimensionScores(answers: Contribution[], dimensions: { id: string; name: string }[]): DimensionScore[] {
+  return dimensions.map(dimension => {
+    let total = 0, evidenceWeight = 0, evidenceCount = 0
+    for (const answer of answers) {
+      const position = answer.weights.find(w => w.dimensionId === dimension.id)
+      const influence = position?.influence ?? answer.influence ?? 1
+      if (!position || !Number.isFinite(position.value) || !Number.isFinite(influence) || influence <= 0) continue
+      total += Math.max(0, Math.min(100, position.value)) * influence
+      evidenceWeight += influence
+      evidenceCount++
     }
+    // 50 is a storage/display fallback only; zero evidence is excluded from matching.
+    return { dimensionId: dimension.id, dimensionName: dimension.name, score: evidenceWeight ? total / evidenceWeight : 50, evidenceCount, evidenceWeight }
   })
-
-  // Return the best match
-  return matches.reduce((best, current) =>
-    current.matchScore > best.matchScore ? current : best
-  )
+}
+type Archetype = { id: string; name: string; dimensions: { dimensionId: string; targetValue: number; relevance: number }[] }
+export function rankArchetypes(dimensionScores: DimensionScore[], archetypes: Archetype[]): ArchetypeMatch[] {
+  return archetypes.flatMap(archetype => {
+    let squared = 0, observed = 0, totalWeight = 0
+    for (const target of archetype.dimensions) {
+      if (target.relevance <= 0) continue
+      totalWeight += target.relevance
+      const score = dimensionScores.find(s => s.dimensionId === target.dimensionId && s.evidenceCount !== 0)
+      if (!score) continue
+      squared += (score.score - target.targetValue) ** 2 * target.relevance
+      observed += target.relevance
+    }
+    if (!observed) return []
+    const distance = Math.sqrt(squared / observed)
+    return [{ archetypeId: archetype.id, archetypeName: archetype.name, matchScore: Math.max(0, 100 - distance), distance, evidenceCoverage: observed / totalWeight }]
+  }).sort((a, b) => a.distance - b.distance || a.archetypeId.localeCompare(b.archetypeId))
+}
+export function findBestArchetype(scores: DimensionScore[], archetypes: Archetype[]): ArchetypeMatch | null {
+  return rankArchetypes(scores, archetypes)[0] ?? null
 }
 
 /**

@@ -55,40 +55,23 @@ function fixture(type = 'MULTIPLE_CHOICE') {
             answers:
               type === 'SCALE'
                 ? [
-                    option('low', -50),
-                    option('high', 50),
+                    option('low', 0),
+                    option('high', 100),
                     option('one', 0),
                     option('two', 0),
                     option('three', 0),
                   ]
-                : [option('low', -50), option('high', 50)],
+                : [option('low', 0), option('high', 100)],
           },
         ],
       },
     ],
   } as unknown as FullQuiz
 }
-test('zero remains zero before subsequent weights; clamping happens at the end', () => {
-  assert.equal(
-    calculateDimensionScores(
-      [
-        { weights: [{ dimensionId: 'm', value: -50 }] },
-        { weights: [{ dimensionId: 'm', value: 10 }] },
-      ],
-      [dimension],
-    )[0].score,
-    10,
-  )
-  assert.equal(
-    calculateDimensionScores(
-      [
-        { weights: [{ dimensionId: 'm', value: -100 }] },
-        { weights: [{ dimensionId: 'm', value: 80 }] },
-      ],
-      [dimension],
-    )[0].score,
-    30,
-  )
+test('adding equivalent evidence does not change the scale', () => {
+  const a = { weights: [{ dimensionId: 'm', value: 80 }] }
+  assert.equal(calculateDimensionScores([a, a], [dimension])[0].score, 80)
+  assert.equal(calculateDimensionScores(Array(20).fill(a), [dimension])[0].score, 80)
 })
 test('choice scores and nearest archetype reflect actual submitted options', () => {
   const result = scoreQuiz(fixture(), { q: { answerId: 'high' } })
@@ -142,7 +125,7 @@ test('required, foreign, malformed, and hidden answers cannot be submitted', () 
 test('optional skipped questions are neutral and snapshots are independent of later edits', () => {
   const quiz = fixture()
   quiz.pages[1].questions[0].required = false
-  assert.equal(scoreQuiz(quiz, {}).scores[0].score, 50)
+  assert.throws(() => scoreQuiz(quiz, {}), /not enough answered/)
   const result = scoreQuiz(quiz, { q: { answerId: 'high' } })
   quiz.archetypes[1].name = 'Changed'
   quiz.dimensions[0].name = 'Changed'
@@ -182,4 +165,27 @@ test('result snapshots retain complete dimension and archetype themes', () => {
   assert.equal(result.snapshot.scores[0].color, '#7c3aed,#db2777')
   assert.equal(result.snapshot.archetype.color, '#2563eb,#7c3aed')
   assert.equal(result.snapshot.scores[0].score, 100)
+})
+
+
+test('close and exactly tied matches are explicit, reproducible and snapshots keep evidence', () => {
+  const quiz = fixture('SLIDER')
+  const result = scoreQuiz(quiz, { q: { value: 50 } })
+  assert.equal(result.snapshot.scoringVersion, 2)
+  assert.equal(result.snapshot.ambiguous, true)
+  assert.equal(result.snapshot.matchMargin, 0)
+  assert.equal(result.snapshot.alternatives?.[0].tied, true)
+  assert.equal(result.scores[0].evidenceCount, 1)
+  quiz.archetypes.reverse()
+  assert.equal(scoreQuiz(quiz, { q: { value: 50 } }).archetypeId, result.archetypeId)
+})
+
+test('optional missing evidence is excluded, while neutral and zero remain meaningful answers', () => {
+  const quiz = fixture('SLIDER')
+  quiz.dimensions.push({ ...quiz.dimensions[0], id: 'unmeasured', name: 'Not asked' })
+  const snapshot = scoreQuiz(quiz, { q: { value: 0 } }).snapshot
+  assert.equal(snapshot.scores[0].score, 0)
+  assert.equal(snapshot.scores[0].evidenceCount, 1)
+  assert.equal(snapshot.scores[1].evidenceCount, 0)
+  assert.equal(scoreQuiz(quiz, { q: { value: 50 } }).scores[0].score, 50)
 })

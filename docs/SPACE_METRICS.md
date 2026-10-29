@@ -2,7 +2,7 @@
 
 The Analyze UI uses plain-language labels and short practical help. The in-app technical reference at `/reference/space-metrics` preserves the definitions below, with direct links from each metric. These presentation changes do not alter the calculations.
 
-Each Analyze card includes three deterministic diagnostics, a numeric value, an explicit range, and an expandable explanation. Ranges are product heuristics chosen for an initial design pass. They are not externally validated psychological or statistical quality standards. The one scoring integrity requirement is that every archetype needs an active target: the current matcher otherwise gives it zero distance.
+Each Analyze card includes deterministic diagnostics, a numeric value, an explicit range, and an expandable explanation. Ranges are product heuristics chosen for an initial design pass. They are not externally validated psychological or statistical quality standards. The one scoring integrity requirement is that every archetype needs an active target: archetypes with no observed active targets are excluded from matching.
 
 All metrics use underlying 0–100 values, regardless of display-scale preference. Missing inputs produce unavailable values rather than defaults or favorable zeroes. Counts and exact distances are separated from probe-based estimates. These numbers are not participant analytics.
 
@@ -46,11 +46,12 @@ All three are exact counts. Targets must be finite, in [0,100], and refer to kno
 | --- | --- | --- |
 | Reachable axis span | Mean reachable interval width / full axis width × 100 | Higher → broader marginal reach. <40% narrow; 40–<70% limited; ≥70% broad. |
 | Outcome balance | Effective outcome diversity / archetype count × 100 | Higher → more even outcomes. <50% concentrated; 50–<80% uneven; ≥80% even. |
-| Clamped scores | Mean fraction of answer paths with raw scores below 0 or above 100 × 100 | Lower → more raw score distinctions preserved. ≤10% low; >10–30% elevated; >30% high. |
+| Close results | Share of paths with top-two distance gap below 5 points | Lower → more decisive matches. ≤20% distinct; >20–50% some overlap; >50% much overlap. |
+| One-answer sensitivity | Share of eligible omission comparisons changing winner | Lower → less dependence on one answer. ≤10% steady; >10–30% some changes; >30% sensitive. |
 
 Reachable axis span is exact from answer extrema. It measures interval width, not filled volume: an interval can have holes, and marginal extremes may be mutually incompatible. A fixed dimension contributes zero span.
 
-Outcome balance and clamping use the existing exact enumeration or reproducible fixed-seed answer-path sample. They remain deterministic for a fixed model but can still have simulation error. The outcome bars retain Wilson intervals; the diagnostic bands do not override those uncertainties. A value near a heuristic cutoff should not be treated as a decisive difference.
+Outcome balance, close results and omission checks use the existing exact enumeration or reproducible fixed-seed answer-path sample. They remain deterministic for a fixed model but can still have simulation error. The outcome bars retain Wilson intervals; the diagnostic bands do not override those uncertainties. A value near a heuristic cutoff should not be treated as a decisive difference.
 
 Rare outcomes, focused questions, and endpoint emphasis can all be intentional. These directions assume the author's goal is a broad, discriminating quiz with a varied result collection, not that every quiz must have equal outcomes. See [question-space assumptions and calculations](QUESTION_SPACE_ANALYSIS.md) for the equal-answer prior, optional-answer policy, actual scoring functions, and further research.
 
@@ -69,3 +70,5 @@ Here `p_ad = positive importance_ad / sum of positive importance_a` and `H(p) = 
 The colored overview bar shows each dimension’s mean share. The heatmap shows normalized shares with a common purple shading scale, while dimension-colored target bars retain coordinate values and the original importance setting remains visible. Each active row totals 100% before rounding. Missing targets use hatching; zero importance stays white. Per-archetype focus appears beside the archetype identity. These are authored priorities, not estimates of actual influence on winners.
 
 The earlier profile-completeness, ready-archetype and dimension-use calculations are now conditional setup warnings, not headline quality metrics. Their definitions above remain useful as integrity checks. All thresholds remain directional product heuristics; shared priorities and narrow focus can be deliberate.
+
+Normalized scoring version 2 uses question-influence-weighted averages, excludes unmeasured dimensions and exposes close alternatives. See [SCORING.md](SCORING.md) for migration, missing-evidence handling, and the bounded omission stress test. These checks do not establish empirical reliability.

@@ -1,7 +1,4 @@
-# Editable starter quizzes. Validate with: npm run catalog:validate
-# publication: PUBLIC publishes on first import; PRIVATE_DRAFT stays private.
-# Dimensions use solids; archetypes use distinct hex themes. Scores remain 0–100.
-version: 1
+version: 2
 quizzes:
   - slug: weekend-wanderer
     title: What kind of weekend wanderer are you?
@@ -76,86 +73,96 @@ quizzes:
         answers:
           - text: Return to my favorite spot.
             weights:
-              novelty: -12
+              novelty: 0
             emoji: 🏡
           - text: See what sounds good tomorrow.
             weights:
-              novelty: 0
+              novelty: 50
             emoji: ⚖️
           - text: Pick somewhere I have never been.
             weights:
-              novelty: 12
+              novelty: 100
             emoji: 🥾
         emoji: 🧭
+        dimensionInfluences:
+          novelty: 12
       - type: MULTIPLE_CHOICE
         text: You spot an unmarked path beside the main trail.
         answers:
           - text: Stay with the route I know.
             weights:
-              novelty: -12
+              novelty: 0
             emoji: 🏡
           - text: Look it up before deciding.
             weights:
-              novelty: 0
+              novelty: 50
             emoji: ⚖️
           - text: Let us see where it goes.
             weights:
-              novelty: 12
+              novelty: 100
             emoji: 🥾
         emoji: 🧭
+        dimensionInfluences:
+          novelty: 12
       - type: MULTIPLE_CHOICE
         text: Who gets an invitation?
         answers:
           - text: Nobody; this one is for me.
             weights:
-              company: -12
+              company: 0
             emoji: 🧘
           - text: One or two easygoing companions.
             weights:
-              company: 0
+              company: 50
             emoji: ⚖️
           - text: The group chat is already buzzing.
             weights:
-              company: 12
+              company: 100
             emoji: 🎉
         emoji: 👥
+        dimensionInfluences:
+          company: 12
       - type: MULTIPLE_CHOICE
         text: The ideal evening ends with…
         answers:
           - text: A book and my own thoughts.
             weights:
-              company: -12
+              company: 0
             emoji: 🧘
           - text: A conversation with a close friend.
             weights:
-              company: 0
+              company: 50
             emoji: ⚖️
           - text: A table full of stories.
             weights:
-              company: 12
+              company: 100
             emoji: 🎉
         emoji: 👥
+        dimensionInfluences:
+          company: 12
       - type: SLIDER
         text: How far from your usual routine would you like to go?
         answers:
           - text: Keep it familiar
             weights:
-              novelty: -16
+              novelty: 0
             emoji: 🏡
           - text: Surprise me
             weights:
-              novelty: 16
+              novelty: 100
             emoji: 🥾
         emoji: 🧭
+        dimensionInfluences:
+          novelty: 16
       - type: SCALE
         text: How much company makes a getaway better?
         answers:
           - text: Solo sanctuary
             weights:
-              company: -16
+              company: 0
           - text: The whole crew
             weights:
-              company: 16
+              company: 100
           - text: Just me
             weights: {}
           - text: A little
@@ -167,6 +174,8 @@ quizzes:
           - text: Everyone
             weights: {}
         emoji: 👥
+        dimensionInfluences:
+          company: 16
     color: "#2563eb,#7c3aed"
     publication: PUBLIC
   - slug: creative-sidekick
@@ -273,86 +282,96 @@ quizzes:
         answers:
           - text: Use a technique I trust.
             weights:
-              experimentation: -12
+              experimentation: 0
             emoji: 🛠️
           - text: Start with a familiar idea and twist it.
             weights:
-              experimentation: 0
+              experimentation: 50
             emoji: ⚖️
           - text: Try a medium I barely understand.
             weights:
-              experimentation: 12
+              experimentation: 100
             emoji: 💡
         emoji: 🧪
+        dimensionInfluences:
+          experimentation: 12
       - type: MULTIPLE_CHOICE
         text: A first draft is almost working. You…
         answers:
           - text: Refine the strongest part.
             weights:
-              experimentation: -12
+              experimentation: 0
             emoji: 🛠️
           - text: Test a modest variation.
             weights:
-              experimentation: 0
+              experimentation: 50
             emoji: ⚖️
           - text: Make a radically different version.
             weights:
-              experimentation: 12
+              experimentation: 100
             emoji: 💡
         emoji: 🧪
+        dimensionInfluences:
+          experimentation: 12
       - type: MULTIPLE_CHOICE
         text: Your project is ready. The satisfying part is…
         answers:
           - text: Knowing I made it well.
             weights:
-              visibility: -12
+              visibility: 0
             emoji: 🎧
           - text: Showing a trusted friend.
             weights:
-              visibility: 0
+              visibility: 50
             emoji: ⚖️
           - text: Sharing it with a crowd.
             weights:
-              visibility: 12
+              visibility: 100
             emoji: 🎤
         emoji: 🎭
+        dimensionInfluences:
+          visibility: 12
       - type: MULTIPLE_CHOICE
         text: A collaboration needs someone to present. You…
         answers:
           - text: Help prepare the material.
             weights:
-              visibility: -12
+              visibility: 0
             emoji: 🎧
           - text: Share the presentation.
             weights:
-              visibility: 0
+              visibility: 50
             emoji: ⚖️
           - text: Volunteer for the spotlight.
             weights:
-              visibility: 12
+              visibility: 100
             emoji: 🎤
         emoji: 🎭
+        dimensionInfluences:
+          visibility: 12
       - type: SLIDER
         text: How experimental is your next project?
         answers:
           - text: Tried and true
             weights:
-              experimentation: -16
+              experimentation: 0
             emoji: 🛠️
           - text: Beautifully odd
             weights:
-              experimentation: 16
+              experimentation: 100
             emoji: 💡
         emoji: 🧪
+        dimensionInfluences:
+          experimentation: 16
       - type: SCALE
         text: How visible do you want your creative work to be?
         answers:
           - text: Behind the scenes
             weights:
-              visibility: -16
+              visibility: 0
           - text: Center stage
             weights:
-              visibility: 16
+              visibility: 100
           - text: Private
             weights: {}
           - text: A trusted few
@@ -364,6 +383,8 @@ quizzes:
           - text: On the big screen
             weights: {}
         emoji: 🎭
+        dimensionInfluences:
+          visibility: 16
       - type: MULTIPLE_CHOICE
         text: Your first attempt looks nothing like your idea. What next?
         emoji: 🧵
@@ -371,15 +392,17 @@ quizzes:
           - text: Follow a different spark.
             emoji: 🦋
             weights:
-              persistence: -12
+              persistence: 0
           - text: It depends on the moment.
             emoji: ⚖️
             weights:
-              persistence: 0
+              persistence: 50
           - text: Keep working until the idea comes through.
             emoji: 🪡
             weights:
-              persistence: 12
+              persistence: 100
+        dimensionInfluences:
+          persistence: 12
       - type: SLIDER
         text: A creative project has reached the fiddly finishing stage.
         emoji: 🧵
@@ -387,11 +410,13 @@ quizzes:
           - text: The discovery was the fun part.
             emoji: 🦋
             weights:
-              persistence: -12
+              persistence: 0
           - text: The finishing touches are where I settle in.
             emoji: 🪡
             weights:
-              persistence: 12
+              persistence: 100
+        dimensionInfluences:
+          persistence: 12
       - type: SCALE
         text: How much do you enjoy returning to the same piece over several sessions?
         emoji: 🧵
@@ -399,11 +424,11 @@ quizzes:
           - text: I prefer a fresh canvas.
             emoji: 🦋
             weights:
-              persistence: -16
+              persistence: 0
           - text: I enjoy seeing one piece through.
             emoji: 🪡
             weights:
-              persistence: 16
+              persistence: 100
           - text: Not at all
             weights: {}
           - text: A little
@@ -414,6 +439,8 @@ quizzes:
             weights: {}
           - text: Very much
             weights: {}
+        dimensionInfluences:
+          persistence: 16
     color: "#7c3aed,#db2777"
     publication: PUBLIC
   - slug: dinner-party
@@ -495,86 +522,96 @@ quizzes:
         answers:
           - text: A recipe I have made a dozen times.
             weights:
-              improvisation: -12
+              improvisation: 0
             emoji: 📖
           - text: A favorite with one new dish.
             weights:
-              improvisation: 0
+              improvisation: 50
             emoji: ⚖️
           - text: An ingredient I have never cooked.
             weights:
-              improvisation: 12
+              improvisation: 100
             emoji: 🌶️
         emoji: 🍳
+        dimensionInfluences:
+          improvisation: 12
       - type: MULTIPLE_CHOICE
         text: The market is out of your main ingredient. You…
         answers:
           - text: Find the closest substitute.
             weights:
-              improvisation: -12
+              improvisation: 0
             emoji: 📖
           - text: Adjust the recipe a little.
             weights:
-              improvisation: 0
+              improvisation: 50
             emoji: ⚖️
           - text: Invent a new menu.
             weights:
-              improvisation: 12
+              improvisation: 100
             emoji: 🌶️
         emoji: 🍳
+        dimensionInfluences:
+          improvisation: 12
       - type: MULTIPLE_CHOICE
         text: Your dream table has room for…
         answers:
           - text: Two people and a long conversation.
             weights:
-              hosting: -12
+              hosting: 0
             emoji: 🕯️
           - text: A handful of friends.
             weights:
-              hosting: 0
+              hosting: 50
             emoji: ⚖️
           - text: Anyone who wants to pull up a chair.
             weights:
-              hosting: 12
+              hosting: 100
             emoji: 🎊
         emoji: 🥂
+        dimensionInfluences:
+          hosting: 12
       - type: MULTIPLE_CHOICE
         text: After dinner, the mood is…
         answers:
           - text: Quiet and unhurried.
             weights:
-              hosting: -12
+              hosting: 0
             emoji: 🕯️
           - text: Warm conversation.
             weights:
-              hosting: 0
+              hosting: 50
             emoji: ⚖️
           - text: Music, games, and another round of stories.
             weights:
-              hosting: 12
+              hosting: 100
             emoji: 🎊
         emoji: 🥂
+        dimensionInfluences:
+          hosting: 12
       - type: SLIDER
         text: How much culinary improvisation sounds fun?
         answers:
           - text: Follow the recipe
             weights:
-              improvisation: -16
+              improvisation: 0
             emoji: 📖
           - text: Cook by instinct
             weights:
-              improvisation: 16
+              improvisation: 100
             emoji: 🌶️
         emoji: 🍳
+        dimensionInfluences:
+          improvisation: 16
       - type: SCALE
         text: How big is your ideal gathering?
         answers:
           - text: A cozy few
             weights:
-              hosting: -16
+              hosting: 0
           - text: A lively crowd
             weights:
-              hosting: 16
+              hosting: 100
           - text: Two
             weights: {}
           - text: Four
@@ -586,6 +623,8 @@ quizzes:
           - text: The neighborhood
             weights: {}
         emoji: 🥂
+        dimensionInfluences:
+          hosting: 16
       - type: MULTIPLE_CHOICE
         text: Dinner is ready. How do you serve it?
         emoji: 🎨
@@ -593,15 +632,17 @@ quizzes:
           - text: Good food in the pan it came from.
             emoji: 🥣
             weights:
-              presentation: -12
+              presentation: 0
           - text: It depends on the moment.
             emoji: ⚖️
             weights:
-              presentation: 0
+              presentation: 50
           - text: A reveal worth gathering everyone for.
             emoji: 🎆
             weights:
-              presentation: 12
+              presentation: 100
+        dimensionInfluences:
+          presentation: 12
       - type: SLIDER
         text: You have ten spare minutes before guests arrive.
         emoji: 🎨
@@ -609,11 +650,13 @@ quizzes:
           - text: Set out napkins and relax.
             emoji: 🥣
             weights:
-              presentation: -12
+              presentation: 0
           - text: Make the table a little world of its own.
             emoji: 🎆
             weights:
-              presentation: 12
+              presentation: 100
+        dimensionInfluences:
+          presentation: 12
       - type: SCALE
         text: How appealing is a dinner with a dress code, a soundtrack, and a theme?
         emoji: 🎨
@@ -621,11 +664,11 @@ quizzes:
           - text: Let the food speak for itself.
             emoji: 🥣
             weights:
-              presentation: -16
+              presentation: 0
           - text: I am already planning the centerpiece.
             emoji: 🎆
             weights:
-              presentation: 16
+              presentation: 100
           - text: Not at all
             weights: {}
           - text: A little
@@ -636,6 +679,8 @@ quizzes:
             weights: {}
           - text: Very much
             weights: {}
+        dimensionInfluences:
+          presentation: 16
     color: "#c2410c,#f59e0b"
     publication: PUBLIC
   - slug: fantasy-tavern
@@ -775,86 +820,96 @@ quizzes:
         answers:
           - text: A well-paid delivery on a safe road.
             weights:
-              risk: -12
+              risk: 0
             emoji: 🛡️
           - text: A scouting trip with a decent map.
             weights:
-              risk: 0
+              risk: 50
             emoji: ⚖️
           - text: A ruin that rearranges itself at midnight.
             weights:
-              risk: 12
+              risk: 100
             emoji: ⚔️
         emoji: 🐉
+        dimensionInfluences:
+          risk: 12
       - type: MULTIPLE_CHOICE
         text: A glowing potion is offered for free. You…
         answers:
           - text: Politely decline.
             weights:
-              risk: -12
+              risk: 0
             emoji: 🛡️
           - text: Ask the alchemist for details.
             weights:
-              risk: 0
+              risk: 50
             emoji: ⚖️
           - text: Ask what happens if I drink two.
             weights:
-              risk: 12
+              risk: 100
             emoji: ⚔️
         emoji: 🐉
+        dimensionInfluences:
+          risk: 12
       - type: MULTIPLE_CHOICE
         text: You enter the tavern and head toward…
         answers:
           - text: An empty corner booth.
             weights:
-              sociability: -12
+              sociability: 0
             emoji: 📚
           - text: A friendly-looking small table.
             weights:
-              sociability: 0
+              sociability: 50
             emoji: ⚖️
           - text: The loudest group in the room.
             weights:
-              sociability: 12
+              sociability: 100
             emoji: 🎶
         emoji: 🍻
+        dimensionInfluences:
+          sociability: 12
       - type: MULTIPLE_CHOICE
         text: The party needs a spokesperson. You…
         answers:
           - text: Let someone else do the talking.
             weights:
-              sociability: -12
+              sociability: 0
             emoji: 📚
           - text: Help when my knowledge is useful.
             weights:
-              sociability: 0
+              sociability: 50
             emoji: ⚖️
           - text: Introduce everyone before they ask.
             weights:
-              sociability: 12
+              sociability: 100
             emoji: 🎶
         emoji: 🍻
+        dimensionInfluences:
+          sociability: 12
       - type: SLIDER
         text: How dangerous should the next quest be?
         answers:
           - text: A sensible errand
             weights:
-              risk: -16
+              risk: 0
             emoji: 🛡️
           - text: A legend in the making
             weights:
-              risk: 16
+              risk: 100
             emoji: ⚔️
         emoji: 🐉
+        dimensionInfluences:
+          risk: 16
       - type: SCALE
         text: How many companions should join the quest?
         answers:
           - text: A quiet corner
             weights:
-              sociability: -16
+              sociability: 0
           - text: Work the whole room
             weights:
-              sociability: 16
+              sociability: 100
           - text: None
             weights: {}
           - text: One
@@ -866,6 +921,8 @@ quizzes:
           - text: A parade
             weights: {}
         emoji: 🍻
+        dimensionInfluences:
+          sociability: 16
       - type: MULTIPLE_CHOICE
         text: The guild asks you to stay for one more mission.
         emoji: 🛡️
@@ -873,15 +930,17 @@ quizzes:
           - text: My road leads somewhere else.
             emoji: 🦅
             weights:
-              allegiance: -12
+              allegiance: 0
           - text: It depends on the moment.
             emoji: ⚖️
             weights:
-              allegiance: 0
+              allegiance: 50
           - text: My companions can count on me.
             emoji: 🤝
             weights:
-              allegiance: 12
+              allegiance: 100
+        dimensionInfluences:
+          allegiance: 12
       - type: SLIDER
         text: You discover a treasure map that only one person can follow.
         emoji: 🛡️
@@ -889,11 +948,13 @@ quizzes:
           - text: A perfect excuse for a solo quest.
             emoji: 🦅
             weights:
-              allegiance: -12
+              allegiance: 0
           - text: I would rather find a quest we can share.
             emoji: 🤝
             weights:
-              allegiance: 12
+              allegiance: 100
+        dimensionInfluences:
+          allegiance: 12
       - type: SCALE
         text: How much does belonging to a loyal company matter to you?
         emoji: 🛡️
@@ -901,11 +962,11 @@ quizzes:
           - text: I travel light, including commitments.
             emoji: 🦅
             weights:
-              allegiance: -16
+              allegiance: 0
           - text: The company is the heart of the adventure.
             emoji: 🤝
             weights:
-              allegiance: 16
+              allegiance: 100
           - text: Not at all
             weights: {}
           - text: A little
@@ -916,6 +977,8 @@ quizzes:
             weights: {}
           - text: Very much
             weights: {}
+        dimensionInfluences:
+          allegiance: 16
       - type: MULTIPLE_CHOICE
         text: A merchant offers a reliable lantern or a whispering crystal.
         emoji: 🔮
@@ -923,15 +986,17 @@ quizzes:
           - text: The lantern has a useful handle.
             emoji: 🔨
             weights:
-              wonder: -12
+              wonder: 0
           - text: It depends on the moment.
             emoji: ⚖️
             weights:
-              wonder: 0
+              wonder: 50
           - text: What exactly does the crystal whisper?
             emoji: ✨
             weights:
-              wonder: 12
+              wonder: 100
+        dimensionInfluences:
+          wonder: 12
       - type: SLIDER
         text: The inn has one room beside the stables and one inside a floating tower.
         emoji: 🔮
@@ -939,11 +1004,13 @@ quizzes:
           - text: A solid floor and a decent bed.
             emoji: 🔨
             weights:
-              wonder: -12
+              wonder: 0
           - text: A view that ignores the laws of gravity.
             emoji: ✨
             weights:
-              wonder: 12
+              wonder: 100
+        dimensionInfluences:
+          wonder: 12
       - type: SCALE
         text: How tempted are you to investigate a door that only appears in moonlight?
         emoji: 🔮
@@ -951,11 +1018,11 @@ quizzes:
           - text: I would first check where it leads.
             emoji: 🔨
             weights:
-              wonder: -16
+              wonder: 0
           - text: That sounds like the beginning of a wonderful story.
             emoji: ✨
             weights:
-              wonder: 16
+              wonder: 100
           - text: Not at all
             weights: {}
           - text: A little
@@ -966,6 +1033,8 @@ quizzes:
             weights: {}
           - text: Very much
             weights: {}
+        dimensionInfluences:
+          wonder: 16
     color: "#0f766e,#38bdf8"
     publication: PUBLIC
   - slug: city-after-dark
@@ -1031,86 +1100,96 @@ quizzes:
         answers:
           - text: My dependable favorite.
             weights:
-              discovery: -12
+              discovery: 0
             emoji: 🏘️
           - text: A place a friend recommended.
             weights:
-              discovery: 0
+              discovery: 50
             emoji: ⚖️
           - text: An intriguing doorway I just noticed.
             weights:
-              discovery: 12
+              discovery: 100
             emoji: 🚪
         emoji: 🗺️
+        dimensionInfluences:
+          discovery: 12
       - type: MULTIPLE_CHOICE
         text: A menu has one dish you cannot identify. You…
         answers:
           - text: Order what I already love.
             weights:
-              discovery: -12
+              discovery: 0
             emoji: 🏘️
           - text: Ask the server about it.
             weights:
-              discovery: 0
+              discovery: 50
             emoji: ⚖️
           - text: Give the mystery dish its moment.
             weights:
-              discovery: 12
+              discovery: 100
             emoji: 🚪
         emoji: 🗺️
+        dimensionInfluences:
+          discovery: 12
       - type: MULTIPLE_CHOICE
         text: At the first stop, you prefer to…
         answers:
           - text: Settle in for the evening.
             weights:
-              pace: -12
+              pace: 0
             emoji: 🪑
           - text: See how the mood develops.
             weights:
-              pace: 0
+              pace: 50
             emoji: ⚖️
           - text: Enjoy it, then find the next place.
             weights:
-              pace: 12
+              pace: 100
             emoji: 🛼
         emoji: 🌃
+        dimensionInfluences:
+          pace: 12
       - type: MULTIPLE_CHOICE
         text: An hour remains before the last train. You…
         answers:
           - text: Stay somewhere comfortable.
             weights:
-              pace: -12
+              pace: 0
             emoji: 🪑
           - text: Fit in one more easy stop.
             weights:
-              pace: 0
+              pace: 50
             emoji: ⚖️
           - text: Make a miniature adventure of it.
             weights:
-              pace: 12
+              pace: 100
             emoji: 🛼
         emoji: 🌃
+        dimensionInfluences:
+          pace: 12
       - type: SLIDER
         text: How unfamiliar should tonight feel?
         answers:
           - text: Comfortably known
             weights:
-              discovery: -16
+              discovery: 0
             emoji: 🏘️
           - text: Entirely new
             weights:
-              discovery: 16
+              discovery: 100
             emoji: 🚪
         emoji: 🗺️
+        dimensionInfluences:
+          discovery: 16
       - type: SCALE
         text: What pace feels right?
         answers:
           - text: One lovely stop
             weights:
-              pace: -16
+              pace: 0
           - text: Keep the night moving
             weights:
-              pace: 16
+              pace: 100
           - text: Lingering
             weights: {}
           - text: Unhurried
@@ -1122,6 +1201,8 @@ quizzes:
           - text: Always moving
             weights: {}
         emoji: 🌃
+        dimensionInfluences:
+          pace: 16
     color: "#475569,#a5b4fc"
     publication: PUBLIC
   - slug: space-crew
@@ -1300,86 +1381,96 @@ quizzes:
         answers:
           - text: Open the emergency checklist.
             weights:
-              adaptation: -12
+              adaptation: 0
             emoji: 📋
           - text: Check the readings, then adapt.
             weights:
-              adaptation: 0
+              adaptation: 50
             emoji: ⚖️
           - text: Build a workaround on the fly.
             weights:
-              adaptation: 12
+              adaptation: 100
             emoji: 🔧
         emoji: 🛸
+        dimensionInfluences:
+          adaptation: 12
       - type: MULTIPLE_CHOICE
         text: The mission plan hits an unexpected obstacle. You…
         answers:
           - text: Find the documented fallback.
             weights:
-              adaptation: -12
+              adaptation: 0
             emoji: 📋
           - text: Modify the original plan.
             weights:
-              adaptation: 0
+              adaptation: 50
             emoji: ⚖️
           - text: Sketch an entirely new approach.
             weights:
-              adaptation: 12
+              adaptation: 100
             emoji: 🔧
         emoji: 🛸
+        dimensionInfluences:
+          adaptation: 12
       - type: MULTIPLE_CHOICE
         text: An unknown signal arrives. You want to…
         answers:
           - text: Study the pattern in peace.
             weights:
-              outreach: -12
+              outreach: 0
             emoji: 🔭
           - text: Discuss it with the science team.
             weights:
-              outreach: 0
+              outreach: 50
             emoji: ⚖️
           - text: Open a channel and say hello.
             weights:
-              outreach: 12
+              outreach: 100
             emoji: 👽
         emoji: 📡
+        dimensionInfluences:
+          outreach: 12
       - type: MULTIPLE_CHOICE
         text: During downtime, you gravitate toward…
         answers:
           - text: A personal project in the workshop.
             weights:
-              outreach: -12
+              outreach: 0
             emoji: 🔭
           - text: A small shared meal.
             weights:
-              outreach: 0
+              outreach: 50
             emoji: ⚖️
           - text: Meeting everyone on the next station.
             weights:
-              outreach: 12
+              outreach: 100
             emoji: 👽
         emoji: 📡
+        dimensionInfluences:
+          outreach: 12
       - type: SLIDER
         text: How much improvisation belongs on the bridge?
         answers:
           - text: Checklist first
             weights:
-              adaptation: -16
+              adaptation: 0
             emoji: 📋
           - text: Whatever works
             weights:
-              adaptation: 16
+              adaptation: 100
             emoji: 🔧
         emoji: 🛸
+        dimensionInfluences:
+          adaptation: 16
       - type: SCALE
         text: How eager are you to make first contact?
         answers:
           - text: Study the instruments
             weights:
-              outreach: -16
+              outreach: 0
           - text: Hail the unknown ship
             weights:
-              outreach: 16
+              outreach: 100
           - text: Observe quietly
             weights: {}
           - text: Listen first
@@ -1391,6 +1482,8 @@ quizzes:
           - text: Broadcast a welcome
             weights: {}
         emoji: 📡
+        dimensionInfluences:
+          outreach: 16
       - type: MULTIPLE_CHOICE
         text: An unstable shortcut could save days of travel.
         emoji: ☄️
@@ -1398,15 +1491,17 @@ quizzes:
           - text: Take the charted route.
             emoji: 🛟
             weights:
-              boldness: -12
+              boldness: 0
           - text: It depends on the moment.
             emoji: ⚖️
             weights:
-              boldness: 0
+              boldness: 50
           - text: Plot a careful course through the shortcut.
             emoji: 🚀
             weights:
-              boldness: 12
+              boldness: 100
+        dimensionInfluences:
+          boldness: 12
       - type: SLIDER
         text: A strange signal is fading beyond your mapped sector.
         emoji: ☄️
@@ -1414,11 +1509,13 @@ quizzes:
           - text: Record it and stay on mission.
             emoji: 🛟
             weights:
-              boldness: -12
+              boldness: 0
           - text: Follow it while there is still time.
             emoji: 🚀
             weights:
-              boldness: 12
+              boldness: 100
+        dimensionInfluences:
+          boldness: 12
       - type: SCALE
         text: How appealing is an expedition with no guaranteed way home?
         emoji: ☄️
@@ -1426,11 +1523,11 @@ quizzes:
           - text: I need a reliable return plan.
             emoji: 🛟
             weights:
-              boldness: -16
+              boldness: 0
           - text: The discovery could be worth the uncertainty.
             emoji: 🚀
             weights:
-              boldness: 16
+              boldness: 100
           - text: Not at all
             weights: {}
           - text: A little
@@ -1441,6 +1538,8 @@ quizzes:
             weights: {}
           - text: Very much
             weights: {}
+        dimensionInfluences:
+          boldness: 16
       - type: MULTIPLE_CHOICE
         text: Your exhausted crew could push on or lose a day to recovery.
         emoji: 🌱
@@ -1448,15 +1547,17 @@ quizzes:
           - text: Keep the objective within reach.
             emoji: 🎯
             weights:
-              stewardship: -12
+              stewardship: 0
           - text: It depends on the moment.
             emoji: ⚖️
             weights:
-              stewardship: 0
+              stewardship: 50
           - text: Make sure everyone can recover first.
             emoji: 🫂
             weights:
-              stewardship: 12
+              stewardship: 100
+        dimensionInfluences:
+          stewardship: 12
       - type: SLIDER
         text: You have room for one extra supply crate.
         emoji: 🌱
@@ -1464,11 +1565,13 @@ quizzes:
           - text: Specialized tools for the mission.
             emoji: 🎯
             weights:
-              stewardship: -12
+              stewardship: 0
           - text: Comforts and backup provisions for the crew.
             emoji: 🫂
             weights:
-              stewardship: 12
+              stewardship: 100
+        dimensionInfluences:
+          stewardship: 12
       - type: SCALE
         text: How much should crew wellbeing shape a difficult command decision?
         emoji: 🌱
@@ -1476,11 +1579,11 @@ quizzes:
           - text: The mission sets the priorities.
             emoji: 🎯
             weights:
-              stewardship: -16
+              stewardship: 0
           - text: Protecting the crew is central to the mission.
             emoji: 🫂
             weights:
-              stewardship: 16
+              stewardship: 100
           - text: Not at all
             weights: {}
           - text: A little
@@ -1491,6 +1594,8 @@ quizzes:
             weights: {}
           - text: Very much
             weights: {}
+        dimensionInfluences:
+          stewardship: 16
       - type: MULTIPLE_CHOICE
         text: You get a free hour at the observation deck.
         emoji: 🪐
@@ -1498,15 +1603,17 @@ quizzes:
           - text: Solve a problem that is slowing us down today.
             emoji: ⏱️
             weights:
-              horizon: -12
+              horizon: 0
           - text: It depends on the moment.
             emoji: ⚖️
             weights:
-              horizon: 0
+              horizon: 50
           - text: Sketch what this mission could lead to in ten years.
             emoji: 🌌
             weights:
-              horizon: 12
+              horizon: 100
+        dimensionInfluences:
+          horizon: 12
       - type: SLIDER
         text: Your research budget can fund one project.
         emoji: 🪐
@@ -1514,11 +1621,13 @@ quizzes:
           - text: A practical upgrade we can use this week.
             emoji: ⏱️
             weights:
-              horizon: -12
+              horizon: 0
           - text: An ambitious idea for the next generation of ships.
             emoji: 🌌
             weights:
-              horizon: 12
+              horizon: 100
+        dimensionInfluences:
+          horizon: 12
       - type: SCALE
         text: How often do distant possibilities guide your present choices?
         emoji: 🪐
@@ -1526,11 +1635,11 @@ quizzes:
           - text: I prefer a clear next step.
             emoji: ⏱️
             weights:
-              horizon: -16
+              horizon: 0
           - text: I like a next step that serves a bigger future.
             emoji: 🌌
             weights:
-              horizon: 16
+              horizon: 100
           - text: Not at all
             weights: {}
           - text: A little
@@ -1541,6 +1650,8 @@ quizzes:
             weights: {}
           - text: Very much
             weights: {}
+        dimensionInfluences:
+          horizon: 16
     color: "#be185d,#fb7185"
     publication: PUBLIC
   - slug: team-project
@@ -1667,86 +1778,96 @@ quizzes:
         answers:
           - text: Trying a small experiment.
             weights:
-              structure: -12
+              structure: 0
             emoji: 🌱
           - text: Agreeing on a loose outline.
             weights:
-              structure: 0
+              structure: 50
             emoji: ⚖️
           - text: Mapping milestones and responsibilities.
             weights:
-              structure: 12
+              structure: 100
             emoji: 📐
         emoji: 🗂️
+        dimensionInfluences:
+          structure: 12
       - type: MULTIPLE_CHOICE
         text: A deadline shifts. You prefer to…
         answers:
           - text: Adjust as the new work takes shape.
             weights:
-              structure: -12
+              structure: 0
             emoji: 🌱
           - text: Update the next few priorities.
             weights:
-              structure: 0
+              structure: 50
             emoji: ⚖️
           - text: Rebuild the schedule clearly.
             weights:
-              structure: 12
+              structure: 100
             emoji: 📐
         emoji: 🗂️
+        dimensionInfluences:
+          structure: 12
       - type: MULTIPLE_CHOICE
         text: A meeting stalls. You naturally…
         answers:
           - text: Help clarify someone else’s idea.
             weights:
-              initiative: -12
+              initiative: 0
             emoji: 🤝
           - text: Offer a question to move things along.
             weights:
-              initiative: 0
+              initiative: 50
             emoji: ⚖️
           - text: Propose a direction and a next step.
             weights:
-              initiative: 12
+              initiative: 100
             emoji: 🧭
         emoji: 🚀
+        dimensionInfluences:
+          initiative: 12
       - type: MULTIPLE_CHOICE
         text: A promising opportunity appears. You…
         answers:
           - text: Offer support to whoever picks it up.
             weights:
-              initiative: -12
+              initiative: 0
             emoji: 🤝
           - text: Discuss whether it fits the team.
             weights:
-              initiative: 0
+              initiative: 50
             emoji: ⚖️
           - text: Take the first step and invite others.
             weights:
-              initiative: 12
+              initiative: 100
             emoji: 🧭
         emoji: 🚀
+        dimensionInfluences:
+          initiative: 12
       - type: SLIDER
         text: How detailed should a project plan be?
         answers:
           - text: A rough direction
             weights:
-              structure: -16
+              structure: 0
             emoji: 🌱
           - text: A clear roadmap
             weights:
-              structure: 16
+              structure: 100
             emoji: 📐
         emoji: 🗂️
+        dimensionInfluences:
+          structure: 16
       - type: SCALE
         text: How often do you like to initiate the next move?
         answers:
           - text: Strengthen the work
             weights:
-              initiative: -16
+              initiative: 0
           - text: Set the direction
             weights:
-              initiative: 16
+              initiative: 100
           - text: Rarely
             weights: {}
           - text: Occasionally
@@ -1758,6 +1879,8 @@ quizzes:
           - text: Usually
             weights: {}
         emoji: 🚀
+        dimensionInfluences:
+          initiative: 16
       - type: MULTIPLE_CHOICE
         text: A tricky task lands on your desk.
         emoji: 🧩
@@ -1765,15 +1888,17 @@ quizzes:
           - text: Give me time to think it through alone.
             emoji: 🎧
             weights:
-              collaboration: -12
+              collaboration: 0
           - text: It depends on the moment.
             emoji: ⚖️
             weights:
-              collaboration: 0
+              collaboration: 50
           - text: Let us put a few minds around it.
             emoji: 🗣️
             weights:
-              collaboration: 12
+              collaboration: 100
+        dimensionInfluences:
+          collaboration: 12
       - type: SLIDER
         text: You are working out a rough first idea.
         emoji: 🧩
@@ -1781,11 +1906,13 @@ quizzes:
           - text: I want something formed before sharing it.
             emoji: 🎧
             weights:
-              collaboration: -12
+              collaboration: 0
           - text: I think best with someone to bounce ideas off.
             emoji: 🗣️
             weights:
-              collaboration: 12
+              collaboration: 100
+        dimensionInfluences:
+          collaboration: 12
       - type: SCALE
         text: How much do regular working sessions with teammates help you?
         emoji: 🧩
@@ -1793,11 +1920,11 @@ quizzes:
           - text: I do better with uninterrupted solo time.
             emoji: 🎧
             weights:
-              collaboration: -16
+              collaboration: 0
           - text: Shared working time gives me energy and clarity.
             emoji: 🗣️
             weights:
-              collaboration: 16
+              collaboration: 100
           - text: Not at all
             weights: {}
           - text: A little
@@ -1808,6 +1935,8 @@ quizzes:
             weights: {}
           - text: Very much
             weights: {}
+        dimensionInfluences:
+          collaboration: 16
       - type: MULTIPLE_CHOICE
         text: The team has two promising approaches.
         emoji: ⚡
@@ -1815,15 +1944,17 @@ quizzes:
           - text: Compare the tradeoffs before committing.
             emoji: 🔎
             weights:
-              momentum: -12
+              momentum: 0
           - text: It depends on the moment.
             emoji: ⚖️
             weights:
-              momentum: 0
+              momentum: 50
           - text: Try a small version and learn from it.
             emoji: 🏃
             weights:
-              momentum: 12
+              momentum: 100
+        dimensionInfluences:
+          momentum: 12
       - type: SLIDER
         text: A decision is reversible but the information is incomplete.
         emoji: ⚡
@@ -1831,11 +1962,13 @@ quizzes:
           - text: Gather one more useful piece of evidence.
             emoji: 🔎
             weights:
-              momentum: -12
+              momentum: 0
           - text: Make the call and keep checking the results.
             emoji: 🏃
             weights:
-              momentum: 12
+              momentum: 100
+        dimensionInfluences:
+          momentum: 12
       - type: SCALE
         text: How much do you enjoy turning a rough idea into a quick first attempt?
         emoji: ⚡
@@ -1843,11 +1976,11 @@ quizzes:
           - text: I want to understand the problem before starting.
             emoji: 🔎
             weights:
-              momentum: -16
+              momentum: 0
           - text: A first attempt helps me understand the problem.
             emoji: 🏃
             weights:
-              momentum: 16
+              momentum: 100
           - text: Not at all
             weights: {}
           - text: A little
@@ -1858,6 +1991,8 @@ quizzes:
             weights: {}
           - text: Very much
             weights: {}
+        dimensionInfluences:
+          momentum: 16
     color: "#166534,#84cc16"
     publication: PUBLIC
   - slug: rainy-day
@@ -1951,86 +2086,96 @@ quizzes:
         answers:
           - text: A gentle book and a warm drink.
             weights:
-              stimulation: -12
+              stimulation: 0
             emoji: 🫖
           - text: A film or a small creative project.
             weights:
-              stimulation: 0
+              stimulation: 50
             emoji: ⚖️
           - text: A game or project that takes all my attention.
             weights:
-              stimulation: 12
+              stimulation: 100
             emoji: 🎮
         emoji: ☔
+        dimensionInfluences:
+          stimulation: 12
       - type: MULTIPLE_CHOICE
         text: Your room’s soundtrack is…
         answers:
           - text: The rain itself.
             weights:
-              stimulation: -12
+              stimulation: 0
             emoji: 🫖
           - text: A soft playlist.
             weights:
-              stimulation: 0
+              stimulation: 50
             emoji: ⚖️
           - text: Something with energy and momentum.
             weights:
-              stimulation: 12
+              stimulation: 100
             emoji: 🎮
         emoji: ☔
+        dimensionInfluences:
+          stimulation: 12
       - type: MULTIPLE_CHOICE
         text: Who belongs in your rainy-day plan?
         answers:
           - text: Just me.
             weights:
-              sharing: -12
+              sharing: 0
             emoji: 📔
           - text: One close companion.
             weights:
-              sharing: 0
+              sharing: 50
             emoji: ⚖️
           - text: A few friends looking for shelter.
             weights:
-              sharing: 12
+              sharing: 100
             emoji: 🫂
         emoji: 🛋️
+        dimensionInfluences:
+          sharing: 12
       - type: MULTIPLE_CHOICE
         text: You make something delicious. You…
         answers:
           - text: Enjoy it in peace.
             weights:
-              sharing: -12
+              sharing: 0
             emoji: 📔
           - text: Save some for someone I love.
             weights:
-              sharing: 0
+              sharing: 50
             emoji: ⚖️
           - text: Invite people over while it is still warm.
             weights:
-              sharing: 12
+              sharing: 100
             emoji: 🫂
         emoji: 🛋️
+        dimensionInfluences:
+          sharing: 12
       - type: SLIDER
         text: How much stimulation sounds good today?
         answers:
           - text: Peace and quiet
             weights:
-              stimulation: -16
+              stimulation: 0
             emoji: 🫖
           - text: Something absorbing
             weights:
-              stimulation: 16
+              stimulation: 100
             emoji: 🎮
         emoji: ☔
+        dimensionInfluences:
+          stimulation: 16
       - type: SCALE
         text: How much company feels right indoors?
         answers:
           - text: My own little world
             weights:
-              sharing: -16
+              sharing: 0
           - text: Bring people together
             weights:
-              sharing: 16
+              sharing: 100
           - text: Solo
             weights: {}
           - text: One person
@@ -2042,6 +2187,8 @@ quizzes:
           - text: Everyone fits somehow
             weights: {}
         emoji: 🛋️
+        dimensionInfluences:
+          sharing: 16
       - type: MULTIPLE_CHOICE
         text: You settle in with something to watch.
         emoji: 📼
@@ -2049,15 +2196,17 @@ quizzes:
           - text: A film I know almost nothing about.
             emoji: 🎲
             weights:
-              nostalgia: -12
+              nostalgia: 0
           - text: It depends on the moment.
             emoji: ⚖️
             weights:
-              nostalgia: 0
+              nostalgia: 50
           - text: The favorite I can quote by heart.
             emoji: 📺
             weights:
-              nostalgia: 12
+              nostalgia: 100
+        dimensionInfluences:
+          nostalgia: 12
       - type: SLIDER
         text: A rainy afternoon gives you time for a small project.
         emoji: 📼
@@ -2065,11 +2214,13 @@ quizzes:
           - text: Try something I have never made.
             emoji: 🎲
             weights:
-              nostalgia: -12
+              nostalgia: 0
           - text: Return to a hobby that already feels like home.
             emoji: 📺
             weights:
-              nostalgia: 12
+              nostalgia: 100
+        dimensionInfluences:
+          nostalgia: 12
       - type: SCALE
         text: How much do familiar rituals improve an indoor day?
         emoji: 📼
@@ -2077,11 +2228,11 @@ quizzes:
           - text: Surprise me with something new.
             emoji: 🎲
             weights:
-              nostalgia: -16
+              nostalgia: 0
           - text: The rituals are half the pleasure.
             emoji: 📺
             weights:
-              nostalgia: 16
+              nostalgia: 100
           - text: Not at all
             weights: {}
           - text: A little
@@ -2092,6 +2243,8 @@ quizzes:
             weights: {}
           - text: Very much
             weights: {}
+        dimensionInfluences:
+          nostalgia: 16
     color: "#c2410c,#a855f7"
     publication: PUBLIC
   - slug: reading-nook
@@ -2171,15 +2324,17 @@ quizzes:
           - text: A close look at an ordinary life.
             emoji: 🪴
             weights:
-              escape: -12
+              escape: 0
           - text: A little of both, depending on the day.
             emoji: ⚖️
             weights:
-              escape: 0
+              escape: 50
           - text: A world with rules I have never imagined.
             emoji: 🐉
             weights:
-              escape: 12
+              escape: 100
+        dimensionInfluences:
+          escape: 12
       - type: SLIDER
         text: The setting of your ideal story feels…
         emoji: 🗝️
@@ -2187,11 +2342,13 @@ quizzes:
           - text: Like a place I could visit tomorrow.
             emoji: 🪴
             weights:
-              escape: -12
+              escape: 0
           - text: Like a place that exists only in a dream.
             emoji: 🐉
             weights:
-              escape: 12
+              escape: 100
+        dimensionInfluences:
+          escape: 12
       - type: SCALE
         text: How much do you enjoy a story that asks you to believe in the impossible?
         emoji: 🗝️
@@ -2199,11 +2356,11 @@ quizzes:
           - text: I prefer the wonder of everyday life.
             emoji: 🪴
             weights:
-              escape: -16
+              escape: 0
           - text: The stranger the world, the more I want to explore it.
             emoji: 🐉
             weights:
-              escape: 16
+              escape: 100
           - text: Not at all
             weights: {}
           - text: A little
@@ -2214,6 +2371,8 @@ quizzes:
             weights: {}
           - text: Very much
             weights: {}
+        dimensionInfluences:
+          escape: 16
       - type: MULTIPLE_CHOICE
         text: An unexpected free hour appears.
         emoji: 🕯️
@@ -2221,15 +2380,17 @@ quizzes:
           - text: Read wherever I happen to be.
             emoji: 🎒
             weights:
-              ritual: -12
+              ritual: 0
           - text: A little of both, depending on the day.
             emoji: ⚖️
             weights:
-              ritual: 0
+              ritual: 50
           - text: Settle into my favorite spot with a drink.
             emoji: ☕
             weights:
-              ritual: 12
+              ritual: 100
+        dimensionInfluences:
+          ritual: 12
       - type: SLIDER
         text: Your book travels with you…
         emoji: 🕯️
@@ -2237,11 +2398,13 @@ quizzes:
           - text: Loose in my bag, ready for any spare moment.
             emoji: 🎒
             weights:
-              ritual: -12
+              ritual: 0
           - text: Between carefully protected reading sessions.
             emoji: ☕
             weights:
-              ritual: 12
+              ritual: 100
+        dimensionInfluences:
+          ritual: 12
       - type: SCALE
         text: How much does your favorite chair, drink, or soundtrack add to a book?
         emoji: 🕯️
@@ -2249,11 +2412,11 @@ quizzes:
           - text: The story is enough wherever I am.
             emoji: 🎒
             weights:
-              ritual: -16
+              ritual: 0
           - text: My little reading ritual makes it complete.
             emoji: ☕
             weights:
-              ritual: 16
+              ritual: 100
           - text: Not at all
             weights: {}
           - text: A little
@@ -2264,6 +2427,8 @@ quizzes:
             weights: {}
           - text: Very much
             weights: {}
+        dimensionInfluences:
+          ritual: 16
   - slug: garden-companion
     title: What kind of garden companion are you?
     description: Discover how you bring a patch of green to life. For fun and reflection; not a
@@ -2371,15 +2536,17 @@ quizzes:
           - text: Scatter a few seeds and see what thrives.
             emoji: 🌱
             weights:
-              planning: -12
+              planning: 0
           - text: A little of both, depending on the day.
             emoji: ⚖️
             weights:
-              planning: 0
+              planning: 50
           - text: Sketch a layout before planting.
             emoji: 📏
             weights:
-              planning: 12
+              planning: 100
+        dimensionInfluences:
+          planning: 12
       - type: SLIDER
         text: Your garden paths would be…
         emoji: 📐
@@ -2387,11 +2554,13 @@ quizzes:
           - text: A little winding and full of surprises.
             emoji: 🌱
             weights:
-              planning: -12
+              planning: 0
           - text: Clear, practical, and easy to follow.
             emoji: 📏
             weights:
-              planning: 12
+              planning: 100
+        dimensionInfluences:
+          planning: 12
       - type: SCALE
         text: How satisfying is a neatly planned planting calendar?
         emoji: 📐
@@ -2399,11 +2568,11 @@ quizzes:
           - text: I prefer following the season as it unfolds.
             emoji: 🌱
             weights:
-              planning: -16
+              planning: 0
           - text: I love knowing what is coming next.
             emoji: 📏
             weights:
-              planning: 16
+              planning: 100
           - text: Not at all
             weights: {}
           - text: A little
@@ -2414,6 +2583,8 @@ quizzes:
             weights: {}
           - text: Very much
             weights: {}
+        dimensionInfluences:
+          planning: 16
       - type: MULTIPLE_CHOICE
         text: There is room for one more planter.
         emoji: 🍅
@@ -2421,15 +2592,17 @@ quizzes:
           - text: Choose flowers with an unforgettable color.
             emoji: 🌸
             weights:
-              purpose: -12
+              purpose: 0
           - text: A little of both, depending on the day.
             emoji: ⚖️
             weights:
-              purpose: 0
+              purpose: 50
           - text: Grow something I can cook with.
             emoji: 🥕
             weights:
-              purpose: 12
+              purpose: 100
+        dimensionInfluences:
+          purpose: 12
       - type: SLIDER
         text: The best gift from a garden is…
         emoji: 🍅
@@ -2437,11 +2610,13 @@ quizzes:
           - text: A little beauty to stop and notice.
             emoji: 🌸
             weights:
-              purpose: -12
+              purpose: 0
           - text: Something useful to bring into the kitchen.
             emoji: 🥕
             weights:
-              purpose: 12
+              purpose: 100
+        dimensionInfluences:
+          purpose: 12
       - type: SCALE
         text: How much do you like a garden that helps fill your plate?
         emoji: 🍅
@@ -2449,11 +2624,11 @@ quizzes:
           - text: I mostly want a lovely place to spend time.
             emoji: 🌸
             weights:
-              purpose: -16
+              purpose: 0
           - text: Harvesting is a big part of the pleasure.
             emoji: 🥕
             weights:
-              purpose: 16
+              purpose: 100
           - text: Not at all
             weights: {}
           - text: A little
@@ -2464,6 +2639,8 @@ quizzes:
             weights: {}
           - text: Very much
             weights: {}
+        dimensionInfluences:
+          purpose: 16
       - type: MULTIPLE_CHOICE
         text: Your plants produce more than expected.
         emoji: 🧺
@@ -2471,15 +2648,17 @@ quizzes:
           - text: Preserve a little for my own future meals.
             emoji: 🪴
             weights:
-              sharing: -12
+              sharing: 0
           - text: A little of both, depending on the day.
             emoji: ⚖️
             weights:
-              sharing: 0
+              sharing: 50
           - text: Start leaving surprise baskets with neighbors.
             emoji: 🤝
             weights:
-              sharing: 12
+              sharing: 100
+        dimensionInfluences:
+          sharing: 12
       - type: SLIDER
         text: A perfect garden afternoon includes…
         emoji: 🧺
@@ -2487,11 +2666,13 @@ quizzes:
           - text: Quiet time among my plants.
             emoji: 🪴
             weights:
-              sharing: -12
+              sharing: 0
           - text: Someone to chat and work alongside.
             emoji: 🤝
             weights:
-              sharing: 12
+              sharing: 100
+        dimensionInfluences:
+          sharing: 12
       - type: SCALE
         text: How appealing is helping care for a shared neighborhood plot?
         emoji: 🧺
@@ -2499,11 +2680,11 @@ quizzes:
           - text: I prefer tending a small space of my own.
             emoji: 🪴
             weights:
-              sharing: -16
+              sharing: 0
           - text: Growing things together sounds wonderful.
             emoji: 🤝
             weights:
-              sharing: 16
+              sharing: 100
           - text: Not at all
             weights: {}
           - text: A little
@@ -2514,6 +2695,8 @@ quizzes:
             weights: {}
           - text: Very much
             weights: {}
+        dimensionInfluences:
+          sharing: 16
   - slug: festival-day
     title: Who are you on a festival day?
     description: Find your rhythm in a field full of possibilities. For fun and reflection; not a
@@ -2609,15 +2792,17 @@ quizzes:
           - text: Choose the artist I came to see.
             emoji: 🎧
             weights:
-              discovery: -12
+              discovery: 0
           - text: A little of both, depending on the day.
             emoji: ⚖️
             weights:
-              discovery: 0
+              discovery: 50
           - text: Try the intriguing name I have never heard.
             emoji: 🎲
             weights:
-              discovery: 12
+              discovery: 100
+        dimensionInfluences:
+          discovery: 12
       - type: SLIDER
         text: Walking past a tiny stage, you hear something unusual.
         emoji: 🎵
@@ -2625,11 +2810,13 @@ quizzes:
           - text: Keep heading toward the set I planned.
             emoji: 🎧
             weights:
-              discovery: -12
+              discovery: 0
           - text: Stop and see where this goes.
             emoji: 🎲
             weights:
-              discovery: 12
+              discovery: 100
+        dimensionInfluences:
+          discovery: 12
       - type: SCALE
         text: How much do you enjoy leaving a festival with a new favorite?
         emoji: 🎵
@@ -2637,11 +2824,11 @@ quizzes:
           - text: I mainly want time with my existing favorites.
             emoji: 🎧
             weights:
-              discovery: -16
+              discovery: 0
           - text: Finding something new is a highlight.
             emoji: 🎲
             weights:
-              discovery: 16
+              discovery: 100
           - text: Not at all
             weights: {}
           - text: A little
@@ -2652,6 +2839,8 @@ quizzes:
             weights: {}
           - text: Very much
             weights: {}
+        dimensionInfluences:
+          discovery: 16
       - type: MULTIPLE_CHOICE
         text: There is an hour between your must-see acts.
         emoji: ⚡
@@ -2659,15 +2848,17 @@ quizzes:
           - text: Find a shady spot and settle in.
             emoji: 🌳
             weights:
-              energy: -12
+              energy: 0
           - text: A little of both, depending on the day.
             emoji: ⚖️
             weights:
-              energy: 0
+              energy: 50
           - text: Catch parts of two other sets.
             emoji: 💃
             weights:
-              energy: 12
+              energy: 100
+        dimensionInfluences:
+          energy: 12
       - type: SLIDER
         text: Your ideal place in the crowd is…
         emoji: ⚡
@@ -2675,11 +2866,13 @@ quizzes:
           - text: Somewhere comfortable with room to breathe.
             emoji: 🌳
             weights:
-              energy: -12
+              energy: 0
           - text: Close enough to feel the whole crowd moving.
             emoji: 💃
             weights:
-              energy: 12
+              energy: 100
+        dimensionInfluences:
+          energy: 12
       - type: SCALE
         text: How much do you enjoy staying on your feet from the first set to the last?
         emoji: ⚡
@@ -2687,11 +2880,11 @@ quizzes:
           - text: I need pauses to savor the day.
             emoji: 🌳
             weights:
-              energy: -16
+              energy: 0
           - text: Keeping the momentum feels great.
             emoji: 💃
             weights:
-              energy: 16
+              energy: 100
           - text: Not at all
             weights: {}
           - text: A little
@@ -2702,6 +2895,8 @@ quizzes:
             weights: {}
           - text: Very much
             weights: {}
+        dimensionInfluences:
+          energy: 16
       - type: MULTIPLE_CHOICE
         text: Your friends want a different stage.
         emoji: 📍
@@ -2709,15 +2904,17 @@ quizzes:
           - text: Agree on a meeting point and follow my own ears.
             emoji: 🧭
             weights:
-              coordination: -12
+              coordination: 0
           - text: A little of both, depending on the day.
             emoji: ⚖️
             weights:
-              coordination: 0
+              coordination: 50
           - text: Find a set we can all enjoy together.
             emoji: 🫂
             weights:
-              coordination: 12
+              coordination: 100
+        dimensionInfluences:
+          coordination: 12
       - type: SLIDER
         text: Your festival messages look like…
         emoji: 📍
@@ -2725,11 +2922,13 @@ quizzes:
           - text: See you at the meeting spot later.
             emoji: 🧭
             weights:
-              coordination: -12
+              coordination: 0
           - text: Who is coming to the next set with me?
             emoji: 🫂
             weights:
-              coordination: 12
+              coordination: 100
+        dimensionInfluences:
+          coordination: 12
       - type: SCALE
         text: How important is sharing most of the day with the same people?
         emoji: 📍
@@ -2737,11 +2936,11 @@ quizzes:
           - text: Wandering on my own is part of the fun.
             emoji: 🧭
             weights:
-              coordination: -16
+              coordination: 0
           - text: The shared memories are what I came for.
             emoji: 🫂
             weights:
-              coordination: 16
+              coordination: 100
           - text: Not at all
             weights: {}
           - text: A little
@@ -2752,3 +2951,5 @@ quizzes:
             weights: {}
           - text: Very much
             weights: {}
+        dimensionInfluences:
+          coordination: 16

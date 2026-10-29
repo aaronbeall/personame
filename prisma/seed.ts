@@ -238,7 +238,7 @@ async function main() {
               weights: {
                 create: {
                   dimensionId: extraversion.id,
-                  value: 50,
+                  value: 100,
                 },
               },
             },
@@ -248,7 +248,7 @@ async function main() {
               weights: {
                 create: {
                   dimensionId: extraversion.id,
-                  value: -40,
+                  value: 10,
                 },
               },
             },
@@ -258,7 +258,7 @@ async function main() {
               weights: {
                 create: {
                   dimensionId: extraversion.id,
-                  value: -50,
+                  value: 0,
                 },
               },
             },
@@ -280,7 +280,7 @@ async function main() {
               weights: {
                 create: {
                   dimensionId: intuition.id,
-                  value: -40,
+                  value: 10,
                 },
               },
             },
@@ -290,7 +290,7 @@ async function main() {
               weights: {
                 create: {
                   dimensionId: intuition.id,
-                  value: 40,
+                  value: 90,
                 },
               },
             },
@@ -300,7 +300,7 @@ async function main() {
               weights: {
                 create: {
                   dimensionId: intuition.id,
-                  value: 0,
+                  value: 50,
                 },
               },
             },
@@ -322,7 +322,7 @@ async function main() {
               weights: {
                 create: {
                   dimensionId: thinking.id,
-                  value: 45,
+                  value: 95,
                 },
               },
             },
@@ -332,7 +332,7 @@ async function main() {
               weights: {
                 create: {
                   dimensionId: thinking.id,
-                  value: -45,
+                  value: 5,
                 },
               },
             },
@@ -342,7 +342,7 @@ async function main() {
               weights: {
                 create: {
                   dimensionId: thinking.id,
-                  value: 0,
+                  value: 50,
                 },
               },
             },
@@ -364,7 +364,7 @@ async function main() {
               weights: {
                 create: {
                   dimensionId: structure.id,
-                  value: 50,
+                  value: 100,
                 },
               },
             },
@@ -374,7 +374,7 @@ async function main() {
               weights: {
                 create: {
                   dimensionId: structure.id,
-                  value: -50,
+                  value: 0,
                 },
               },
             },
@@ -384,7 +384,7 @@ async function main() {
               weights: {
                 create: {
                   dimensionId: structure.id,
-                  value: 0,
+                  value: 50,
                 },
               },
             },

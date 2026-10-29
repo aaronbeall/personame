@@ -21,7 +21,7 @@ function ReviewDetail({ trigger, title, children }: { trigger: ReactNode; title:
     </Popover.Content>
   </Popover.Portal></Popover.Root>
 }
-export function ReviewSummary({ quiz }: { quiz: FullQuiz }) {
+export function ReviewSummary({ quiz, preview }: { quiz: FullQuiz; preview?: ReactNode }) {
   const pages = quiz.pages.filter(p => !p.hidden && p.style !== 'cover' && p.style !== 'results')
   const questions = pages.flatMap(p => p.questions)
   const hidden = quiz.pages.filter(p => p.hidden).length
@@ -31,7 +31,7 @@ export function ReviewSummary({ quiz }: { quiz: FullQuiz }) {
       <QuizCoverMark emoji={quiz.emoji} color={quiz.color} />
       <div><span className="review-eyebrow">YOUR QUIZ, AT A GLANCE</span><h2>{quiz.title || 'Untitled quiz'}</h2><p>{quiz.description || 'Add a description to give people a little context.'}</p>
         <div className="review-metadata"><span><EntityIcon kind="dimension" size={14} />{quiz.dimensions.length} dimensions</span><span><EntityIcon kind="archetype" size={14} />{quiz.archetypes.length} archetypes</span><span><ListChecks size={14} />{questions.length} questions</span></div>
-      </div>{edit('name', 'Edit name & style')}
+      </div><div className="review-identity-actions">{preview}{edit('name', 'Edit name & style')}</div>
     </section>
     <div className="review-section review-composition" role="group" aria-label="Quiz composition">
     <section className="review-summary-section" aria-labelledby="review-dimensions-title">

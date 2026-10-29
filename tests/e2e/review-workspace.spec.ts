@@ -27,6 +27,7 @@ test('Publish tab reflects readiness, live and closed states and respects reduce
 })
 
 test('Workspace tabs use the URL across deep links, history, reload and publishing', async ({ page, seedQuiz }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
   const { id } = await seedQuiz()
   const base = `/create/${id}/preview`
   const keyWarnings: string[] = []
@@ -42,6 +43,8 @@ test('Workspace tabs use the URL across deep links, history, reload and publishi
   expect(new URL(page.url()).searchParams.get('keep')).toBe('yes')
   expect(new URL(page.url()).hash).toBe('#workspace')
   await expect(page.getByRole('button', { name: 'Publish quiz', exact: true })).toBeEnabled()
+  await expect(page.getByRole('heading', { name: 'Try it before you publish', exact: true })).toBeVisible()
+  await expect(page.locator('.publish-preview-invite').getByRole('button', { name: 'Try the quiz', exact: true })).toBeVisible()
   await expect(page.getByRole('combobox', { name: 'Discoverability' })).toBeDisabled()
   await expect(page.getByRole('combobox', { name: 'Publish timing' })).toBeDisabled()
   expect(publishCalls).toBe(0)
@@ -56,6 +59,8 @@ test('Workspace tabs use the URL across deep links, history, reload and publishi
   await expect(page.getByRole('tab', { name: 'Review', exact: true })).toBeFocused()
   await expect.poll(() => new URL(page.url()).searchParams.get('tab')).toBe('review')
   await expect(page.locator('.review-todos')).toBeVisible()
+  await expect(page.getByRole('region', { name: 'Quiz summary', exact: true }).getByRole('button', { name: 'Try the quiz', exact: true })).toBeVisible()
+  await expect(page.getByText('A final look at the world you’ve built.', { exact: true })).toHaveCount(0)
   await expect(page.locator('.archetype-space')).toHaveCount(0)
   await page.getByRole('link', { name: 'Continue to Publish', exact: true }).click()
   await expect.poll(() => new URL(page.url()).searchParams.get('tab')).toBe('publish')

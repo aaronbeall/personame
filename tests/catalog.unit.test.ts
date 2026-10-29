@@ -11,6 +11,8 @@ for (const definition of catalog.quizzes)
   test(`${definition.title}: valid, scores all question types, every archetype reachable`, () => {
     const quiz = compileCatalogQuiz(definition)
     assert.deepEqual(readiness(quiz), [])
+    assert.equal(quiz.pages.filter(p => p.style === 'results').length, 1)
+    assert.equal(quiz.pages.at(-1)?.style, 'results')
     const questions = quiz.pages[1].questions
     const matches = new Set<string>()
     // Explore all low/high combinations, not just one happy-path result.
@@ -59,7 +61,7 @@ test('readiness excludes hidden, cover and results questions from dimension cove
   const quiz = compileCatalogQuiz(catalog.quizzes[0])
   quiz.pages[1].hidden = true
   assert.ok(readiness(quiz).some((s) => s.includes('visible question')))
-  assert.ok(readiness(quiz).some((s) => s.includes('non-zero')))
+  assert.ok(readiness(quiz).some((s) => s.includes('Map at least')))
   for (const style of ['cover', 'results']) {
     quiz.pages[1].hidden = false
     quiz.pages[1].style = style
@@ -119,9 +121,9 @@ test('publishing rejects blank text, missing options, foreign weights and zero-o
     assert.ok(issues.includes(text), text)
   const zero = compileCatalogQuiz(catalog.quizzes[0])
   zero.pages[1].questions.forEach((q) =>
-    q.answers.forEach((a) => a.weights.forEach((w) => (w.value = 0))),
+    q.answers.forEach((a) => (a.weights = [])),
   )
-  assert.equal(readiness(zero).filter((s) => s.includes('non-zero')).length, 2)
+  assert.equal(readiness(zero).filter((s) => s.includes('Map at least')).length, 2)
 })
 
 test('editable catalog preserves curated theme lists on quizzes, dimensions and archetypes', () => {
