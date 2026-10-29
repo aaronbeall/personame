@@ -21,7 +21,7 @@ export function ArtConfettiBurst({
   anchorRef,
   onComplete,
 }: {
-  anchorRef: RefObject<HTMLAnchorElement | null>
+  anchorRef: RefObject<HTMLElement | null>
   onComplete: () => void
 }) {
   const canvas = useRef<HTMLCanvasElement>(null)

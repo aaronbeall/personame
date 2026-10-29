@@ -1,9 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import type { ReactNode } from 'react'
+import { useArtConfetti } from '@/hooks/use-art-confetti'
 import { ArtActionIcon } from './art-action-icon'
-import { ArtConfettiBurst, preloadArtConfetti } from './art-confetti-burst'
+import { ArtConfettiBurst } from './art-confetti-burst'
 
 /** Shared Create action; a finite decorative burst never intercepts clicks. */
 export function CreateQuizLink({
@@ -15,23 +16,7 @@ export function CreateQuizLink({
   className?: string
   'aria-current'?: 'page'
 }) {
-  const anchor = useRef<HTMLAnchorElement>(null)
-  const [burst, setBurst] = useState(false)
-  const lastBurst = useRef(-Infinity)
-  const complete = useCallback(() => setBurst(false), [])
-  useEffect(() => {
-    preloadArtConfetti()
-  }, [])
-  const celebrate = () => {
-    if (
-      burst ||
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
-      performance.now() - lastBurst.current < 1100
-    )
-      return
-    lastBurst.current = performance.now()
-    setBurst(true)
-  }
+  const { anchor, burst, complete, celebrate } = useArtConfetti<HTMLAnchorElement>()
   return (
     <Link
       ref={anchor}

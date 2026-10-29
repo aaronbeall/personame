@@ -2,7 +2,7 @@
 import { use, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
-import { ChevronDown, Check, ArrowRight, CheckCircle2, Rocket, ScanEye, ListChecks, ChartNoAxesCombined } from 'lucide-react'
+import { ChevronDown, Check, ArrowRight, CheckCircle2, Rocket, Radio, CircleStop, ScanEye, ListChecks, ChartNoAxesCombined } from 'lucide-react'
 import { useProtectedPage } from '@/hooks/use-protected-page'
 import { AppLayoutBackground } from '@/components/app-layout-background'
 import { StepProgress } from '@/components/step-progress'
@@ -39,11 +39,11 @@ export default function ReviewPage({ params }: { params: Promise<{ id: string }>
   const [checklistExpanded, setChecklistExpanded] = useState(false)
   const quiz = query.data
   const refresh = () => Promise.all(['review', 'progress', 'personal', 'discover'].map(key => cache.invalidateQueries({ queryKey: key === 'review' || key === 'progress' ? [key, id] : [key] })))
-  const mutate = async (action: 'publish' | 'draft') => {
+  const mutate = async (action: 'publish' | 'close') => {
     setBusy(true); setError('')
     try {
       if (action === 'publish') await requestJson(`/api/personames/${id}/publish`, { method: 'POST' })
-      else await requestJson(`/api/personames/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'DRAFT' }) })
+      else await requestJson(`/api/personames/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'CLOSED' }) })
       await refresh()
     } catch (e) { setError(e instanceof Error ? e.message : 'Unable to update your quiz.') }
     finally { setBusy(false) }
@@ -51,6 +51,8 @@ export default function ReviewPage({ params }: { params: Promise<{ id: string }>
   if (!quiz) return <AppLayoutBackground><div className="review-page">{query.error ? <p role="alert" className="notice error">{query.error.message}</p> : <LoadingState label="Preparing your review…" />}</div></AppLayoutBackground>
   const issues = readinessByStage(quiz)
   const todoCount = Object.values(issues).reduce((count, list) => count + new Set(list).size, 0)
+  const publishState = quiz.status === 'PUBLISHED' ? 'live' : quiz.status === 'CLOSED' ? 'closed' : todoCount === 0 ? 'ready' : 'incomplete'
+  const publishDescription = { live: 'Live · accepting responses', closed: 'Closed · not accepting responses', ready: 'Ready to publish', incomplete: 'Finish the publishing checklist first' }[publishState]
   const playerQuiz = { id: quiz.id, title: quiz.title, description: quiz.description, slug: quiz.slug, emoji: quiz.emoji, color: quiz.color, revision: new Date(quiz.updatedAt).toISOString(), pages: quiz.pages.filter(p => !p.hidden) } satisfies ReturnType<typeof publicQuiz>
   return <AppLayoutBackground><div className="review-page">
     <StepProgress title="Review & publish" description="Check your quiz, explore your model, and share it with your people." />
@@ -58,12 +60,12 @@ export default function ReviewPage({ params }: { params: Promise<{ id: string }>
     <UrlTabs id="review-workspace" label="Quiz workspace" value={tab} onValueChange={value => { void setTab(value) }} items={[
       { value: 'review', label: 'Review', icon: <ScanEye size={16} /> },
       { value: 'analyze', label: 'Analyze', icon: <ChartNoAxesCombined size={16} /> },
-      { value: 'publish', label: 'Publish', icon: <Rocket size={16} /> },
+      { value: 'publish', label: 'Publish', className: `publish-tab publish-tab-${publishState}`, description: publishDescription, icon: <Rocket size={16} aria-hidden="true" />, badge: (publishState === 'live' || publishState === 'closed') ? <span className="publish-tab-badge" aria-hidden="true">{publishState === 'live' ? <Radio size={11} /> : <CircleStop size={11} />}</span> : undefined },
     ]} />
     <div role="tabpanel" id={`review-workspace-panel-${tab}`} aria-labelledby={`review-workspace-tab-${tab}`} tabIndex={0}>
     {tab === 'review' && <>
     <div className="review-workspace-tools"><p>A final look at the world you’ve built.</p><QuizPreviewDialog quiz={playerQuiz} /></div>
-    {quiz.status !== 'PUBLISHED' && <section className="review-todos" data-ready={todoCount === 0} aria-labelledby="review-todos-title">
+    {quiz.status === 'DRAFT' && <section className="review-todos" data-ready={todoCount === 0} aria-labelledby="review-todos-title">
       {todoCount === 0 ? <header className="review-ready-header">
         <CheckCircle2 className="review-ready-icon" size={24} aria-hidden="true" />
         <div><h2 id="review-todos-title">Ready to publish</h2><p>All {stages.length} checks complete.</p></div>
@@ -85,12 +87,12 @@ export default function ReviewPage({ params }: { params: Promise<{ id: string }>
       })}
       </ul>
     </section>}
-    {quiz.status === 'PUBLISHED' && <div className="review-live" role="status"><CheckCircle2 size={20} /><div><strong>Your quiz is live</strong><p>Ready for your people.</p></div><Link href={hrefFor('publish')} className="review-edit-link">Manage publishing →</Link></div>}
+    {quiz.status !== 'DRAFT' && <div className="review-live" role="status"><CheckCircle2 size={20} /><div><strong>{quiz.status === 'CLOSED' ? 'Your quiz is closed' : 'Your quiz is live'}</strong><p>{quiz.status === 'CLOSED' ? 'Past results are still available.' : 'Ready for your people.'}</p></div><Link href={hrefFor('publish')} className="review-edit-link">Manage publishing →</Link></div>}
     <ReviewSummary quiz={quiz} />
-    {todoCount > 0 && quiz.status !== 'PUBLISHED' && <p className="review-publish-guidance">Finish the to-do items above to unlock publishing. <Link href={hrefFor('publish')}>Publish settings →</Link></p>}
+    {todoCount > 0 && quiz.status === 'DRAFT' && <p className="review-publish-guidance">Finish the to-do items above to unlock publishing. <Link href={hrefFor('publish')}>Publish settings →</Link></p>}
     </>}
     {tab === 'analyze' && <div className="review-analysis-stack" key={quiz.updatedAt.toString()}><ArchetypeSpace dimensions={quiz.dimensions} archetypes={quiz.archetypes} /><TargetsImportance dimensions={quiz.dimensions} archetypes={quiz.archetypes} /><QuestionSpace quiz={quiz} /></div>}
-    {tab === 'publish' && <PublishWorkspace quiz={quiz} todoCount={todoCount} busy={busy} copied={copied} reviewHref={hrefFor('review')} onPublish={() => { void mutate('publish') }} onUnpublish={() => { void mutate('draft') }} onCopy={async () => { try { await navigator.clipboard.writeText(`${location.origin}/quiz/${quiz.slug}`); setCopied(true) } catch { setError('Copy the quiz address from your browser.') } }} />}
+    {tab === 'publish' && <PublishWorkspace quiz={quiz} todoCount={todoCount} busy={busy} copied={copied} reviewHref={hrefFor('review')} onPublish={() => { void mutate('publish') }} preview={<QuizPreviewDialog quiz={playerQuiz} />} onClose={() => { void mutate('close') }} onCopy={async () => { try { await navigator.clipboard.writeText(`${location.origin}/quiz/${quiz.slug}`); setCopied(true) } catch { setError('Copy the quiz address from your browser.') } }} />}
     </div>
   </div></AppLayoutBackground>
 }

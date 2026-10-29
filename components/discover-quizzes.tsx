@@ -1,13 +1,11 @@
 'use client'
 import { EntityIcon } from '@/components/entity-icon'
-import { QuizCoverMark } from '@/components/quiz-cover-mark'
+import { QuizCoverArt } from '@/components/quiz-cover-art'
 import { LoadingState } from '@/components/ui/loading'
-import { useEffect, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import Image from 'next/image'
 import Link from 'next/link'
 import { requestJson } from '@/lib/client-api'
-import { getColorTheme } from '@/lib/colors'
 import {
   ArrowUpRight,
   ChevronLeft,
@@ -144,7 +142,6 @@ function QuizShelf({
         aria-label={title}
       >
         {quizzes.map((quiz, index) => {
-          const theme = getColorTheme(quiz.color)
           return (
             <li
               key={`${quiz.id}-${index}`}
@@ -152,29 +149,11 @@ function QuizShelf({
               style={{ animationDelay: `${(index % 5) * 85 + 90}ms` }}
             >
               <Link className="shelf-quiz" href={`/quiz/${quiz.slug}`}>
-                <div
-                  className="shelf-quiz-art"
-                  aria-hidden="true"
-                  style={
-                    {
-                      '--shelf-color': theme.hex,
-                      '--shelf-accent': theme.colors.at(-1),
-                    } as CSSProperties
-                  }
-                >
-                  <Image
-                    src={`/images/decor/${art}.webp`}
-                    fill
-                    sizes="280px"
-                    alt=""
-                    className="shelf-quiz-scene"
-                  />
-                  <span className="shelf-quiz-category">Personality quiz</span>
-                  <QuizCoverMark emoji={quiz.emoji} color={quiz.color} />
+                <QuizCoverArt emoji={quiz.emoji} color={quiz.color} art={art}>
                   <span className="shelf-quiz-open">
                     <ArrowUpRight size={17} />
                   </span>
-                </div>
+                </QuizCoverArt>
                 <div className="shelf-quiz-copy">
                   <div className="shelf-quiz-meta">
                     <span className="shelf-type-tag">
