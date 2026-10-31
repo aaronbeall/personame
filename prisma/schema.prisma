@@ -188,6 +188,7 @@ model ArchetypeDimension {
 
 // Quiz Pages
 model QuizPage {
+  presentation Json @default("{}") // Layout and visible content for cover, question and result pages
   id          String  @id @default(cuid())
   title       String?
   description String?
@@ -293,6 +294,7 @@ model QuizResult {
   archetypeId String?
   archetype   Archetype? @relation(fields: [archetypeId], references: [id], onDelete: SetNull)
   snapshot Json?
+  modelKey String? // Immutable scoring-model cohort for aggregate comparisons
   submissionKey String? @unique
 
   answers      UserAnswer[]
@@ -300,6 +302,7 @@ model QuizResult {
 
   completedAt DateTime @default(now())
 
+  @@index([personaId, modelKey])
   @@index([personaId])
   @@index([userId])
   @@index([archetypeId])
@@ -327,6 +330,7 @@ model UserAnswer {
 
 // Final dimension scores for a result
 model DimensionScore {
+  dimensionId String? // Historical identifier, deliberately not a cascading relation
   id    String @id @default(cuid())
   score Float // Final calculated score (0-100)
 

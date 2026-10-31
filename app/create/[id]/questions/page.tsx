@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useProtectedPage } from '@/hooks/use-protected-page'
 import { Button } from '@/components/ui/button'
+import { StudioPreview } from '@/components/studio-preview'
 import { Card } from '@/components/ui/card'
 import {
   ArrowRight,
@@ -33,7 +34,7 @@ import { PageNavigator } from './page-navigator'
 import { PagePreview } from './page-preview'
 import { PageOptionsPanel } from './page-options-panel'
 import { QuestionOptionsPanel } from './question-options-panel'
-import { DimensionsArchetypesSummary } from './dimensions-archetypes-summary'
+
 import { createDefaultAnswers } from './question-defaults'
 import { withQuizBookends } from '@/lib/quiz-page-defaults'
 
@@ -55,6 +56,8 @@ export default function QuestionsPage({
   useProtectedPage()
   const { id } = use(params)
 
+  const [mobilePanel, setMobilePanel] = useState('canvas')
+  const [canvasSize, setCanvasSize] = useState('desktop')
   const [currentPageIndex, setCurrentPageIndex] = useState(0)
   const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(
     null,
@@ -103,6 +106,7 @@ export default function QuestionsPage({
       color: null,
       style,
       icon: null,
+      presentation: {},
       personaId: id,
       questions: [],
       createdAt: new Date(),
@@ -116,7 +120,7 @@ export default function QuestionsPage({
   const dirty = draft.dirty
 
   const savePagesMutation = useMutation({
-    mutationFn: async (pagesToSave: QuizPageWithQuestions[]) => {
+    mutationFn: async ({ pages: pagesToSave }: {pages: QuizPageWithQuestions[]; advance: boolean}) => {
       const res = await fetch(`/api/personames/${id}/questions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -129,14 +133,14 @@ export default function QuestionsPage({
 
       return res.json()
     },
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
       draft.accept(data)
       queryClient.setQueryData(['questions', id], data)
       queryClient.invalidateQueries({ queryKey: ['review', id] })
       queryClient.invalidateQueries({ queryKey: ['progress', id] })
       queryClient.invalidateQueries({ queryKey: ['personal'] })
       queryClient.invalidateQueries({ queryKey: ['discover'] })
-      router.push(`/create/${id}/preview`)
+      if (variables.advance) router.push(`/create/${id}/preview`)
     },
   })
 
@@ -151,6 +155,7 @@ export default function QuestionsPage({
       color: null,
       style: null,
       icon: null,
+      presentation: {},
       personaId: id,
       questions: [],
       createdAt: new Date(),
@@ -309,7 +314,7 @@ export default function QuestionsPage({
 
   const handleSave = () => {
     if (pages.length < 2) return
-    savePagesMutation.mutate(pages)
+    savePagesMutation.mutate({pages, advance: true})
   }
 
   const currentPage = pages[currentPageIndex]
@@ -334,8 +339,8 @@ export default function QuestionsPage({
     )
 
   return (
-    <AppLayoutBackground>
-      <div className="max-w-7xl mx-auto">
+    <AppLayoutBackground className="quiz-studio">
+      <div className="studio-shell">
         <StepProgress
           title="Build your quiz"
           description="Bring your idea to life with questions. Choose a page, then add and fine-tune its questions."
@@ -350,26 +355,23 @@ export default function QuestionsPage({
           }
         />
 
-        {/* Summary of dimensions and archetypes */}
-        <DimensionsArchetypesSummary
-          dimensions={dimensionsQuery.data || []}
-          archetypes={archetypesQuery.data || []}
-        />
-
-        <div className="question-editor-grid grid grid-cols-1 xl:grid-cols-12 gap-5 mb-6">
+        <header className="studio-toolbar"><div><span className="quiz-kicker">YOUR CREATIVE WORKSPACE</span><p role="status">{savePagesMutation.isPending ? 'Saving…' : dirty ? 'Unsaved changes' : 'All changes saved'}</p></div><div className="studio-toolbar-actions"><StudioPreview id={id} dirty={dirty || savePagesMutation.isPending} /><Button variant="outline" onClick={() => savePagesMutation.mutate({pages, advance: false})} disabled={savePagesMutation.isPending || !dirty}>Save changes</Button></div></header>
+        <nav className="studio-mobile-nav" aria-label="Studio panels">{['outline','canvas','settings'].map(panel => <button key={panel} aria-pressed={mobilePanel === panel} onClick={() => setMobilePanel(panel)}>{panel}</button>)}</nav>
+        <div className="studio-grid" data-panel={mobilePanel}>
           {/* Page Navigator - Left sidebar */}
-          <div className="xl:col-span-2">
+          <div className="studio-outline">
             <PageNavigator
               pages={pages}
               currentPageIndex={currentPageIndex}
-              onSelectPage={setCurrentPageIndex}
+              onSelectPage={index => { setCurrentPageIndex(index); setSelectedQuestionId(null); setMobilePanel('canvas') }}
+              onSelectQuestion={(index, qid) => { setCurrentPageIndex(index); setSelectedQuestionId(qid); setMobilePanel('settings') }}
               onAddPage={handleAddPage}
             />
           </div>
 
           {/* Page Preview - Center */}
-          <div className="xl:col-span-6">
-            <Card className="question-preview-panel p-6">
+          <div className="studio-canvas" data-size={canvasSize}>
+            <Card className="question-preview-panel studio-canvas-card">
               <div className="mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Button
@@ -378,6 +380,7 @@ export default function QuestionsPage({
                     onClick={() =>
                       setCurrentPageIndex(Math.max(0, currentPageIndex - 1))
                     }
+                    aria-label="Previous page"
                     disabled={currentPageIndex === 0}
                   >
                     <ChevronLeft className="h-4 w-4" />
@@ -393,6 +396,7 @@ export default function QuestionsPage({
                         Math.min(pages.length - 1, currentPageIndex + 1),
                       )
                     }
+                    aria-label="Next page"
                     disabled={currentPageIndex === pages.length - 1}
                   >
                     <ChevronRight className="h-4 w-4" />
@@ -411,23 +415,14 @@ export default function QuestionsPage({
                 )}
               </div>
 
-              {/* Progress bar */}
-              <div className="mb-6">
-                <div className="h-2 bg-muted-200 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-primary to-secondary transition-all"
-                    style={{
-                      width: `${((currentPageIndex + 1) / pages.length) * 100}%`,
-                    }}
-                  />
-                </div>
-              </div>
-
+              <div className="studio-canvas-tools"><span>Editing {currentPage?.style === 'cover' ? 'cover' : currentPage?.style === 'results' ? 'results' : 'question page'}</span><div aria-label="Canvas width">{['desktop','mobile'].map(size => <button key={size} aria-pressed={canvasSize === size} onClick={() => setCanvasSize(size)}>{size}</button>)}</div></div>
               {currentPage && (
                 <PagePreview
                   page={currentPage}
+                  questionCount={pages.flatMap(p => p.questions).length}
+                  sampleArchetype={archetypesQuery.data?.[0]}
                   selectedQuestionId={selectedQuestionId}
-                  onSelectQuestion={setSelectedQuestionId}
+                  onSelectQuestion={qid => { setSelectedQuestionId(qid); setMobilePanel('settings') }}
                   onUpdateQuestion={handleUpdateQuestion}
                   onDeleteQuestion={handleDeleteQuestion}
                   onAddQuestion={handleAddQuestion}
@@ -438,7 +433,7 @@ export default function QuestionsPage({
           </div>
 
           {/* Options Panel - Right sidebar */}
-          <div className="question-inspector xl:col-span-4">
+          <div className="question-inspector studio-inspector">
             {selectedQuestion ? (
               <QuestionOptionsPanel
                 question={selectedQuestion}

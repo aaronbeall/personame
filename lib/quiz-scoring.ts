@@ -1,3 +1,5 @@
+import { scoringModelKey } from './scoring-model-key'
+import { pagePresentation, type PagePresentation } from './quiz-presentation'
 import { questionInfluence } from './question-influence'
 import type { FullQuiz } from './personas'
 import {
@@ -28,6 +30,10 @@ export type ResultSnapshot = {
     minLabel: string | null
     maxLabel: string | null
   }[]
+  quizColor?: string | null
+  quizEmoji?: string | null
+  modelKey?: string
+  resultPage?: { title: string | null; description: string | null; color: string | null; presentation: PagePresentation }
   matchScore: number
   scoringVersion?: number
   matchMargin?: number | null
@@ -92,6 +98,10 @@ export function scoreQuiz(quiz: FullQuiz, responses: QuizResponses) {
   const archetype = quiz.archetypes.find((a) => a.id === match.archetypeId)!
   const snapshot: ResultSnapshot = {
     quizTitle: quiz.title,
+    quizColor: quiz.color,
+    quizEmoji: quiz.emoji,
+    modelKey: scoringModelKey(quiz),
+    resultPage: (() => { const page = quiz.pages.find(p => p.style === 'results'); return { title: page?.title ?? null, description: page?.description ?? null, color: page?.color ?? null, presentation: pagePresentation(page?.presentation) } })(),
     slug: quiz.slug,
     archetype: {
       name: archetype.name,

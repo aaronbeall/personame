@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from '@/components/providers'
-import { AppHeader } from '@/components/app-header'
-import { AppFooter } from "@/components/app-footer";
+import { AppChrome } from '@/components/app-chrome'
 
 const inter = Inter({
   subsets: ["latin"],
@@ -23,9 +22,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
         <Providers>
-          <AppHeader />
-          {children}
-          <AppFooter />
+          <AppChrome>{children}</AppChrome>
         </Providers>
       </body>
     </html>

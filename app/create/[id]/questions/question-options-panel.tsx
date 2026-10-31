@@ -231,7 +231,7 @@ export function QuestionOptionsPanel({
               <DimensionTag name={d.name} emoji={d.emoji} color={d.color} />
             </button>{active && <label className="question-dimension-influence"><Input type="number" aria-label={`${d.name} influence`} min={0.1} max={100} step={0.1} value={questionInfluence(question, d.id)} onChange={event => { const value = event.target.valueAsNumber; if (Number.isFinite(value) && value > 0 && value <= 100) onUpdate({ ...question, dimensionInfluences: { ...questionInfluences(question), [d.id]: value } }) }} /><span aria-hidden="true">×</span></label>}</div>
           })}</div>
-          <p>Influence is per dimension. 2× counts twice as much as 1× for that dimension.</p>
+          <p>Influence controls how much this question affects the score. 2× counts twice as much as 1×.</p>
         </fieldset>
 
         {question.type === 'MULTIPLE_CHOICE' && (

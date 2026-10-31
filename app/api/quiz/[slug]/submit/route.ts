@@ -62,11 +62,13 @@ export async function POST(
             personaId: quiz.id,
             userId,
             archetypeId: scored.archetypeId,
+            modelKey: scored.snapshot.modelKey,
             submissionKey: body.submissionKey,
             snapshot: JSON.parse(JSON.stringify(scored.snapshot)),
             answers: { create: scored.answers },
             dimensionScores: {
               create: scored.scores.filter(s => s.evidenceCount !== 0).map((s) => ({
+                dimensionId: s.dimensionId,
                 dimensionName: s.dimensionName,
                 score: s.score
               }))

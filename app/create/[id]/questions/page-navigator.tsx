@@ -3,13 +3,14 @@ import { cn } from '@/lib/utils'
 import { Plus, FileText, Home, Trophy } from 'lucide-react'
 
 interface PageNavigatorProps {
-  pages: QuizPage[]
+  pages: (QuizPage & {questions?: {id:string;text:string}[]})[]
   currentPageIndex: number
   onSelectPage: (index: number) => void
   onAddPage: () => void
+  onSelectQuestion?: (pageIndex:number, questionId:string) => void
 }
 
-export function PageNavigator({ pages, currentPageIndex, onSelectPage, onAddPage }: PageNavigatorProps) {
+export function PageNavigator({ pages, currentPageIndex, onSelectPage, onAddPage, onSelectQuestion }: PageNavigatorProps) {
   // Split pages into cover, content, and results
   const coverPage = pages.find(p => p.style === 'cover')
   const resultsPage = pages.find(p => p.style === 'results')
@@ -59,8 +60,8 @@ export function PageNavigator({ pages, currentPageIndex, onSelectPage, onAddPage
         const isActive = index === currentPageIndex
 
         return (
-          <button
-            key={page.id}
+          <div key={page.id}><button
+            aria-current={isActive ? 'page' : undefined}
             onClick={() => onSelectPage(index)}
             className={cn(
               "w-full text-left p-3 rounded-lg border-2 transition-all",
@@ -84,11 +85,11 @@ export function PageNavigator({ pages, currentPageIndex, onSelectPage, onAddPage
                   {page.title || 'Untitled'}
                 </div>
                 <div className="text-xs text-muted-500 truncate">
-                  Question page
+                  {page.questions?.length || 0} questions{page.hidden ? ' · Hidden' : ''}
                 </div>
               </div>
             </div>
-          </button>
+          </button>{isActive && page.questions?.length ? <ol className="studio-outline-questions">{page.questions.map((question,index)=><li key={question.id}><button onClick={()=>onSelectQuestion?.(pages.indexOf(page),question.id)}><span>{index+1}</span>{question.text || 'Untitled question'}</button></li>)}</ol> : null}</div>
         )
       })}
 

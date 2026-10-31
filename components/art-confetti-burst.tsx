@@ -20,16 +20,18 @@ export function preloadArtConfetti() {
 export function ArtConfettiBurst({
   anchorRef,
   onComplete,
+  fullscreen = false,
 }: {
   anchorRef: RefObject<HTMLElement | null>
   onComplete: () => void
+  fullscreen?: boolean
 }) {
   const canvas = useRef<HTMLCanvasElement>(null)
   useEffect(() => {
     const anchor = anchorRef.current
     const node = canvas.current
     const context = node?.getContext('2d')
-    if (!node || !context || !anchor) {
+    if (!node || !context || (!anchor && !fullscreen)) {
       onComplete()
       return
     }
@@ -50,17 +52,19 @@ export function ArtConfettiBurst({
         finish()
         return
       }
-      const rect = anchor.getBoundingClientRect()
+      const rect = anchor?.getBoundingClientRect() ?? { width: window.innerWidth, height: 0, left: 0, top: 0 }
       node.style.width = `${rect.width + 420}px`
       node.style.left = `${rect.left - 210}px`
       node.style.top = `${rect.top + rect.height / 2 - 130}px`
-      const width = node.clientWidth
-      const height = node.clientHeight
+      let width = node.clientWidth
+      let height = node.clientHeight
       const ratio = Math.min(window.devicePixelRatio || 1, 2)
       node.width = Math.round(width * ratio)
       node.height = Math.round(height * ratio)
       context.scale(ratio, ratio)
-      const particles = createArtParticles(rect.width)
+      if (fullscreen) { node.style.width = '100vw'; node.style.height = '100vh'; node.style.left = '0'; node.style.top = '0'; node.width = Math.round(window.innerWidth * ratio); node.height = Math.round(window.innerHeight * ratio); context.scale(ratio, ratio) }
+      const particles = fullscreen ? Array.from({length: 7}, () => createArtParticles(window.innerWidth)).flat().map(p => ({ ...p, x: (Math.random() - .5) * window.innerWidth, y: -200 - Math.random() * 300, vy: 20 + Math.random() * 100, life: 3.8, size: p.size * .8 })) : createArtParticles(rect.width)
+      if (fullscreen) { width = window.innerWidth; height = window.innerHeight }
       const cellWidth = image.naturalWidth / 3
       const cellHeight = image.naturalHeight / 3
       const start = performance.now()
@@ -68,7 +72,7 @@ export function ArtConfettiBurst({
       let accumulator = 0
       const animate = (now: number) => {
         if (disposed) return
-        if (now - start > 2300 || preference.matches) {
+        if (now - start > (fullscreen ? 4200 : 2300) || preference.matches) {
           finish()
           return
         }
@@ -129,9 +133,9 @@ export function ArtConfettiBurst({
       image.removeEventListener('error', finish)
       preference.removeEventListener('change', reduceMotion)
     }
-  }, [anchorRef, onComplete])
+  }, [anchorRef, onComplete, fullscreen])
   return createPortal(
-    <canvas ref={canvas} className="art-confetti" aria-hidden="true" />,
+    <canvas ref={canvas} className={`art-confetti ${fullscreen ? 'art-confetti-screen' : ''}`} aria-hidden="true" />,
     document.body,
   )
 }

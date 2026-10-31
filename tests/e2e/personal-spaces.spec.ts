@@ -273,13 +273,11 @@ test('Still exploring lists started quizzes, resumes saved answers, and clears f
   expect(
     (await page.request.post(`/api/personames/${id}/publish`)).ok(),
   ).toBeTruthy()
-  const header = page.locator('header').first()
   await page.goto(`/quiz/${slug}`)
   await page.getByRole('button', { name: 'Let’s find out' }).click()
   await page.getByRole('group').first().getByRole('button').last().click()
-  await header
-    .getByRole('link', { name: 'Your many selves', exact: true })
-    .click()
+  // The focused participant header intentionally omits application navigation.
+  await page.goto('/selves')
   await page.getByRole('tab', { name: /^Discovered/ }).focus()
   await page.keyboard.press('End')
   const exploring = page.getByRole('tabpanel', { name: /^Still exploring/ })
@@ -306,9 +304,8 @@ test('Still exploring lists started quizzes, resumes saved answers, and clears f
   await groups.nth(4).getByRole('button').last().click()
   await page.getByRole('button', { name: 'See my results' }).click()
   await expect(page).toHaveURL(/\/results\//)
-  await header
-    .getByRole('link', { name: 'Your many selves', exact: true })
-    .click()
+  // The focused participant header intentionally omits application navigation.
+  await page.goto('/selves')
   await expect(
     page.getByRole('tabpanel', { name: /^Discovered/ }).getByRole('article'),
   ).toHaveCount(1)

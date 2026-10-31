@@ -11,9 +11,11 @@ import { PageIntro } from './page-intro'
 export function StepProgress({
   title,
   description,
+  compact = false,
 }: {
   title: string
   description: string
+  compact?: boolean
 }) {
   const path = usePathname()
   const id = path.split('/')[2]
@@ -30,7 +32,7 @@ export function StepProgress({
     ['name', 'Name', 'creation'],
     ['dimensions', 'Dimensions', 'science'],
     ['archetypes', 'Archetypes', 'islands'],
-    ['questions', 'Questions', 'creation'],
+    ['questions', 'Questions', 'pirate-ship'],
     ['preview', 'Review & publish', 'galaxy-expansion'],
   ]
   const active = Math.max(
@@ -97,11 +99,11 @@ export function StepProgress({
           )
         })}
       </nav>
-      <PageIntro
+      {!compact && <PageIntro
         title={title}
         description={description}
         art={stages[active][2]}
-      />
+      />}
     </>
   )
 }

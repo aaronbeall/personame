@@ -11,8 +11,10 @@ export type PlayerQuestion = {
 export function QuestionInput({
   question: q,
   value,
-  onChange
+  onChange,
+  disabled = false,
 }: {
+  disabled?: boolean
   question: PlayerQuestion
   value?: ResponseValue
   onChange: (value: ResponseValue) => void
@@ -30,6 +32,7 @@ export function QuestionInput({
           </span>
         </div>
         <input
+          disabled={disabled}
           aria-label={q.text}
           type="range"
           min={0}
@@ -40,7 +43,7 @@ export function QuestionInput({
         <div className="range-value">
           <output>{value?.value ?? 50}</output>
           {!value && (
-            <button type="button" onClick={() => onChange({ value: 50 })}>
+            <button type="button" disabled={disabled} onClick={() => onChange({ value: 50 })}>
               Use midpoint
             </button>
           )}
@@ -56,6 +59,7 @@ export function QuestionInput({
       {answers.map((a) => (
         <button
           type="button"
+          disabled={disabled}
           aria-pressed={value?.answerId === a.id}
           key={a.id}
           onClick={() => onChange({ answerId: a.id })}

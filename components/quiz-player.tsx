@@ -1,4 +1,5 @@
 'use client'
+import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
@@ -6,8 +7,8 @@ import { saveProgress, removeProgress } from '@/lib/participant-progress'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, ArrowRight, Sparkles } from 'lucide-react'
 import { Button } from './ui/button'
-import { QuizCoverMark } from './quiz-cover-mark'
-import { PageIntro } from './page-intro'
+import { QuizCover } from './quiz-cover'
+import { pagePresentation, quizThemeStyle } from '@/lib/quiz-presentation'
 import { QuestionInput } from './question-input'
 import { ResultView } from './result-view'
 import { requestJson, responseId } from '@/lib/client-api'
@@ -60,13 +61,15 @@ export function QuizPlayer({
       } catch {}
   }
   useEffect(() => {
-    if (pageIndex > 0)
+    if (pageIndex > 0) {
+      root.current?.focus({preventScroll:true})
       root.current?.scrollIntoView({
         block: 'start',
         behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
           ? 'auto'
           : 'smooth',
       })
+    }
   }, [pageIndex])
   const page = pages[pageIndex]
   const allQuestions = pages.flatMap((p) =>
@@ -168,34 +171,22 @@ export function QuizPlayer({
   return (
     <div
       className={`quiz-player page-style-${page.style || 'default'}`}
+      data-layout={pagePresentation(page.presentation).layout}
+      style={quizThemeStyle(page.color || quiz.color)}
       ref={root}
+      tabIndex={-1}
     >
       {preview && (
         <p className="preview-label">
           Participant preview — answers here are not saved
         </p>
       )}
-      <PageIntro
-        identity={
-          <QuizCoverMark emoji={quiz.emoji} color={quiz.color} size="sm" />
-        }
-        title={page.style === 'cover' ? page.title || quiz.title : quiz.title}
-        description={
-          page.style === 'cover'
-            ? page.description ||
-              quiz.description ||
-              'Discover a different side of yourself.'
-            : page.description || 'Go with what feels most like you.'
-        }
-        art={page.style === 'cover' ? 'islands' : 'science'}
-        eyebrow={
-          page.style === 'cover'
-            ? quiz.title
-            : `${answered} of ${allQuestions.length} answered`
-        }
-      />
+      {page.style === 'cover' && <QuizCover title={page.title || quiz.title} description={page.description || quiz.description} quizTitle={quiz.title} emoji={page.emoji || quiz.emoji} color={page.color || quiz.color} presentation={page.presentation} questionCount={allQuestions.length} action={<Button className="quiz-themed-button" onClick={next} disabled={!submissionKey}>{pagePresentation(page.presentation).startLabel}<ArrowRight size={16} /></Button>} />}
+      {page.style === 'cover' && answered > 0 && <p className="quiz-resume" role="status">Your {answered} saved answers are here. Continue to pick up where you left off.</p>}
       {page.style !== 'cover' && (
         <>
+          {pagePresentation(page.presentation).artwork !== 'none' && <div className="player-page-art" aria-hidden="true"><Image src={`/images/decor/${pagePresentation(page.presentation).artwork}.webp`} alt="" fill sizes="900px" /></div>}
+          <header className="player-progress-heading"><strong>{quiz.title}</strong><span role="status">{answered} / {allQuestions.length} answered</span></header>
           <progress
             className="quiz-progress"
             value={answered}
@@ -207,10 +198,13 @@ export function QuizPlayer({
               {page.emoji} {page.title}
             </h2>
           )}
-          <div className="question-list">
+          {pagePresentation(page.presentation).showDescription && page.description && <p className="player-page-description">{page.description}</p>}
+          <div className="question-list" key={page.id} data-layout={pagePresentation(page.presentation).layout}>
             {page.questions.map((q) => (
               <section
                 className="surface player-question"
+                data-answered={!!responses[q.id]}
+                aria-describedby={error && q.required && !responses[q.id] ? `error-${q.id}` : undefined}
                 key={q.id}
                 id={`question-${q.id}`}
                 tabIndex={-1}
@@ -218,13 +212,15 @@ export function QuizPlayer({
                 <p className="eyebrow">
                   Question{' '}
                   {allQuestions.findIndex((item) => item.id === q.id) + 1}
-                  {!q.required ? ' — optional' : ''}
+                  {!q.required ? ' — optional' : ''}{responses[q.id] && <span className="question-answered">✓ Answered</span>}
                 </p>
                 <h3>
                   {q.emoji} {q.text}
                 </h3>
+                {error && q.required && !responses[q.id] && <p id={`error-${q.id}`} className="question-required-error">Choose an answer to continue.</p>}
                 <QuestionInput
                   question={q}
+                  disabled={busy}
                   value={responses[q.id]}
                   onChange={(value) => update({ ...responses, [q.id]: value })}
                 />
@@ -238,7 +234,7 @@ export function QuizPlayer({
           {error}
         </div>
       )}
-      <div className="quiz-navigation">
+      {page.style !== 'cover' && <div className="quiz-navigation">
         {pageIndex > 0 ? (
           <Button
             disabled={busy}
@@ -257,7 +253,7 @@ export function QuizPlayer({
         <span className="muted">
           {pageIndex + 1} / {pages.length}
         </span>
-        <Button onClick={next} loading={busy} disabled={busy || !submissionKey}>
+        <Button className="quiz-themed-button" onClick={next} loading={busy} disabled={busy || !submissionKey}>
           {busy
             ? 'Finding your match…'
             : page.style === 'cover'
@@ -271,7 +267,7 @@ export function QuizPlayer({
             <ArrowRight size={16} />
           )}
         </Button>
-      </div>
+      </div>}
     </div>
   )
 }

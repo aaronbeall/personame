@@ -1,10 +1,14 @@
 'use client'
+import { QuizCover } from '@/components/quiz-cover'
+import { ResultHero } from '@/components/result-hero'
+import { pagePresentation } from '@/lib/quiz-presentation'
+import type { Archetype } from '@prisma/client'
+
 
 import { QuizPage, Question, Answer, AnswerWeight } from '@prisma/client'
 import { cn } from '@/lib/utils'
 import {
   Trash2,
-  GripVertical,
   CheckSquare,
   Sliders,
   BarChart3,
@@ -16,6 +20,8 @@ import { QuestionInput } from '@/components/question-input'
 import type { QuizResponses } from '@/lib/quiz-scoring'
 
 interface PagePreviewProps {
+  questionCount?: number
+  sampleArchetype?: Archetype
   page: QuizPage & {
     questions: (Question & {
       answers: (Answer & {
@@ -40,6 +46,7 @@ export function PagePreview({
   onDeleteQuestion,
   onAddQuestion,
   onAddQuestionOfType,
+  questionCount = 0, sampleArchetype,
 }: PagePreviewProps) {
   const isCover = page.style === 'cover'
   const isResults = page.style === 'results'
@@ -57,57 +64,8 @@ export function PagePreview({
     })
   }
 
-  if (isCover) {
-    return (
-      <>
-        {dialog}
-        <div className="question-special-preview min-h-125 flex flex-col items-center justify-center text-center p-12 bg-linear-to-br from-primary-50 to-secondary-50 rounded-xl border-2 border-primary-200">
-          {page.emoji && <div className="text-6xl mb-4">{page.emoji}</div>}
-          <h1 className="text-4xl font-bold mb-4 text-primary-900">
-            {page.title || 'Welcome'}
-          </h1>
-          {page.description && (
-            <p className="text-lg text-muted-600 max-w-md">
-              {page.description}
-            </p>
-          )}
-          <div className="mt-8">
-            <div className="px-8 py-3 bg-linear-to-r from-primary to-secondary text-white rounded-lg font-medium">
-              Start Quiz
-            </div>
-          </div>
-        </div>
-      </>
-    )
-  }
-
-  if (isResults) {
-    return (
-      <>
-        {dialog}
-        <div className="question-special-preview min-h-125 flex flex-col items-center justify-center text-center p-12 bg-linear-to-br from-secondary-50 to-primary-50 rounded-xl border-2 border-secondary-200">
-          <div className="text-6xl mb-4">🎭</div>
-          <h1 className="text-4xl font-bold mb-4 text-primary-900">
-            {page.title || 'Your Results'}
-          </h1>
-          {page.description && (
-            <p className="text-lg text-muted-600 max-w-md mb-6">
-              {page.description}
-            </p>
-          )}
-          <div className="w-full max-w-md space-y-4">
-            <div className="p-6 bg-white rounded-xl border-2 border-primary-200">
-              <div className="text-3xl mb-2">🎭</div>
-              <div className="font-bold text-xl mb-1">Your Archetype</div>
-              <div className="text-sm text-muted-600">
-                Based on your responses
-              </div>
-            </div>
-          </div>
-        </div>
-      </>
-    )
-  }
+  if (isCover) return <QuizCover title={page.title || 'Welcome'} description={page.description} emoji={page.emoji} color={page.color} presentation={page.presentation} questionCount={questionCount} action={<span className="quiz-themed-button">{pagePresentation(page.presentation).startLabel} →</span>} />
+  if (isResults) return <div className="studio-result-preview"><h2>{page.title || 'Your Results'}</h2><ResultHero title={page.title} name={sampleArchetype?.name || 'Your Archetype'} description={page.description} emoji={sampleArchetype?.emoji} color={page.color || sampleArchetype?.color} presentation={page.presentation} preview /><p className="studio-setting-note">The matched archetype’s artwork and description appear here. Participant comparisons use real results once enough people complete the quiz.</p></div>
 
   return (
     <>
@@ -191,7 +149,7 @@ export function PagePreview({
                   <div className="flex items-start justify-between mb-4 pb-4 border-b border-muted-200">
                     <div className="flex items-start gap-3 flex-1">
                       <div className="shrink-0 text-muted-400 pt-1">
-                        <GripVertical className="h-4 w-4" />
+                        <span className="text-xs">{question.order + 1}</span>
                       </div>
                       <div className="flex items-center gap-2 min-w-0">
                         {question.emoji && (
@@ -200,7 +158,7 @@ export function PagePreview({
                           </span>
                         )}
                         <h3 className="font-semibold text-primary-900 line-clamp-2">
-                          {question.text || '(Untitled question)'}
+                          <button type="button" className="text-left" onClick={() => onSelectQuestion(question.id)} title="Edit question">{question.text || '(Untitled question)'}</button>
                         </h3>
                       </div>
                     </div>
@@ -211,6 +169,7 @@ export function PagePreview({
                         e.stopPropagation()
                         handleDeleteQuestion(question.id, question.text)
                       }}
+                      aria-label={`Delete question: ${question.text}`}
                       className="text-red-500 hover:text-red-700 hover:bg-red-50 shrink-0 ml-2"
                     >
                       <Trash2 className="h-4 w-4" />

@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { pagePresentationSchema } from './quiz-presentation'
 import { storedColorSchema } from './colors'
 import { DimensionDisplayScale } from '@prisma/client'
 const text = z.string().trim().min(1).max(1000)
@@ -76,6 +77,7 @@ export const pagesInput = z.object({
       z.object({
         ...meta,
         title: z.string().nullish(),
+        presentation: pagePresentationSchema.optional(),
         description: z.string().nullish(),
         order: z.number().int(),
         hidden: z.boolean().default(false),

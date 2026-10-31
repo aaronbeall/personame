@@ -98,6 +98,8 @@ export function publicQuiz(quiz: ParticipantQuiz) {
         description: p.description,
         emoji: p.emoji,
         style: p.style,
+        color: p.color,
+        presentation: p.presentation,
         order: p.order,
         questions: p.questions.map((q) => ({
           id: q.id,

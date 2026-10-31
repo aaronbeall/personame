@@ -3,9 +3,10 @@ import { LoadingState } from '@/components/ui/loading'
 import { use } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
-import { AppLayoutBackground } from '@/components/app-layout-background'
+
 import { ResultView } from '@/components/result-view'
 import { requestJson } from '@/lib/client-api'
+import type { ResultComparison } from '@/lib/result-comparison'
 import type { ResultSnapshot } from '@/lib/quiz-scoring'
 export default function ResultsPage({
   params,
@@ -16,13 +17,13 @@ export default function ResultsPage({
   const query = useQuery({
     queryKey: ['result', resultId],
     queryFn: () =>
-      requestJson<{ snapshot: ResultSnapshot }>(
+      requestJson<{ snapshot: ResultSnapshot; comparison: ResultComparison }>(
         `/api/quiz/${slug}/results/${resultId}`,
       ),
     retry: false,
   })
   return (
-    <AppLayoutBackground>
+    <main className="participant-main">
       <div className="max-w-3xl mx-auto">
         {query.isPending ? (
           <LoadingState variant="result" label="Opening your result…" />
@@ -34,9 +35,9 @@ export default function ResultsPage({
             </Link>
           </div>
         ) : (
-          <ResultView result={query.data.snapshot} />
+          <ResultView result={query.data.snapshot} comparison={query.data.comparison} />
         )}
       </div>
-    </AppLayoutBackground>
+    </main>
   )
 }

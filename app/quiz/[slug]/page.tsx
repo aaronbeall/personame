@@ -4,7 +4,7 @@ import { use } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
 import { QuizPlayer } from '@/components/quiz-player'
-import { AppLayoutBackground } from '@/components/app-layout-background'
+
 import { requestJson } from '@/lib/client-api'
 import type { publicQuiz } from '@/lib/personas'
 export default function QuizPage({
@@ -20,7 +20,7 @@ export default function QuizPage({
     retry: false,
   })
   return (
-    <AppLayoutBackground>
+    <main className="participant-main">
       <div className="max-w-3xl mx-auto">
         {query.isPending ? (
           <LoadingState variant="quiz" label="Getting your quiz ready…" />
@@ -36,6 +36,6 @@ export default function QuizPage({
           <QuizPlayer quiz={query.data} />
         )}
       </div>
-    </AppLayoutBackground>
+    </main>
   )
 }

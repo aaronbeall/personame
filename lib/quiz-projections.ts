@@ -22,7 +22,7 @@ export type ReadinessQuiz = Prisma.PersonaGetPayload<{ select: typeof readinessS
 export const participantSelect = {
   id: true, title: true, slug: true, description: true, emoji: true, color: true, updatedAt: true,
   pages: { where: { hidden: false }, orderBy: { order: 'asc' }, select: {
-    id: true, title: true, description: true, hidden: true, emoji: true, style: true, order: true,
+    id: true, title: true, description: true, hidden: true, emoji: true, color: true, presentation: true, style: true, order: true,
     questions: { orderBy: { order: 'asc' }, select: {
       id: true, text: true, type: true, required: true, emoji: true,
       answers: { orderBy: { order: 'asc' }, select: { id: true, text: true, emoji: true } },

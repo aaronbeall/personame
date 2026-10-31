@@ -7,6 +7,7 @@ import { useProtectedPage } from '@/hooks/use-protected-page'
 import { AppLayoutBackground } from '@/components/app-layout-background'
 import { StepProgress } from '@/components/step-progress'
 import { QuizPreviewDialog } from '@/components/quiz-preview-dialog'
+import { PublishCelebration } from '@/components/publish-celebration'
 import { PublishWorkspace } from '@/components/publish-workspace'
 import { UrlTabs } from '@/components/ui/url-tabs'
 import { useUrlTab } from '@/hooks/use-url-tab'
@@ -33,6 +34,7 @@ export default function ReviewPage({ params }: { params: Promise<{ id: string }>
   const cache = useQueryClient()
   const query = useQuery({ queryKey: ['review', id], queryFn: () => requestJson<ReviewQuiz>(`/api/personames/${id}`), enabled: status === 'authenticated', retry: false })
   const { tab, setTab, hrefFor } = useUrlTab(REVIEW_TABS, 'review')
+  const [celebrating, setCelebrating] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
@@ -45,6 +47,7 @@ export default function ReviewPage({ params }: { params: Promise<{ id: string }>
       if (action === 'publish') await requestJson(`/api/personames/${id}/publish`, { method: 'POST' })
       else await requestJson(`/api/personames/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'CLOSED' }) })
       await refresh()
+      if (action === 'publish' && quiz?.status === 'DRAFT') setCelebrating(true)
     } catch (e) { setError(e instanceof Error ? e.message : 'Unable to update your quiz.') }
     finally { setBusy(false) }
   }
@@ -55,6 +58,7 @@ export default function ReviewPage({ params }: { params: Promise<{ id: string }>
   const publishDescription = { live: 'Live · accepting responses', closed: 'Closed · not accepting responses', ready: 'Ready to publish', incomplete: 'Finish the publishing checklist first' }[publishState]
   const playerQuiz = { id: quiz.id, title: quiz.title, description: quiz.description, slug: quiz.slug, emoji: quiz.emoji, color: quiz.color, revision: new Date(quiz.updatedAt).toISOString(), pages: quiz.pages.filter(p => !p.hidden) } satisfies ReturnType<typeof publicQuiz>
   return <AppLayoutBackground><div className="review-page">
+    <PublishCelebration key={celebrating ? 'celebrating' : 'idle'} open={celebrating} onOpenChange={setCelebrating} title={quiz.title} slug={quiz.slug} emoji={quiz.emoji} color={quiz.color} />
     <StepProgress title="Review & publish" description="Check your quiz, explore your model, and share it with your people." />
     {error && <div role="alert" className="notice error">{error}</div>}
     <UrlTabs id="review-workspace" label="Quiz workspace" value={tab} onValueChange={value => { void setTab(value) }} items={[

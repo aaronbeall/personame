@@ -1,3 +1,5 @@
+import { pagePresentation, type PagePresentation } from '@/lib/quiz-presentation'
+import { ColorPicker } from '@/components/ui/color-picker'
 import { QuizPage } from '@prisma/client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -14,17 +16,12 @@ interface PageOptionsPanelProps {
   onDelete?: () => void
 }
 
-const STYLE_PRESETS = [
-  { value: null, label: 'Default', description: 'Standard page layout' },
-  { value: 'minimal', label: 'Minimal', description: 'Clean and simple' },
-  { value: 'centered', label: 'Centered', description: 'Center-aligned content' },
-  { value: 'card', label: 'Card', description: 'Card-based layout' },
-]
-
 export function PageOptionsPanel({ page, onUpdate, onDelete }: PageOptionsPanelProps) {
   const isCover = page.style === 'cover'
   const isResults = page.style === 'results'
   const isSpecialPage = isCover || isResults
+  const presentation = pagePresentation(page.presentation)
+  const updatePresentation = (patch: Partial<PagePresentation>) => onUpdate({ ...page, presentation: { ...presentation, ...patch } })
   const { confirm, dialog } = useConfirmDialog()
 
   const handleDelete = () => {
@@ -91,27 +88,6 @@ export function PageOptionsPanel({ page, onUpdate, onDelete }: PageOptionsPanelP
 
           {!isSpecialPage && (
             <>
-              <div>
-                <label className="text-sm font-medium text-muted-700 mb-2 block">
-                  Style Preset
-                </label>
-                <div className="space-y-2">
-                  {STYLE_PRESETS.map((preset) => (
-                    <button
-                      key={preset.value || 'default'}
-                      onClick={() => onUpdate({ ...page, style: preset.value })}
-                      className={`w-full text-left p-3 rounded-lg border-2 transition-all ${page.style === preset.value
-                        ? 'border-primary-500 bg-primary-50'
-                        : 'border-muted-200 hover:border-primary-300'
-                        }`}
-                    >
-                      <div className="font-medium text-sm">{preset.label}</div>
-                      <div className="text-xs text-muted-500">{preset.description}</div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               <Checkbox
                 id="hidden"
                 label="Hide this page"
@@ -121,14 +97,21 @@ export function PageOptionsPanel({ page, onUpdate, onDelete }: PageOptionsPanelP
             </>
           )}
 
-          {isSpecialPage && (
-            <div className="p-3 bg-muted-50 rounded-lg border border-muted-200">
-              <p className="text-xs text-muted-600">
-                {isCover && 'This is the cover page that appears at the start of your quiz.'}
-                {isResults && 'This is the results page shown after completing the quiz.'}
-              </p>
-            </div>
-          )}
+          <section className="studio-presentation-settings" aria-label="Page appearance">
+            <h4>Look &amp; feel</h4>
+            <label>Layout<select aria-label={isCover ? 'Cover layout' : isResults ? 'Result layout' : 'Page layout'} value={presentation.layout} onChange={event => updatePresentation({ layout: event.target.value as PagePresentation['layout'] })}>
+              <option value="hero">Illustrated hero</option><option value="split">Split story</option><option value="card">Keepsake card</option><option value="minimal">Minimal</option>
+            </select></label>
+            <label>Artwork<select aria-label="Page artwork" value={presentation.artwork} onChange={event => updatePresentation({ artwork: event.target.value as PagePresentation['artwork'] })}><option value="islands">Floating islands</option><option value="party">Celebration</option><option value="science">Curious laboratory</option><option value="creation">Creative world</option><option value="none">No artwork</option></select></label>
+            <div><span className="studio-setting-label">Page palette</span><ColorPicker value={page.color || '#8b5cf6'} onSelect={color => onUpdate({ ...page, color })} /></div>
+            <h4>What to show</h4>
+            <label className="studio-check-setting"><input type="checkbox" checked={presentation.showDescription} onChange={e => updatePresentation({ showDescription: e.target.checked })} />Description</label>
+            {isCover && <><label>Start button<Input aria-label="Start button label" value={presentation.startLabel} maxLength={60} onChange={e => updatePresentation({ startLabel: e.target.value })} /></label>
+              <label className="studio-check-setting"><input type="checkbox" checked={presentation.showQuestionCount} onChange={e => updatePresentation({ showQuestionCount: e.target.checked })} />Question count</label>
+              <label className="studio-check-setting"><input type="checkbox" checked={presentation.showTimeEstimate} onChange={e => updatePresentation({ showTimeEstimate: e.target.checked })} />Estimated time</label></>}
+            {isResults && ([['showDimensions','Dimension landscape'],['showAlternatives','Other close archetypes'],['showComparison','Compare with other quiz takers'],['showRetake','Retake action'],['showShare','Share result action']] as const).map(([key,label]) => <label className="studio-check-setting" key={key}><input type="checkbox" checked={presentation[key]} onChange={e => updatePresentation({ [key]: e.target.checked })} />{label}</label>)}
+            {isResults && <p className="studio-setting-note">Comparisons use other completions of the same scoring model. They appear after 10 comparable results, without sharing individual answers.</p>}
+          </section>
         </CardContent>
       </Card>
     </>

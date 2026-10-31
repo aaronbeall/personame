@@ -8,17 +8,22 @@ import type { CSSProperties } from 'react'
 import { DimensionEndpointLabel } from './dimension-endpoint-label'
 import { EntityIcon } from './entity-icon'
 import { ArchetypeBadge, DimensionTag } from './entity-identity'
-import { PageIntro } from './page-intro'
+import { ResultHero } from './result-hero'
+import { pagePresentation } from '@/lib/quiz-presentation'
+import type { ResultComparison } from '@/lib/result-comparison'
 import type { ResultSnapshot } from '@/lib/quiz-scoring'
 export function ResultView({
   result,
   preview = false,
   onRetake,
+  comparison,
 }: {
   result: ResultSnapshot
   preview?: boolean
+  comparison?: ResultComparison
   onRetake?: () => void
 }) {
+  const settings = pagePresentation(result.resultPage?.presentation)
   const root = useRef<HTMLDivElement>(null)
   useEffect(() => {
     root.current?.scrollIntoView({
@@ -32,39 +37,16 @@ export function ResultView({
   const [error, setError] = useState('')
   return (
     <div className="result-view" ref={root}>
-      <PageIntro
-        title={result.archetype.name}
-        description={
-          result.archetype.description ||
-          'A little insight into what makes you, you.'
-        }
-        eyebrow={preview ? 'Your preview result — not saved' : result.quizTitle}
-        art="party"
-      />
-      <div className="result-summary surface">
-        <ArchetypeBadge
-          name={result.archetype.name}
-          emoji={result.archetype.emoji}
-          color={result.archetype.color}
-          size={88}
-          label={false}
-        />
-        <div>
-          <h2 className="entity-heading">
-            <EntityIcon kind="archetype" size={18} />
-            {result.alternatives?.some(a => a.tied) ? 'One of your closest archetypes' : 'Your closest archetype'}
-          </h2>
-          <p className="muted">
-            A reflection of your answers, not a diagnosis or a box to fit into.
-          </p>
-        </div>
-      </div>
-      {!!result.alternatives?.length && <section className="surface result-alternatives" aria-labelledby="result-alternatives-title">
+      <ResultHero name={result.archetype.name} description={result.archetype.description} emoji={result.archetype.emoji} color={result.resultPage?.color || result.archetype.color} title={result.resultPage?.title} quizTitle={result.quizTitle} presentation={result.resultPage?.presentation} preview={preview} />
+      {settings.showDescription && result.resultPage?.description && <p className="result-introduction">{result.resultPage.description}</p>}
+      <p className="result-reflection">A reflection of your answers, not a diagnosis or a box to fit into.</p>
+      {settings.showComparison && !preview && comparison && comparison.status !== 'disabled' && <section className="surface result-comparison"><h2>Among your fellow quiz takers</h2>{comparison.status === 'ready' ? <><p>{comparison.archetypeShare === null ? 'There aren’t enough matches to your archetype to show a percentage yet.' : `${Math.round(comparison.archetypeShare * 100)}% of other completions shared your archetype.`} Based on {comparison.completions} other completions of this quiz version.</p>{comparison.dimensions.map(d => { const own = result.scores.find(score => score.dimensionId === d.dimensionId); return own && <div className="comparison-row" key={d.dimensionId}><strong>{own.dimensionName}</strong><div className="comparison-track"><span style={{width: `${own.score}%`}} /><i style={{left:`${d.average}%`}} aria-hidden="true" /></div><small>You {Math.round(own.score)} · Average {Math.round(d.average)}</small></div> })}</> : <p className="muted">{comparison.status === 'legacy' ? 'Comparisons aren’t available for this earlier quiz version.' : 'The picture is still taking shape. Comparisons appear after 10 other completions of this quiz version.'}</p>}</section>}
+      {settings.showAlternatives && !!result.alternatives?.length && <section className="surface result-alternatives" aria-labelledby="result-alternatives-title">
         <h2 id="result-alternatives-title">{result.ambiguous ? 'A little of both' : 'Other sides of you'}</h2>
         <p className="muted">{result.ambiguous ? 'Your closest results are less than 5 match points apart. The headline is a close call, rather than a clear separation.' : 'These archetypes also share something with your answers.'} Match points describe closeness, not probability or confidence.</p>
         <ul>{result.alternatives.map((a, index) => <li key={`${a.name}-${index}`}><ArchetypeBadge name={a.name} emoji={a.emoji} color={a.color} size={38} label={false} /><div><strong>{a.name}</strong><span>{a.tied ? 'Equally close · ' : ''}{a.matchScore.toFixed(1)} match points</span></div></li>)}</ul>
       </section>}
-      <section className="surface result-dimensions">
+      {settings.showDimensions && <section className="surface result-dimensions">
         <h2 className="entity-heading">
           <EntityIcon kind="dimension" size={18} />
           Your personality landscape
@@ -118,8 +100,8 @@ export function ResultView({
           </div>
         ))}
       </section>
-      <div className="page-actions">
-        {onRetake ? (
+      }<div className="page-actions">
+        {(settings.showRetake || preview) && (onRetake ? (
           <Button variant="outline" onClick={onRetake}>
             <RotateCcw size={16} />
             Try different answers
@@ -129,8 +111,8 @@ export function ResultView({
             <RotateCcw size={16} />
             Retake quiz
           </Link>
-        )}
-        {!preview && (
+        ))}
+        {!preview && settings.showShare && (
           <Button
             onClick={async () => {
               try {
