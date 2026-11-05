@@ -3240,15 +3240,17 @@ span.quiz-themed-button { display:inline-flex; align-items:center; padding:12px 
 .quiz-cover[data-layout=minimal] .quiz-cover-visual { display:none; }
 .quiz-cover[data-layout=minimal] .quiz-cover-content { padding:40px 8px; }
 .quiz-resume { text-align:center; padding:18px; font-size:13px; color:#756e80; }
-.player-progress-heading { display:flex; justify-content:space-between; gap:18px; margin-bottom:12px; font-size:12px; color:#8b8296; }
+.player-progress-header { position:sticky; top:0; z-index:6; padding:16px 0; margin-bottom:12px; background:#fcfbf8; }
+.player-progress-heading { display:flex; justify-content:space-between; align-items:baseline; gap:18px; margin-bottom:12px; font-size:12px; color:#8b8296; }
+.player-progress-heading > span { flex-shrink:0; }
 .player-progress-heading strong { color:#62576f; max-width:70%; }
-.quiz-player .quiz-progress { height:4px; border:0; border-radius:6px; overflow:hidden; margin-bottom:28px; width:100%; background:var(--quiz-line); accent-color:var(--quiz-accent); }
+.quiz-player .quiz-progress { display:block; height:4px; border:0; border-radius:6px; overflow:hidden; margin:0; width:100%; background:var(--quiz-line); accent-color:var(--quiz-accent); }
 .quiz-player .quiz-progress::-webkit-progress-bar { background:var(--quiz-line); }
 .quiz-player .quiz-progress::-webkit-progress-value { background:var(--quiz-gradient); transition:width .35s; }
 .quiz-player .quiz-page-title { font-size:25px; letter-spacing:-.5px; margin:0 0 10px; }
 .player-page-description { color:#8b8296; margin-bottom:24px; font-size:14px; }
 .quiz-player .question-list { gap:20px; animation:quiz-page-enter .3s ease-out both; }
-.quiz-player .player-question { padding:26px 30px; border:1px solid #e8e3ed; box-shadow:0 4px 18px #30224803; border-radius:17px; transition:border-color .2s; scroll-margin-top:24px; }
+.quiz-player .player-question { padding:26px 30px; border:1px solid #e8e3ed; box-shadow:0 4px 18px #30224803; border-radius:17px; transition:border-color .2s; scroll-margin-top:120px; }
 .quiz-player .player-question[data-answered=true] { border-color:var(--quiz-line); }
 .player-question .eyebrow { display:flex; align-items:center; justify-content:space-between; font-size:10px; letter-spacing:1px; margin-bottom:12px; }
 .question-answered { color:#537770; letter-spacing:0; text-transform:none; font-size:11px; }

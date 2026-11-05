@@ -186,13 +186,15 @@ export function QuizPlayer({
       {page.style !== 'cover' && (
         <>
           {pagePresentation(page.presentation).artwork !== 'none' && <div className="player-page-art" aria-hidden="true"><Image src={`/images/decor/${pagePresentation(page.presentation).artwork}.webp`} alt="" fill sizes="900px" /></div>}
-          <header className="player-progress-heading"><strong>{quiz.title}</strong><span role="status">{answered} / {allQuestions.length} answered</span></header>
-          <progress
-            className="quiz-progress"
-            value={answered}
-            max={allQuestions.length}
-            aria-label="Questions answered"
-          />
+          <header className="player-progress-header">
+            <div className="player-progress-heading"><strong>{quiz.title}</strong><span role="status">{answered} / {allQuestions.length} answered</span></div>
+            <progress
+              className="quiz-progress"
+              value={answered}
+              max={allQuestions.length}
+              aria-label="Questions answered"
+            />
+          </header>
           {page.title && (
             <h2 className="quiz-page-title">
               {page.emoji} {page.title}
