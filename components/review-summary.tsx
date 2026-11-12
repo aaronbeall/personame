@@ -38,7 +38,7 @@ export function ReviewSummary({ quiz, preview }: { quiz: FullQuiz; preview?: Rea
       <header className="review-section-heading"><div><h2 id="review-dimensions-title"><EntityIcon kind="dimension" size={19} />Dimensions<span className="review-section-count">{quiz.dimensions.length}</span></h2></div>{edit('dimensions', 'Edit dimensions')}</header>
       <div className="review-section-content">{quiz.dimensions.length ? <div className="review-identity-list">{quiz.dimensions.map(d => <ReviewDetail key={d.id} title={d.name} trigger={<button type="button" className="review-dimension-card review-identity-trigger" aria-label={`About dimension ${d.name}`}><DimensionTag name={d.name} emoji={d.emoji} color={d.color} /><ChevronDown size={13} aria-hidden="true" /></button>}>
         <p>{d.description || 'No description added.'}</p>
-        <div className="review-dimension-endpoints"><DimensionEndpointLabel label={d.minLabel || 'Low'} emoji={d.minEmoji} end="low" /><DimensionEndpointLabel label={d.maxLabel || 'High'} emoji={d.maxEmoji} end="high" /></div>
+        <div className="review-dimension-endpoints"><DimensionEndpointLabel label={d.minLabel || 'Low'} emoji={d.minEmoji} color={d.color} end="low" /><DimensionEndpointLabel label={d.maxLabel || 'High'} emoji={d.maxEmoji} color={d.color} end="high" /></div>
         <div className="review-definition-track" style={{ background: getColorSurface(getColorTheme(d.color).value).background }} />
       </ReviewDetail>)}</div> : <p className="review-empty">No dimensions yet. Give your quiz its first facet.</p>}</div>
     </section>

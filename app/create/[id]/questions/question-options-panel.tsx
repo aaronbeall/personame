@@ -5,10 +5,14 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { EmojiPicker } from '@/components/ui/emoji-picker'
+import { StyleEditors, StyleFields } from '@/components/style-editors'
+import { QuizSymbol } from '@/components/quiz-symbol'
+import { ItemBackground } from '@/components/quiz-artwork'
+import { quizThemeStyle } from '@/lib/quiz-presentation'
+import { encodeArtwork, readArtwork } from '@/lib/quiz-artwork'
 import { Slider } from '@/components/ui/slider'
 import {
-  X,
+  ChevronRight,
   Plus,
   Trash2,
   CheckSquare,
@@ -32,7 +36,7 @@ interface QuestionOptionsPanelProps {
   onUpdate: (
     question: Question & { answers: (Answer & { weights: AnswerWeight[] })[] },
   ) => void
-  onClose: () => void
+  onSelectPageSettings: () => void
 }
 
 const QUESTION_TYPES = [
@@ -41,11 +45,29 @@ const QUESTION_TYPES = [
   { value: 'SCALE', label: 'Scale', Icon: BarChart3 },
 ] as const
 
+function AnswerStyle({ answer, onChange }: { answer: Answer; onChange: (patch: Partial<Answer>) => void }) {
+  const background = readArtwork(answer.style)
+  return <StyleEditors
+    emoji={answer.emoji}
+    color={answer.color}
+    onEmojiChange={emoji => onChange({ emoji })}
+    onColorChange={color => onChange({ color })}
+    onClearColor={() => onChange({ color: null })}
+    background={background}
+    onBackgroundChange={artwork => onChange({ style: encodeArtwork(artwork) })}
+  >
+    <span className="answer-style-emblem item-style-surface" style={quizThemeStyle(answer.color)}>
+      <ItemBackground artwork={background} />
+      <QuizSymbol value={answer.emoji} fallback="○" />
+    </span>
+  </StyleEditors>
+}
+
 export function QuestionOptionsPanel({
   question,
   dimensions,
   onUpdate,
-  onClose,
+  onSelectPageSettings,
 }: QuestionOptionsPanelProps) {
   // Store answers by question type to restore when switching back
   const [rememberedAnswers, setRememberedAnswers] = useState<
@@ -121,17 +143,23 @@ export function QuestionOptionsPanel({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg flex items-center justify-between">
-          <span>Question Settings</span>
-          <Button
-            variant="ghost"
-            size="sm"
-            aria-label="Close question settings"
-            onClick={onClose}
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </CardTitle>
+        <nav aria-label="Settings breadcrumb">
+          <ol className="flex flex-wrap items-center gap-1.5 text-sm">
+            <li>
+              <button
+                type="button"
+                className="rounded text-primary-700 underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2"
+                onClick={onSelectPageSettings}
+              >
+                Page Settings
+              </button>
+            </li>
+            <li aria-hidden="true"><ChevronRight className="h-3.5 w-3.5 text-muted-500" /></li>
+            <li aria-current="page">
+              <CardTitle className="text-sm">Question Settings</CardTitle>
+            </li>
+          </ol>
+        </nav>
       </CardHeader>
       <CardContent className="space-y-4 max-h-[calc(100vh-300px)] overflow-y-auto">
         <div>
@@ -148,11 +176,16 @@ export function QuestionOptionsPanel({
 
         <div>
           <label className="text-sm font-medium text-muted-700 mb-1 block">
-            Emoji
+            Question style
           </label>
-          <EmojiPicker
-            value={question.emoji || ''}
-            onSelect={(emoji) => onUpdate({ ...question, emoji })}
+          <StyleFields
+            emoji={question.emoji}
+            color={question.color}
+            onEmojiChange={emoji => onUpdate({ ...question, emoji })}
+            onColorChange={color => onUpdate({ ...question, color })}
+            onClearColor={() => onUpdate({ ...question, color: null })}
+            background={readArtwork(question.style)}
+            onBackgroundChange={artwork => onUpdate({ ...question, style: encodeArtwork(artwork) })}
           />
         </div>
 
@@ -253,12 +286,7 @@ export function QuestionOptionsPanel({
                   className="border border-muted-200 rounded-lg p-3 space-y-2"
                 >
                   <div className="flex items-start gap-2">
-                    <EmojiPicker
-                      value={answer.emoji || ''}
-                      onSelect={(emoji) =>
-                        handleUpdateAnswer(answer.id, { emoji })
-                      }
-                    />
+                    <AnswerStyle answer={answer} onChange={patch => handleUpdateAnswer(answer.id, patch)} />
                     <Input
                       value={answer.text}
                       onChange={(e) =>
@@ -320,12 +348,7 @@ export function QuestionOptionsPanel({
                         {label} Label
                       </label>
                       <div className="flex items-center gap-2">
-                        <EmojiPicker
-                          value={answer.emoji || ''}
-                          onSelect={(emoji) =>
-                            handleUpdateAnswer(answer.id, { emoji })
-                          }
-                        />
+                        <AnswerStyle answer={answer} onChange={patch => handleUpdateAnswer(answer.id, patch)} />
                         <Input
                           value={answer.text}
                           onChange={(e) =>
@@ -384,7 +407,7 @@ const AnswerWeightsEditor = ({
           <Input type="number" aria-label={`${answer.text}: ${dimension.name} position`} min={0} max={100} step={1} value={value} onChange={event => { const next = event.target.valueAsNumber; if (Number.isFinite(next)) onUpdateWeight(answer.id, dimension.id, Math.max(0, Math.min(100, next))) }} />
         </div>
         <Slider className="answer-position-slider" color={dimension.color ?? undefined} min={0} max={100} step={1} value={[value]} aria-label={`${answer.text}: ${dimension.name} scale`} aria-valuetext={`${Math.round(value)} out of 100; ${dimension.minLabel || 'Low'} to ${dimension.maxLabel || 'High'}`} onValueChange={values => onUpdateWeight(answer.id, dimension.id, values[0])} />
-        <div className="answer-position-endpoints"><DimensionEndpointLabel label={dimension.minLabel || 'Low'} emoji={dimension.minEmoji} end="low" /><DimensionEndpointLabel label={dimension.maxLabel || 'High'} emoji={dimension.maxEmoji} end="high" /></div>
+        <div className="answer-position-endpoints"><DimensionEndpointLabel label={dimension.minLabel || 'Low'} emoji={dimension.minEmoji} color={dimension.color} end="low" /><DimensionEndpointLabel label={dimension.maxLabel || 'High'} emoji={dimension.maxEmoji} color={dimension.color} end="high" /></div>
       </div>
     })}
   </fieldset>
@@ -559,10 +582,7 @@ function ScaleEditor({
                   {label}
                 </label>
                 <div className="flex items-center gap-2">
-                  <EmojiPicker
-                    value={answer.emoji || ''}
-                    onSelect={(emoji) => onUpdateAnswer(answer.id, { emoji })}
-                  />
+                  <AnswerStyle answer={answer} onChange={patch => onUpdateAnswer(answer.id, patch)} />
                   <Input
                     value={answer.text}
                     onChange={(e) =>
@@ -626,10 +646,12 @@ function ScaleEditor({
 
         <div className="space-y-1.5">
           {scalePointAnswers.map((answer, idx) => (
-            <div key={answer.id} className="flex items-center gap-2">
+            <div key={answer.id} className="scale-point-editor">
+              <div className="flex items-center gap-2">
               <span className="text-xs font-medium text-muted-600 w-6 text-center">
                 {idx + 1}
               </span>
+              <AnswerStyle answer={answer} onChange={patch => onUpdateAnswer(answer.id, patch)} />
               <Input
                 value={answer.text}
                 onChange={(e) => handleUpdateLabel(idx, e.target.value)}
@@ -645,6 +667,7 @@ function ScaleEditor({
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
+              </div>
             </div>
           ))}
 

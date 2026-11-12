@@ -1,15 +1,18 @@
 'use client'
+import { QuizSymbol } from '@/components/quiz-symbol'
 
 import { ArrowDown, ArrowUp, Pencil } from 'lucide-react'
-import { EmojiPicker } from './ui/emoji-picker'
+import { SymbolPicker } from './ui/emoji-picker'
 import { Button } from './ui/button'
 
 export function DimensionEndpointIconEditor({
   emoji,
+  color,
   end,
   onChange,
 }: {
   emoji?: string | null
+  color?: string | null
   end: 'low' | 'high'
   onChange: (emoji: string | null) => void
 }) {
@@ -17,10 +20,11 @@ export function DimensionEndpointIconEditor({
   return (
     <span className="style-portrait endpoint-icon-editor">
       <span className="endpoint-icon-editor-face" aria-hidden="true">
-        {emoji || <Arrow size={18} />}
+        <QuizSymbol value={emoji} color={color} fallback={<Arrow size={18} />} />
       </span>
-      <EmojiPicker
+      <SymbolPicker
         value={emoji}
+        color={color}
         onSelect={onChange}
         trigger={
           <Button

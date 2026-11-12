@@ -5,12 +5,13 @@ import { atlasMarkerRadius, projectTarget } from '@/lib/archetype-map'
 import { projectAtlasPreview } from '@/lib/atlas-camera'
 import { getColorTheme } from '@/lib/colors'
 import { getArchetypeTheme } from './entity-identity'
+import { textSymbol } from './quiz-symbol'
 
 type Dimension = FullQuiz['dimensions'][number]
 type Archetype = FullQuiz['archetypes'][number]
 type ChartProps = { dimensions: Dimension[]; archetypes: Archetype[]; selectedId?: string; onSelect?: (id: string) => void; mini?: boolean }
 const shortName = (name: string, max = 25) => name.length > max ? `${name.slice(0, max - 1)}…` : name
-const endLabel = (dimension: Dimension, high: boolean) => `${(high ? dimension.maxEmoji : dimension.minEmoji) || ''} ${(high ? dimension.maxLabel : dimension.minLabel) || (high ? 'High' : 'Low')}`.trim()
+const endLabel = (dimension: Dimension, high: boolean) => `${textSymbol(high ? dimension.maxEmoji : dimension.minEmoji)} ${(high ? dimension.maxLabel : dimension.minLabel) || (high ? 'High' : 'Low')}`.trim()
 const activate = (event: React.KeyboardEvent, callback: () => void) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); callback() } }
 const cube = Array.from({ length: 8 }, (_, i) => [i & 1 ? 100 : 0, i & 2 ? 100 : 0, i & 4 ? 100 : 0])
 

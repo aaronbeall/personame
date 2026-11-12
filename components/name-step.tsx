@@ -18,18 +18,21 @@ import { useProtectedPage } from '@/hooks/use-protected-page'
 import { useBuilderDraft } from '@/hooks/use-builder-draft'
 import { requestJson } from '@/lib/client-api'
 import { COLOR_THEME, getColorTheme } from '@/lib/colors'
+import { encodeQuizAppearance, quizAppearance, type QuizAppearance } from '@/lib/quiz-presentation'
 
 type Details = {
   title: string
   description: string
   emoji: string | null
   color: string
+  style?: string
 }
 const empty: Details = {
   title: '',
   description: '',
   emoji: null,
   color: '#8b5cf6',
+  style: encodeQuizAppearance({ layout: 'hero', coverImage: null, backgroundImage: null }),
 }
 const starterEmojis = [
   '✨',
@@ -66,6 +69,7 @@ export function NameStep({ quizId }: { quizId?: string }) {
         description: q.description || '',
         emoji: q.emoji || null,
         color: getColorTheme(q.color || '#8b5cf6').value,
+        style: q.style,
       }
     },
   })
@@ -87,10 +91,14 @@ export function NameStep({ quizId }: { quizId?: string }) {
     quizId || 'new-quiz',
   )
   const values = draft.value || empty
+  const appearance = quizAppearance(values)
   function update(next: Partial<Details>) {
     draft.update({ ...values, ...next })
     setMessage('')
     setError(null)
+  }
+  function updateAppearance(next: Partial<QuizAppearance>) {
+    update({ style: encodeQuizAppearance({ ...appearance, ...next }) })
   }
   async function save(advance: boolean) {
     if (!values.title.trim() || busy) return
@@ -116,6 +124,7 @@ export function NameStep({ quizId }: { quizId?: string }) {
         description: saved.description || '',
         emoji: saved.emoji || null,
         color: getColorTheme(saved.color).value,
+        style: saved.style || values.style,
       }
       draft.accept(canonical)
       cache.setQueryData(['quiz-details', saved.id], canonical)
@@ -188,8 +197,11 @@ export function NameStep({ quizId }: { quizId?: string }) {
                 color={values.color}
                 onEmojiChange={(emoji) => update({ emoji })}
                 onColorChange={(color) => update({ color })}
+                background={appearance.coverImage}
+                onBackgroundChange={coverImage => updateAppearance({ coverImage })}
+                imageLabel="Quiz image"
               >
-                <QuizCoverMark emoji={values.emoji} color={values.color} />
+                <QuizCoverMark emoji={values.emoji} color={values.color} background={appearance.coverImage} />
               </StyleEditors>
             </div>
             <div className="quiz-setup-fields">

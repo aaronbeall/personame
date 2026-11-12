@@ -30,8 +30,8 @@ export function DimensionScale({
       aria-label={`Scale from ${minLabel} at 0 to ${maxLabel} at 100`}
     >
       <div className="dimension-scale-labels">
-        <DimensionEndpointLabel label={minLabel} emoji={minEmoji} end="low" />
-        <DimensionEndpointLabel label={maxLabel} emoji={maxEmoji} end="high" />
+        <DimensionEndpointLabel label={minLabel} emoji={minEmoji} color={color} end="low" />
+        <DimensionEndpointLabel label={maxLabel} emoji={maxEmoji} color={color} end="high" />
       </div>
       <div className="dimension-scale-track">
         <div className="dimension-scale-ticks">

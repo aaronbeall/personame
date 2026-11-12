@@ -11,6 +11,7 @@ import { getColorTheme, getBarGradient } from '@/lib/colors'
 import type { CSSProperties } from 'react'
 import { useConfirmDialog } from '@/components/ui/confirm-dialog'
 import { StyleEditors } from '@/components/style-editors'
+import { encodeArtwork, readArtwork } from '@/lib/quiz-artwork'
 import { ArchetypeEditor } from './archetype-editor'
 import {
   ArchetypeBadge,
@@ -87,10 +88,13 @@ export function ArchetypeRow({
             color={archetype.color}
             onEmojiChange={(emoji) => onChange({ ...archetype, emoji })}
             onColorChange={(color) => onChange({ ...archetype, color })}
+            background={readArtwork(archetype.imageUrl)}
+            onBackgroundChange={artwork => onChange({ ...archetype, imageUrl: encodeArtwork(artwork) })}
           >
             <ArchetypeBadge
               name={archetype.name}
               emoji={archetype.emoji}
+              background={readArtwork(archetype.imageUrl)}
               color={archetype.color}
             />
           </StyleEditors>
@@ -201,11 +205,13 @@ export function ArchetypeRow({
                       <DimensionEndpointLabel
                         label={dimension.minLabel || 'Low'}
                         emoji={dimension.minEmoji}
+                        color={dimension.color}
                         end="low"
                       />
                       <DimensionEndpointLabel
                         label={dimension.maxLabel || 'High'}
                         emoji={dimension.maxEmoji}
+                        color={dimension.color}
                         end="high"
                       />
                     </div>

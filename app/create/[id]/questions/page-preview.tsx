@@ -1,7 +1,11 @@
 'use client'
+import { QuizSymbol } from '@/components/quiz-symbol'
 import { QuizCover } from '@/components/quiz-cover'
 import { ResultHero } from '@/components/result-hero'
-import { pagePresentation } from '@/lib/quiz-presentation'
+import { ArtworkCredit, ItemBackground, QuizBackground } from '@/components/quiz-artwork'
+import { readArtwork } from '@/lib/quiz-artwork'
+import { coverPresentation, pagePresentation, quizThemeStyle, type QuizAppearance } from '@/lib/quiz-presentation'
+import { QuizPageHeading } from '@/components/quiz-page-heading'
 import type { Archetype } from '@prisma/client'
 
 
@@ -20,6 +24,8 @@ import { QuestionInput } from '@/components/question-input'
 import type { QuizResponses } from '@/lib/quiz-scoring'
 
 interface PagePreviewProps {
+  quiz?: { title: string; description: string | null; emoji: string | null; color: string | null }
+  appearance: QuizAppearance
   questionCount?: number
   sampleArchetype?: Archetype
   page: QuizPage & {
@@ -41,6 +47,8 @@ interface PagePreviewProps {
 
 export function PagePreview({
   page,
+  quiz,
+  appearance,
   selectedQuestionId,
   onSelectQuestion,
   onDeleteQuestion,
@@ -50,6 +58,8 @@ export function PagePreview({
 }: PagePreviewProps) {
   const isCover = page.style === 'cover'
   const isResults = page.style === 'results'
+  const settings = pagePresentation(page.presentation)
+  const background = settings.backgroundImage
   const { confirm, dialog } = useConfirmDialog()
 
   // Local preview state - not stored in model
@@ -64,27 +74,16 @@ export function PagePreview({
     })
   }
 
-  if (isCover) return <QuizCover title={page.title || 'Welcome'} description={page.description} emoji={page.emoji} color={page.color} presentation={page.presentation} questionCount={questionCount} action={<span className="quiz-themed-button">{pagePresentation(page.presentation).startLabel} →</span>} />
-  if (isResults) return <div className="studio-result-preview"><h2>{page.title || 'Your Results'}</h2><ResultHero title={page.title} name={sampleArchetype?.name || 'Your Archetype'} description={page.description} emoji={sampleArchetype?.emoji} color={page.color || sampleArchetype?.color} presentation={page.presentation} preview /><p className="studio-setting-note">The matched archetype’s artwork and description appear here. Participant comparisons use real results once enough people complete the quiz.</p></div>
+  if (isCover) return <QuizCover title={quiz?.title || 'Welcome'} description={quiz?.description} emoji={quiz?.emoji} color={quiz?.color} presentation={coverPresentation(page.presentation, appearance)} questionCount={questionCount} action={<span className="quiz-themed-button">{settings.startLabel} →</span>} />
+  if (isResults) return <div className="studio-result-preview"><ResultHero title={page.title} name={sampleArchetype?.name || 'Your Archetype'} description={sampleArchetype?.description} emoji={sampleArchetype?.emoji} artwork={readArtwork(sampleArchetype?.imageUrl)} color={sampleArchetype?.color} presentation={page.presentation} preview /></div>
 
   return (
     <>
       {dialog}
-      <div className="question-canvas flex flex-col">
-        {/* Page Header */}
-        <div className="text-center mb-6">
-          {page.emoji && <div className="text-5xl mb-3">{page.emoji}</div>}
-          {page.title && (
-            <h2 className="text-3xl font-bold text-primary-900 mb-2">
-              {page.title}
-            </h2>
-          )}
-          {page.description && (
-            <p className="text-muted-600 max-w-2xl mx-auto">
-              {page.description}
-            </p>
-          )}
-        </div>
+      <div className="question-canvas flex flex-col" data-layout={settings.layout} style={quizThemeStyle(page.color || quiz?.color)}>
+        {background && <QuizBackground artwork={background} />}
+        {background && <ArtworkCredit artwork={background} />}
+        <QuizPageHeading title={page.title} description={settings.showDescription ? page.description : null} emoji={page.emoji} color={page.color} layout={settings.layout} />
 
         {/* Questions Section */}
         {page.questions.length === 0 ? (
@@ -129,17 +128,20 @@ export function PagePreview({
             </div>
           </div>
         ) : (
-          <div className="space-y-5 flex-1">
+          <div className="studio-question-list flex-1">
             {page.questions.map((question) => {
               const isSelected = selectedQuestionId === question.id
+              const artwork = readArtwork(question.style)
 
               return (
                 <div
                   key={question.id}
                   data-selected={isSelected}
+                  data-custom-color={!!question.color}
+                  style={question.color ? quizThemeStyle(question.color) : undefined}
                   onClick={() => onSelectQuestion(question.id)}
                   className={cn(
-                    'question-preview-question p-5 rounded-xl border cursor-pointer transition-colors',
+                    'question-preview-question item-style-surface p-5 rounded-xl border cursor-pointer transition-colors',
                     isSelected
                       ? 'border-primary-500 bg-primary-50 ring-2 ring-primary-200'
                       : 'border-muted-200 bg-muted-50 hover:border-muted-300',
@@ -154,7 +156,7 @@ export function PagePreview({
                       <div className="flex items-center gap-2 min-w-0">
                         {question.emoji && (
                           <span className="text-2xl shrink-0">
-                            {question.emoji}
+                            <QuizSymbol value={question.emoji} />
                           </span>
                         )}
                         <h3 className="font-semibold text-primary-900 line-clamp-2">
@@ -176,6 +178,7 @@ export function PagePreview({
                     </Button>
                   </div>
 
+                  <ItemBackground artwork={artwork} />
                   <div onClick={(e) => e.stopPropagation()}>
                     <QuestionInput
                       question={question}
@@ -188,6 +191,7 @@ export function PagePreview({
                       }
                     />
                   </div>
+                  {artwork && <ArtworkCredit artwork={artwork} />}
                 </div>
               )
             })}

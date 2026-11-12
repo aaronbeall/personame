@@ -1,5 +1,8 @@
 'use client'
-import Image from 'next/image'
+import { QuizSymbol } from '@/components/quiz-symbol'
+import { ArtworkCredit, ItemBackground, QuizBackground } from './quiz-artwork'
+import { QuizPageHeading } from './quiz-page-heading'
+import { readArtwork } from '@/lib/quiz-artwork'
 import { useEffect, useRef, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
@@ -8,7 +11,7 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, ArrowRight, Sparkles } from 'lucide-react'
 import { Button } from './ui/button'
 import { QuizCover } from './quiz-cover'
-import { pagePresentation, quizThemeStyle } from '@/lib/quiz-presentation'
+import { coverPresentation, pagePresentation, quizAppearance, quizThemeStyle } from '@/lib/quiz-presentation'
 import { QuestionInput } from './question-input'
 import { ResultView } from './result-view'
 import { requestJson, responseId } from '@/lib/client-api'
@@ -72,6 +75,9 @@ export function QuizPlayer({
     }
   }, [pageIndex])
   const page = pages[pageIndex]
+  const settings = pagePresentation(page?.presentation)
+  const appearance = quizAppearance(quiz, pages.find(item => item.style === 'cover')?.presentation)
+  const background = settings.backgroundImage
   const allQuestions = pages.flatMap((p) =>
     p.style === 'cover' ? [] : p.questions,
   )
@@ -171,21 +177,21 @@ export function QuizPlayer({
   return (
     <div
       className={`quiz-player page-style-${page.style || 'default'}`}
-      data-layout={pagePresentation(page.presentation).layout}
-      style={quizThemeStyle(page.color || quiz.color)}
+      data-layout={settings.layout}
+      style={quizThemeStyle((page.style === 'cover' ? quiz.color : page.color) || quiz.color)}
       ref={root}
       tabIndex={-1}
     >
+      {background && page.style !== 'cover' && <QuizBackground artwork={background} />}
       {preview && (
         <p className="preview-label">
           Participant preview — answers here are not saved
         </p>
       )}
-      {page.style === 'cover' && <QuizCover title={page.title || quiz.title} description={page.description || quiz.description} quizTitle={quiz.title} emoji={page.emoji || quiz.emoji} color={page.color || quiz.color} presentation={page.presentation} questionCount={allQuestions.length} action={<Button className="quiz-themed-button" onClick={next} disabled={!submissionKey}>{pagePresentation(page.presentation).startLabel}<ArrowRight size={16} /></Button>} />}
+      {page.style === 'cover' && <QuizCover title={quiz.title} description={quiz.description} emoji={quiz.emoji} color={quiz.color} presentation={coverPresentation(page.presentation, appearance)} questionCount={allQuestions.length} action={<Button className="quiz-themed-button" onClick={next} disabled={!submissionKey}>{settings.startLabel}<ArrowRight size={16} /></Button>} />}
       {page.style === 'cover' && answered > 0 && <p className="quiz-resume" role="status">Your {answered} saved answers are here. Continue to pick up where you left off.</p>}
       {page.style !== 'cover' && (
         <>
-          {pagePresentation(page.presentation).artwork !== 'none' && <div className="player-page-art" aria-hidden="true"><Image src={`/images/decor/${pagePresentation(page.presentation).artwork}.webp`} alt="" fill sizes="900px" /></div>}
           <header className="player-progress-header">
             <div className="player-progress-heading"><strong>{quiz.title}</strong><span role="status">{answered} / {allQuestions.length} answered</span></div>
             <progress
@@ -195,29 +201,29 @@ export function QuizPlayer({
               aria-label="Questions answered"
             />
           </header>
-          {page.title && (
-            <h2 className="quiz-page-title">
-              {page.emoji} {page.title}
-            </h2>
-          )}
-          {pagePresentation(page.presentation).showDescription && page.description && <p className="player-page-description">{page.description}</p>}
-          <div className="question-list" key={page.id} data-layout={pagePresentation(page.presentation).layout}>
-            {page.questions.map((q) => (
+          <QuizPageHeading title={page.title} description={settings.showDescription ? page.description : null} emoji={page.emoji} color={page.color} layout={settings.layout} />
+          <div className="question-list" key={page.id} data-layout={settings.layout}>
+            {page.questions.map((q) => {
+              const artwork = readArtwork(q.style)
+              return (
               <section
-                className="surface player-question"
+                className="surface player-question item-style-surface"
+                data-custom-color={!!q.color}
+                style={q.color ? quizThemeStyle(q.color) : undefined}
                 data-answered={!!responses[q.id]}
                 aria-describedby={error && q.required && !responses[q.id] ? `error-${q.id}` : undefined}
                 key={q.id}
                 id={`question-${q.id}`}
                 tabIndex={-1}
               >
+                <ItemBackground artwork={artwork} />
                 <p className="eyebrow">
                   Question{' '}
                   {allQuestions.findIndex((item) => item.id === q.id) + 1}
                   {!q.required ? ' — optional' : ''}{responses[q.id] && <span className="question-answered">✓ Answered</span>}
                 </p>
                 <h3>
-                  {q.emoji} {q.text}
+                  <QuizSymbol value={q.emoji} /> {q.text}
                 </h3>
                 {error && q.required && !responses[q.id] && <p id={`error-${q.id}`} className="question-required-error">Choose an answer to continue.</p>}
                 <QuestionInput
@@ -226,11 +232,14 @@ export function QuizPlayer({
                   value={responses[q.id]}
                   onChange={(value) => update({ ...responses, [q.id]: value })}
                 />
+                {artwork && <ArtworkCredit artwork={artwork} />}
               </section>
-            ))}
+              )
+            })}
           </div>
         </>
       )}
+      {background && page.style !== 'cover' && <ArtworkCredit artwork={background} />}
       {error && (
         <div className="notice error mt-5" role="alert">
           {error}

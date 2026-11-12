@@ -1,4 +1,9 @@
 'use client'
+import { Fragment } from 'react'
+import { QuizSymbol } from '@/components/quiz-symbol'
+import { readArtwork } from '@/lib/quiz-artwork'
+import { ArtworkCredit, ItemBackground } from './quiz-artwork'
+import { quizThemeStyle } from '@/lib/quiz-presentation'
 import type { ResponseValue } from '@/lib/quiz-scoring'
 export type PlayerQuestion = {
   id: string
@@ -6,7 +11,7 @@ export type PlayerQuestion = {
   type: 'MULTIPLE_CHOICE' | 'SLIDER' | 'SCALE'
   required: boolean
   emoji: string | null
-  answers: { id: string; text: string; emoji: string | null }[]
+  answers: { id: string; text: string; emoji: string | null; style?: string | null; color?: string | null }[]
 }
 export function QuestionInput({
   question: q,
@@ -24,12 +29,16 @@ export function QuestionInput({
     return (
       <div className="question-slider">
         <div className="range-labels">
-          <span>
-            {q.answers[0]?.emoji} {q.answers[0]?.text}
-          </span>
-          <span>
-            {q.answers[1]?.emoji} {q.answers[1]?.text}
-          </span>
+          {q.answers.slice(0, 2).map(answer => {
+            const artwork = readArtwork(answer.style)
+            return <div key={answer.id} className="slider-end-style">
+              <div className="item-style-surface" data-artwork={!!artwork} data-custom-color={!!answer.color} style={answer.color ? quizThemeStyle(answer.color) : undefined}>
+                <ItemBackground artwork={artwork} />
+                <span className="answer-option-label"><QuizSymbol value={answer.emoji} /> {answer.text}</span>
+              </div>
+              {artwork && <ArtworkCredit artwork={artwork} />}
+            </div>
+          })}
         </div>
         <input
           disabled={disabled}
@@ -56,25 +65,34 @@ export function QuestionInput({
       role="group"
       aria-label={q.text}
     >
-      {answers.map((a) => (
-        <button
+      {answers.map((answer) => {
+        const artwork = readArtwork(answer.style)
+        const selected = value?.answerId === answer.id
+        const button = <button
           type="button"
+          className="item-style-surface"
           disabled={disabled}
-          aria-pressed={value?.answerId === a.id}
-          key={a.id}
-          onClick={() => onChange({ answerId: a.id })}
+          aria-pressed={selected}
+          data-artwork={!!artwork}
+          data-custom-color={!!answer.color}
+          style={answer.color ? quizThemeStyle(answer.color) : undefined}
+          onClick={() => onChange({ answerId: answer.id })}
         >
-          <span className="answer-emoji" aria-hidden="true">
-            {a.emoji ||
-              (q.type === 'MULTIPLE_CHOICE'
-                ? value?.answerId === a.id
-                  ? '●'
-                  : '○'
-                : '')}
+          <ItemBackground artwork={artwork} />
+          <span className="answer-option-label">
+            <span className="answer-emoji" aria-hidden="true">
+              <QuizSymbol value={answer.emoji} fallback={q.type === 'MULTIPLE_CHOICE' ? selected ? '●' : '○' : ''} />
+            </span>
+            <span>{answer.text}</span>
           </span>
-          <span>{a.text}</span>
         </button>
-      ))}
+        return artwork ? (
+          <div className="answer-with-artwork" key={answer.id}>
+            {button}
+            <ArtworkCredit artwork={artwork} />
+          </div>
+        ) : <Fragment key={answer.id}>{button}</Fragment>
+      })}
     </div>
   )
 }

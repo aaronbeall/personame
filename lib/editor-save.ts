@@ -69,7 +69,7 @@ export async function saveArchetypes(id: string, json: unknown) {
   return result
 }
 export async function savePages(id: string, json: unknown) {
-  const { pages } = pagesInput.parse(json)
+  const { pages, quizStyle } = pagesInput.parse(json)
   unique(pages.map(p => p.id))
   unique(pages.flatMap(p => p.questions.map(q => q.id)))
   unique(pages.flatMap(p => p.questions.flatMap(q => q.answers.map(a => a.id))))
@@ -107,7 +107,7 @@ export async function savePages(id: string, json: unknown) {
     await tx.answer.deleteMany({ where: { question: { page: { personaId: id } }, id: { notIn: answers.map(a => a.data.id) } } })
     await tx.question.deleteMany({ where: { page: { personaId: id }, id: { notIn: questions.map(q => q.data.id) } } })
     await tx.quizPage.deleteMany({ where: { personaId: id, id: { notIn: prepared.map(p => p.data.id) } } })
-    await tx.persona.update({ where: { id }, data: { status: 'DRAFT' } })
+    await tx.persona.update({ where: { id }, data: { ...quizStyle, status: 'DRAFT' } })
     return (await tx.persona.findUniqueOrThrow({ where: { id }, select: { pages: quizInclude.pages } })).pages
   }, { timeout: 20000 })
   invalidatePublicQuiz(id)

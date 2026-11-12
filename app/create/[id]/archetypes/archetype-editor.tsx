@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Dimension, ArchetypeDimension, Archetype } from '@prisma/client'
 import { StyleEditors } from '@/components/style-editors'
+import { encodeArtwork, readArtwork } from '@/lib/quiz-artwork'
 import { getTempId } from '@/lib/utils'
 import { ArchetypeBadge } from '@/components/entity-identity'
 import { DimensionTargetEditor } from './dimension-target-editor'
@@ -73,12 +74,15 @@ export function ArchetypeEditor({
             color={color}
             onEmojiChange={setEmoji}
             onColorChange={setColor}
+            background={readArtwork(archetype.imageUrl)}
+            onBackgroundChange={artwork => update({ imageUrl: encodeArtwork(artwork) })}
           >
             <ArchetypeBadge
               name={name}
               emoji={emoji}
               color={color}
               size={80}
+              background={readArtwork(archetype.imageUrl)}
               label={false}
             />
           </StyleEditors>
