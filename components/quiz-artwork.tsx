@@ -40,15 +40,3 @@ export function ItemBackground({ artwork }: { artwork?: Artwork | null }) {
     <ArtworkImage artwork={artwork} width={640} />
   </span> : null
 }
-
-export function QuizArtwork({ artwork, className, width }: {
-  artwork: Artwork | null | undefined
-  className?: string
-  width?: number
-}) {
-  if (!artwork) return null
-  return <figure className={className}>
-    <ArtworkImage artwork={artwork} width={width} />
-    <ArtworkCredit artwork={artwork} />
-  </figure>
-}

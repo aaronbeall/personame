@@ -73,8 +73,7 @@ export function ArchetypeBadge({
   color,
   size = 96,
   label = true,
-  background,
-}: { size?: number; label?: boolean } & Identity) {
+}: { size?: number; label?: boolean } & Omit<Identity, 'background'>) {
   const theme = getArchetypeTheme(color, name)
   const badge = getBadgeAppearance(theme.value)
   return (
@@ -94,8 +93,7 @@ export function ArchetypeBadge({
         } as CSSProperties
       }
     >
-      <div className="archetype-badge-face item-style-surface" aria-hidden="true">
-        <ItemBackground artwork={background} />
+      <div className="archetype-badge-face" aria-hidden="true">
         <QuizSymbol value={emoji} fallback={getInitials(name) || '?'} />
       </div>
       {label && (
