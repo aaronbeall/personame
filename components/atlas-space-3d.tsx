@@ -12,6 +12,7 @@ import { createAtlasCamera, targetPosition } from '@/lib/atlas-camera'
 import { atlasMarkerRadius } from '@/lib/archetype-map'
 import { getColorTheme } from '@/lib/colors'
 import { getArchetypeTheme } from './entity-identity'
+import { textSymbol } from './quiz-symbol'
 
 type Dimension = FullQuiz['dimensions'][number]
 type Props = Pick<FullQuiz, 'dimensions' | 'archetypes'> & { sizeDimension?: Dimension; selectedId?: string; onSelect: (id: string) => void }
@@ -34,8 +35,8 @@ export default function AtlasSpace3D({ dimensions, archetypes, sizeDimension, se
   }, [dimensions])
   const annotations = useMemo(() => axes.flatMap(({ dimension: d, layout }, index) => [
     { id: `axis-${index}-name`, kind: 'name', text: d.name, position: new THREE.Vector3(...layout.name as [number, number, number]) },
-    { id: `axis-${index}-low`, kind: 'end', text: `${d.minEmoji || ''} ${d.minLabel || 'Low'}`.trim(), position: new THREE.Vector3(...layout.low as [number, number, number]) },
-    { id: `axis-${index}-high`, kind: 'end', text: `${d.maxEmoji || ''} ${d.maxLabel || 'High'}`.trim(), position: new THREE.Vector3(...layout.high as [number, number, number]) },
+    { id: `axis-${index}-low`, kind: 'end', text: `${textSymbol(d.minEmoji)} ${d.minLabel || 'Low'}`.trim(), position: new THREE.Vector3(...layout.low as [number, number, number]) },
+    { id: `axis-${index}-high`, kind: 'end', text: `${textSymbol(d.maxEmoji)} ${d.maxLabel || 'High'}`.trim(), position: new THREE.Vector3(...layout.high as [number, number, number]) },
   ]), [axes])
   const points = useMemo(() => archetypes.flatMap(a => {
     const targets = dimensions.map(d => a.dimensions.find(t => t.dimensionId === d.id))

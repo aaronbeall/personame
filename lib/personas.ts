@@ -89,6 +89,7 @@ export function publicQuiz(quiz: ParticipantQuiz) {
     description: quiz.description,
     emoji: quiz.emoji,
     color: quiz.color,
+    style: quiz.style,
     revision: quiz.updatedAt.toISOString(),
     pages: quiz.pages
       .filter((p) => !p.hidden)
@@ -107,10 +108,14 @@ export function publicQuiz(quiz: ParticipantQuiz) {
           type: q.type,
           required: q.required,
           emoji: q.emoji,
+          style: q.style,
+          color: q.color,
           answers: q.answers.map((a) => ({
             id: a.id,
             text: a.text,
             emoji: a.emoji,
+            style: a.style,
+            color: a.color,
           })),
         })),
       })),

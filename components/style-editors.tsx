@@ -1,26 +1,51 @@
 'use client'
 
 import * as Popover from '@radix-ui/react-popover'
-import { ImagePlus, Pencil } from 'lucide-react'
+import { Pencil, Trash2 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { ColorPicker } from './ui/color-picker'
-import { EmojiPicker } from './ui/emoji-picker'
+import { SymbolPicker } from './ui/emoji-picker'
 import { Button } from './ui/button'
+import { ArtworkPicker } from './artwork-picker'
+import type { Artwork } from '@/lib/quiz-artwork'
 
-/** One entry point for an extensible appearance editor. Future image support belongs here. */
-export function StyleEditors({
-  emoji,
-  color,
-  onEmojiChange,
-  onColorChange,
-  children,
-}: {
-  children: ReactNode
+type StyleFieldsProps = {
   emoji?: string | null
   color?: string | null
   onEmojiChange: (emoji: string | null) => void
   onColorChange: (color: string) => void
-}) {
+  onClearColor?: () => void
+  background?: Artwork | null
+  onBackgroundChange?: (artwork: Artwork | null) => void
+  imageLabel?: string
+}
+
+export function StyleFields({
+  emoji,
+  color,
+  onEmojiChange,
+  onColorChange,
+  onClearColor,
+  background,
+  onBackgroundChange,
+  imageLabel = 'Background image',
+}: StyleFieldsProps) {
+  return <div className="style-editor-options">
+    <SymbolPicker value={emoji} color={color} onSelect={onEmojiChange} />
+    <div className="style-color-actions">
+      <ColorPicker value={color ?? undefined} showLabel={false} onSelect={onColorChange} />
+      {onClearColor && color && <Button type="button" variant="ghost" size="icon" onClick={onClearColor} aria-label="Remove custom color"><Trash2 size={15} /></Button>}
+    </div>
+    {onBackgroundChange && <ArtworkPicker label={imageLabel} value={background ?? null} onChange={onBackgroundChange} />}
+  </div>
+}
+
+export function StyleEditors({
+  children,
+  ...fields
+}: {
+  children: ReactNode
+} & StyleFieldsProps) {
   return (
     <div className="style-portrait">
       <div className="style-portrait-content">{children}</div>
@@ -32,7 +57,7 @@ export function StyleEditors({
             size="icon"
             className="style-editor-trigger"
             aria-label="Edit style"
-            title="Edit icon, color, or image"
+            title="Edit style"
           >
             <Pencil size={12} aria-hidden="true" />
           </Button>
@@ -44,34 +69,7 @@ export function StyleEditors({
             align="start"
             aria-label="Style options"
           >
-            <div className="style-editor-options">
-              <label>
-                Icon
-                <EmojiPicker value={emoji} onSelect={onEmojiChange} />
-              </label>
-              <label>
-                Color
-                <ColorPicker
-                  value={color ?? undefined}
-                  onSelect={onColorChange}
-                />
-              </label>
-              <label>
-                <span>
-                  Image <span className="style-image-soon">Soon</span>
-                </span>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  disabled
-                  aria-label="Choose image (coming soon)"
-                  title="Image selection is coming soon"
-                >
-                  <ImagePlus size={18} aria-hidden="true" />
-                </Button>
-              </label>
-            </div>
+            <StyleFields {...fields} />
           </Popover.Content>
         </Popover.Portal>
       </Popover.Root>

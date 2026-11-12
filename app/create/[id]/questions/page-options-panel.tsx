@@ -1,12 +1,13 @@
-import { pagePresentation, type PagePresentation } from '@/lib/quiz-presentation'
-import { ColorPicker } from '@/components/ui/color-picker'
+import { coverPresentation, pagePresentation, type PagePresentation, type QuizAppearance, type CoverPageStyle } from '@/lib/quiz-presentation'
+import { StyleFields } from '@/components/style-editors'
+import { PageLayoutPicker } from '@/components/page-layout-picker'
+import { ArtworkPicker } from '@/components/artwork-picker'
 import { QuizPage } from '@prisma/client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { EmojiPicker } from '@/components/ui/emoji-picker'
 import { useConfirmDialog } from '@/components/ui/confirm-dialog'
 import { Trash2 } from 'lucide-react'
 
@@ -14,14 +15,27 @@ interface PageOptionsPanelProps {
   page: QuizPage
   onUpdate: (page: QuizPage) => void
   onDelete?: () => void
+  welcomeStyle?: {
+    emoji: string | null
+    color: string | null
+    appearance: QuizAppearance
+    onEmojiChange: (emoji: string | null) => void
+    onColorChange: (color: string) => void
+    onAppearanceChange: (patch: Partial<QuizAppearance>) => void
+  }
 }
 
-export function PageOptionsPanel({ page, onUpdate, onDelete }: PageOptionsPanelProps) {
+export function PageOptionsPanel({ page, onUpdate, onDelete, welcomeStyle }: PageOptionsPanelProps) {
   const isCover = page.style === 'cover'
   const isResults = page.style === 'results'
   const isSpecialPage = isCover || isResults
   const presentation = pagePresentation(page.presentation)
   const updatePresentation = (patch: Partial<PagePresentation>) => onUpdate({ ...page, presentation: { ...presentation, ...patch } })
+  const cover = welcomeStyle ? coverPresentation(page.presentation, welcomeStyle.appearance) : null
+  const updateCoverStyle = (patch: Partial<CoverPageStyle>) => {
+    if (!cover) return
+    updatePresentation({ coverPageStyle: { layout: cover.layout, backgroundImage: cover.backgroundImage ?? null, ...patch } })
+  }
   const { confirm, dialog } = useConfirmDialog()
 
   const handleDelete = () => {
@@ -53,7 +67,23 @@ export function PageOptionsPanel({ page, onUpdate, onDelete }: PageOptionsPanelP
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div>
+          {isCover ? welcomeStyle && <section className="studio-welcome-style" aria-label="Quiz style">
+            <h4>Quiz style</h4>
+            <StyleFields
+              emoji={welcomeStyle.emoji}
+              color={welcomeStyle.color}
+              onEmojiChange={welcomeStyle.onEmojiChange}
+              onColorChange={welcomeStyle.onColorChange}
+              background={welcomeStyle.appearance.coverImage}
+              onBackgroundChange={coverImage => welcomeStyle.onAppearanceChange({ coverImage })}
+              imageLabel="Quiz image"
+            />
+            {cover && <div className="quiz-style-extra" role="group" aria-label="Cover page style">
+              <h4>Cover page</h4>
+              <ArtworkPicker label="Page background" value={cover.backgroundImage ?? null} onChange={backgroundImage => updateCoverStyle({ backgroundImage })} />
+              <PageLayoutPicker value={cover.layout} onChange={layout => updateCoverStyle({ layout })} />
+            </div>}
+          </section> : <><div>
             <label className="text-sm font-medium text-muted-700 mb-1 block">
               Title
             </label>
@@ -76,15 +106,7 @@ export function PageOptionsPanel({ page, onUpdate, onDelete }: PageOptionsPanelP
             />
           </div>
 
-          <div>
-            <label className="text-sm font-medium text-muted-700 mb-1 block">
-              Emoji
-            </label>
-            <EmojiPicker
-              value={page.emoji || ''}
-              onSelect={(emoji) => onUpdate({ ...page, emoji })}
-            />
-          </div>
+          </>}
 
           {!isSpecialPage && (
             <>
@@ -97,13 +119,18 @@ export function PageOptionsPanel({ page, onUpdate, onDelete }: PageOptionsPanelP
             </>
           )}
 
-          <section className="studio-presentation-settings" aria-label="Page appearance">
-            <h4>Look &amp; feel</h4>
-            <label>Layout<select aria-label={isCover ? 'Cover layout' : isResults ? 'Result layout' : 'Page layout'} value={presentation.layout} onChange={event => updatePresentation({ layout: event.target.value as PagePresentation['layout'] })}>
-              <option value="hero">Illustrated hero</option><option value="split">Split story</option><option value="card">Keepsake card</option><option value="minimal">Minimal</option>
-            </select></label>
-            <label>Artwork<select aria-label="Page artwork" value={presentation.artwork} onChange={event => updatePresentation({ artwork: event.target.value as PagePresentation['artwork'] })}><option value="islands">Floating islands</option><option value="party">Celebration</option><option value="science">Curious laboratory</option><option value="creation">Creative world</option><option value="none">No artwork</option></select></label>
-            <div><span className="studio-setting-label">Page palette</span><ColorPicker value={page.color || '#8b5cf6'} onSelect={color => onUpdate({ ...page, color })} /></div>
+          <section className="studio-presentation-settings" aria-label="Page settings">
+            {!isSpecialPage && <>
+              <h4>Page style</h4>
+              <PageLayoutPicker value={presentation.layout} onChange={layout => updatePresentation({ layout })} />
+              <StyleFields emoji={page.emoji} color={page.color}
+                onEmojiChange={emoji => onUpdate({ ...page, emoji })}
+                onColorChange={color => onUpdate({ ...page, color })}
+                onClearColor={() => onUpdate({ ...page, color: null })}
+                background={presentation.backgroundImage}
+                onBackgroundChange={backgroundImage => updatePresentation({ backgroundImage })}
+              />
+            </>}
             <h4>What to show</h4>
             <label className="studio-check-setting"><input type="checkbox" checked={presentation.showDescription} onChange={e => updatePresentation({ showDescription: e.target.checked })} />Description</label>
             {isCover && <><label>Start button<Input aria-label="Start button label" value={presentation.startLabel} maxLength={60} onChange={e => updatePresentation({ startLabel: e.target.value })} /></label>

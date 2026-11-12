@@ -1,3 +1,6 @@
+import { QuizSymbol } from '@/components/quiz-symbol'
+import { ItemBackground } from './quiz-artwork'
+import type { Artwork } from '@/lib/quiz-artwork'
 import type { CSSProperties } from 'react'
 import {
   getColorTheme,
@@ -7,7 +10,7 @@ import {
 } from '@/lib/colors'
 import { getInitials } from '@/lib/utils'
 
-type Identity = { name: string; emoji?: string | null; color?: string | null }
+type Identity = { name: string; emoji?: string | null; color?: string | null; background?: Artwork | null }
 export function getArchetypeTheme(
   color: string | null | undefined,
   name: string,
@@ -24,16 +27,18 @@ export function DimensionSymbol({
   name,
   emoji,
   color,
+  background,
 }: {
   name: string
   emoji?: string | null
   color?: string | null
+  background?: Artwork | null
 }) {
   const theme = getColorTheme(color)
   const surface = getColorSurface(theme.value)
   return (
     <span
-      className="dimension-symbol"
+      className="dimension-symbol item-style-surface"
       style={
         {
           '--dimension-color': theme.hex,
@@ -43,19 +48,21 @@ export function DimensionSymbol({
       }
       aria-hidden="true"
     >
-      <span>{emoji || getInitials(name) || '#'}</span>
+      <ItemBackground artwork={background} />
+      <span><QuizSymbol value={emoji} fallback={getInitials(name) || '#'} /></span>
     </span>
   )
 }
-export function DimensionTag({ name, emoji, color }: Identity) {
+export function DimensionTag({ name, emoji, color, background }: Identity) {
   const theme = getColorTheme(color)
   const surface = getColorSurface(theme.value)
   return (
     <span
-      className="dimension-tag"
+      className="dimension-tag item-style-surface"
       style={{ background: surface.background, color: surface.textColor }}
     >
-      {emoji && <span aria-hidden="true">{emoji}</span>}
+      <ItemBackground artwork={background} />
+      {emoji && <span aria-hidden="true"><QuizSymbol value={emoji} /></span>}
       {name}
     </span>
   )
@@ -66,7 +73,7 @@ export function ArchetypeBadge({
   color,
   size = 96,
   label = true,
-}: { size?: number; label?: boolean } & Identity) {
+}: { size?: number; label?: boolean } & Omit<Identity, 'background'>) {
   const theme = getArchetypeTheme(color, name)
   const badge = getBadgeAppearance(theme.value)
   return (
@@ -87,7 +94,7 @@ export function ArchetypeBadge({
       }
     >
       <div className="archetype-badge-face" aria-hidden="true">
-        {emoji || getInitials(name) || '?'}
+        <QuizSymbol value={emoji} fallback={getInitials(name) || '?'} />
       </div>
       {label && (
         <span className="archetype-badge-label" title={name}>

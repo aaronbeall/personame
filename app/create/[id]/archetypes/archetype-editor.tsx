@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Dimension, ArchetypeDimension, Archetype } from '@prisma/client'
 import { StyleEditors } from '@/components/style-editors'
+import { encodeArtwork, readArtwork } from '@/lib/quiz-artwork'
+import { ArtworkCredit, ItemBackground } from '@/components/quiz-artwork'
 import { getTempId } from '@/lib/utils'
 import { ArchetypeBadge } from '@/components/entity-identity'
 import { DimensionTargetEditor } from './dimension-target-editor'
@@ -30,6 +32,7 @@ export function ArchetypeEditor({
   onDelete,
 }: ArchetypeEditorProps) {
   const { name, description, emoji, color } = archetype
+  const artwork = readArtwork(archetype.imageUrl)
   const dimensionTargets = archetype.dimensions
   const update = (patch: Partial<typeof archetype>) =>
     onChange({ ...archetype, ...patch })
@@ -66,13 +69,16 @@ export function ArchetypeEditor({
   return (
     <div className="archetype-editor space-y-6">
       {/* Header with Profile */}
-      <div className="archetype-editor-header flex items-start gap-5">
+      <div className="archetype-editor-header archetype-heading-art item-style-surface flex items-start gap-5" data-artwork={!!artwork}>
+        <ItemBackground artwork={artwork} />
         <div className="flex flex-col items-center flex-shrink-0">
           <StyleEditors
             emoji={emoji}
             color={color}
             onEmojiChange={setEmoji}
             onColorChange={setColor}
+            background={artwork}
+            onBackgroundChange={artwork => update({ imageUrl: encodeArtwork(artwork) })}
           >
             <ArchetypeBadge
               name={name}
@@ -115,6 +121,7 @@ export function ArchetypeEditor({
               className="text-sm"
             />
           </div>
+          {artwork && <ArtworkCredit artwork={artwork} />}
         </div>
       </div>
 

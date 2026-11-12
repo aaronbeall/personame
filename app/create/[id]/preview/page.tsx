@@ -56,7 +56,7 @@ export default function ReviewPage({ params }: { params: Promise<{ id: string }>
   const todoCount = Object.values(issues).reduce((count, list) => count + new Set(list).size, 0)
   const publishState = quiz.status === 'PUBLISHED' ? 'live' : quiz.status === 'CLOSED' ? 'closed' : todoCount === 0 ? 'ready' : 'incomplete'
   const publishDescription = { live: 'Live · accepting responses', closed: 'Closed · not accepting responses', ready: 'Ready to publish', incomplete: 'Finish the publishing checklist first' }[publishState]
-  const playerQuiz = { id: quiz.id, title: quiz.title, description: quiz.description, slug: quiz.slug, emoji: quiz.emoji, color: quiz.color, revision: new Date(quiz.updatedAt).toISOString(), pages: quiz.pages.filter(p => !p.hidden) } satisfies ReturnType<typeof publicQuiz>
+  const playerQuiz = { id: quiz.id, title: quiz.title, description: quiz.description, slug: quiz.slug, emoji: quiz.emoji, color: quiz.color, style: quiz.style, revision: new Date(quiz.updatedAt).toISOString(), pages: quiz.pages.filter(p => !p.hidden) } satisfies ReturnType<typeof publicQuiz>
   return <AppLayoutBackground><div className="review-page">
     <PublishCelebration key={celebrating ? 'celebrating' : 'idle'} open={celebrating} onOpenChange={setCelebrating} title={quiz.title} slug={quiz.slug} emoji={quiz.emoji} color={quiz.color} />
     <StepProgress title="Review & publish" description="Check your quiz, explore your model, and share it with your people." />

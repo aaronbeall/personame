@@ -1,4 +1,5 @@
 'use client'
+import { QuizSymbol } from '@/components/quiz-symbol'
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
@@ -64,14 +65,14 @@ function AnalysisContent({ quiz, analysis: a }: { quiz: Quiz; analysis: Question
     <div className="question-space-results">
       <section aria-labelledby="question-reach-title"><div className="question-space-subheading"><div><h3 id="question-reach-title">Where answers can take you</h3><p>The scores your questions can produce, and where results tend to gather.</p></div></div>
         {a.axes.map((axis, i) => { const d = quiz.dimensions[i], color = getColorTheme(d.color).hex, peak = Math.max(1, ...axis.bins)
-          return <div className="question-reach" key={axis.id}><div><strong>{d.emoji} {d.name}</strong><span>{axis.evidenceQuestions ? `${axis.questions} varying questions · ${axis.min.toFixed(0)}–${axis.max.toFixed(0)}` : 'Not measured'}</span></div>
+          return <div className="question-reach" key={axis.id}><div><strong><QuizSymbol value={d.emoji} color={d.color} /> {d.name}</strong><span>{axis.evidenceQuestions ? `${axis.questions} varying questions · ${axis.min.toFixed(0)}–${axis.max.toFixed(0)}` : 'Not measured'}</span></div>
             <svg viewBox="0 0 400 58" role="img" aria-label={`${d.name}: reachable from ${axis.min.toFixed(1)} to ${axis.max.toFixed(1)}; ${a.count ? `weighted-average scores; ${axis.evidenceQuestions} mapped questions` : 'outcome distribution unavailable'}`}>
               <rect x={10} y={38} width={380} height={4} rx={2} fill="#eeebf4" />
               {a.count > 0 && axis.bins.map((count, bin) => <rect key={bin} x={10 + bin * 38} y={35 - count / peak * 25} width={35} height={count / peak * 25} rx={2} fill={color} opacity={.38}><title>{bin * 10} ≤ score {bin === 9 ? '≤ 100' : `< ${(bin + 1) * 10}`}: {percent(count / a.count)} of paths</title></rect>)}
               <line x1={10 + axis.min * 3.8} x2={10 + axis.max * 3.8} y1={40} y2={40} stroke={color} strokeWidth={4} strokeLinecap="round" />
               {quiz.archetypes.map(ar => { const t = ar.dimensions.find(t => t.dimensionId === d.id && t.relevance > 0); return t ? <path key={ar.id} d={`M ${10 + t.targetValue * 3.8} 34 l 5 6 l -5 6 l -5 -6 Z`} fill={getArchetypeTheme(ar.color, ar.name).hex} stroke="white" strokeWidth={1}><title>{ar.name}: {t.targetValue} target</title></path> : null })}
               <text x={10} y={57}>0</text><text x={390} y={57} textAnchor="end">100</text>
-            </svg><div className="question-reach-ends"><span>{d.minEmoji} {d.minLabel || 'Low'}</span><span>{d.maxEmoji} {d.maxLabel || 'High'}</span></div>
+            </svg><div className="question-reach-ends"><span><QuizSymbol value={d.minEmoji} color={d.color} /> {d.minLabel || 'Low'}</span><span><QuizSymbol value={d.maxEmoji} color={d.color} /> {d.maxLabel || 'High'}</span></div>
             {a.count > 0 && axis.evidenceQuestions > 0 && <small>Mean {axis.mean.toFixed(1)} · {axis.evidenceQuestions} mapped questions</small>}
           </div>
         })}

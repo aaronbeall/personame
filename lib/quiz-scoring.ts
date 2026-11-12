@@ -2,6 +2,7 @@ import { scoringModelKey } from './scoring-model-key'
 import { pagePresentation, type PagePresentation } from './quiz-presentation'
 import { questionInfluence } from './question-influence'
 import type { FullQuiz } from './personas'
+import { readArtwork, type Artwork } from './quiz-artwork'
 import {
   calculateDimensionScores,
   rankArchetypes,
@@ -16,11 +17,14 @@ export type ResultSnapshot = {
     name: string
     description: string | null
     emoji: string | null
+    artwork?: Artwork | null
     color: string | null
   }
   scores: {
     dimensionId: string
     dimensionName: string
+    emoji?: string | null
+    artwork?: Artwork | null
     color?: string | null
     score: number
     evidenceCount?: number
@@ -107,20 +111,22 @@ export function scoreQuiz(quiz: FullQuiz, responses: QuizResponses) {
       name: archetype.name,
       description: archetype.description,
       emoji: archetype.emoji,
+      artwork: readArtwork(archetype.imageUrl),
       color: archetype.color,
     },
-    scores: scores.map((s) => ({
-      ...s,
-      color:
-        quiz.dimensions.find((dimension) => dimension.id === s.dimensionId)!
-          .color ?? null,
-      minEmoji:
-        quiz.dimensions.find((m) => m.id === s.dimensionId)!.minEmoji ?? null,
-      maxEmoji:
-        quiz.dimensions.find((m) => m.id === s.dimensionId)!.maxEmoji ?? null,
-      minLabel: quiz.dimensions.find((m) => m.id === s.dimensionId)!.minLabel,
-      maxLabel: quiz.dimensions.find((m) => m.id === s.dimensionId)!.maxLabel,
-    })),
+    scores: scores.map((score) => {
+      const dimension = quiz.dimensions.find(({ id }) => id === score.dimensionId)!
+      return {
+        ...score,
+        emoji: dimension.emoji ?? null,
+        artwork: readArtwork(dimension.style),
+        color: dimension.color ?? null,
+        minEmoji: dimension.minEmoji ?? null,
+        maxEmoji: dimension.maxEmoji ?? null,
+        minLabel: dimension.minLabel,
+        maxLabel: dimension.maxLabel,
+      }
+    }),
     matchScore: match.matchScore,
     scoringVersion: 2,
     matchMargin: matches[1] ? matches[1].distance - match.distance : null,

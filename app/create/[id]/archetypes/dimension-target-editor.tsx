@@ -114,11 +114,13 @@ export function DimensionTargetEditor({
           <DimensionEndpointLabel
             label={dimension.minLabel || '0'}
             emoji={dimension.minEmoji}
+            color={dimension.color}
             end="low"
           />
           <DimensionEndpointLabel
             label={dimension.maxLabel || '100'}
             emoji={dimension.maxEmoji}
+            color={dimension.color}
             end="high"
           />
         </div>

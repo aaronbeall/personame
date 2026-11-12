@@ -9,7 +9,7 @@ import {
   getColorTheme,
   getColorSurface,
 } from '@/lib/colors'
-import { Check, Palette } from 'lucide-react'
+import { Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface ColorPickerProps {
@@ -29,7 +29,7 @@ export function ColorPicker({
     selected.colors.length > 1 ? 'themes' : 'solid',
   )
   const id = useId()
-  const surface = getColorSurface(value ? selected.value : '#e5e7eb')
+  const surface = value ? getColorSurface(selected.value) : null
   const options =
     tab === 'solid'
       ? COLOR_THEME.map((color) => ({ label: color.label, value: color.hex }))
@@ -49,25 +49,16 @@ export function ColorPicker({
         <Button
           type="button"
           aria-label={`Choose color${value ? `: ${selected.label}` : ''}`}
-          title="Choose color"
+          title={value ? 'Choose color' : 'Choose color (none selected)'}
           variant="outline"
           className={cn(
             'h-10 px-2 relative overflow-hidden',
             showLabel ? 'min-w-24 justify-center' : 'w-10',
+            !value && 'color-picker-unset',
           )}
-          style={{ background: surface.background, color: surface.textColor }}
+          style={surface ? { background: surface.background, color: surface.textColor } : undefined}
         >
-          <span className="relative z-10 font-medium text-xs">
-            {showLabel ? (
-              value ? (
-                selected.label
-              ) : (
-                'Color'
-              )
-            ) : (
-              <Palette aria-hidden="true" className="h-4 w-4" />
-            )}
-          </span>
+          {showLabel && value && <span className="relative z-10 font-medium text-xs">{selected.label}</span>}
         </Button>
       </Popover.Trigger>
       <Popover.Portal>

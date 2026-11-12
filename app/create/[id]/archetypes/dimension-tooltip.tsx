@@ -29,12 +29,14 @@ export function DimensionTooltip({ dimension, children }: DimensionTooltipProps)
             <DimensionEndpointLabel
               label={dimension.minLabel || 'Low'}
               emoji={dimension.minEmoji}
+              color={dimension.color}
               end="low"
             />
             <span aria-hidden="true"> – </span>
             <DimensionEndpointLabel
               label={dimension.maxLabel || 'High'}
               emoji={dimension.maxEmoji}
+              color={dimension.color}
               end="high"
             />
           </span>
