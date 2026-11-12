@@ -16,7 +16,7 @@ test('studio settings persist into the participant cover and result presentation
   await expect(page.getByRole('status').filter({ hasText: 'Saved. Your changes are in the draft.' })).toBeVisible()
   await page.goto(`/create/${id}/questions`)
   await expect(page.getByRole('heading',{name:'Build your quiz',exact:true})).toBeVisible()
-  await expect(page.locator('.quiz-studio .page-intro[data-page-art=pirate-ship]')).toBeVisible()
+  await expect(page.locator('.quiz-studio .page-intro[data-page-art=science]')).toBeVisible()
   await expect(page.locator('.quiz-studio .page-intro h1')).toHaveCSS('font-weight','700')
   await expect(page.locator('.quiz-studio .workspace-landscape')).not.toHaveCSS('display','none')
   await expect(page.locator('.quiz-cover-visual img[src*="party.webp"]')).toBeVisible()

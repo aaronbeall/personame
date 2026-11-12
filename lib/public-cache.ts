@@ -11,9 +11,9 @@ export function invalidatePublicQuiz(id: string) {
 }
 export const publishedListings = unstable_cache(() => prisma.persona.findMany({
   where: { status: 'PUBLISHED', visibility: 'PUBLIC' },
-  select: { id: true, title: true, slug: true, description: true, emoji: true, color: true, completions: true, publishedAt: true, _count: { select: { archetypes: true } } },
+  select: { id: true, title: true, slug: true, description: true, emoji: true, color: true, style: true, completions: true, publishedAt: true, _count: { select: { archetypes: true } } },
   orderBy: [{ publishedAt: 'desc' }, { id: 'desc' }], take: 30,
-}), ['published-listings-v1'], { tags: [catalogTag], revalidate: 30 })
+}), ['published-listings-v2'], { tags: [catalogTag], revalidate: 30 })
 export const publishedCount = unstable_cache(() => prisma.persona.count({
   where: { status: 'PUBLISHED', visibility: 'PUBLIC' },
 }), ['published-count-v1'], { tags: [catalogTag], revalidate: 30 })

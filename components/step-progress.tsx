@@ -30,10 +30,10 @@ export function StepProgress({
   const composition = progressQuery.data
   const stages = [
     ['name', 'Name', 'creation'],
-    ['dimensions', 'Dimensions', 'science'],
+    ['dimensions', 'Dimensions', 'chef-cuisine'],
     ['archetypes', 'Archetypes', 'islands'],
-    ['questions', 'Questions', 'pirate-ship'],
-    ['preview', 'Review & publish', 'galaxy-expansion'],
+    ['questions', 'Questions', 'science'],
+    ['preview', 'Review & publish', 'pirate-ship'],
   ]
   const active = Math.max(
     0,

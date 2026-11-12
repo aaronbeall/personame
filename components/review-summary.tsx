@@ -6,6 +6,7 @@ import * as Popover from '@radix-ui/react-popover'
 import type { ReactNode } from 'react'
 import type { FullQuiz } from '@/lib/personas'
 import { getColorSurface, getColorTheme } from '@/lib/colors'
+import { readQuizAppearance } from '@/lib/quiz-presentation'
 import { QuizCoverMark } from './quiz-cover-mark'
 import { ArchetypeBadge, DimensionTag } from './entity-identity'
 import { DimensionEndpointLabel } from './dimension-endpoint-label'
@@ -28,7 +29,7 @@ export function ReviewSummary({ quiz, preview }: { quiz: FullQuiz; preview?: Rea
   const edit = (stage: string, label: string) => <Link className="review-edit-link" href={`/create/${quiz.id}/${stage}`}>{label}<ArrowUpRight size={14} aria-hidden="true" /></Link>
   return <div className="review-summary">
     <section className="review-section review-identity" aria-label="Quiz summary">
-      <QuizCoverMark emoji={quiz.emoji} color={quiz.color} />
+      <QuizCoverMark emoji={quiz.emoji} color={quiz.color} booklet={readQuizAppearance(quiz.style)?.booklet} />
       <div><span className="review-eyebrow">YOUR QUIZ, AT A GLANCE</span><h2>{quiz.title || 'Untitled quiz'}</h2><p>{quiz.description || 'Add a description to give people a little context.'}</p>
         <div className="review-metadata"><span><EntityIcon kind="dimension" size={14} />{quiz.dimensions.length} dimensions</span><span><EntityIcon kind="archetype" size={14} />{quiz.archetypes.length} archetypes</span><span><ListChecks size={14} />{questions.length} questions</span></div>
       </div><div className="review-identity-actions">{preview}{edit('name', 'Edit name & style')}</div>

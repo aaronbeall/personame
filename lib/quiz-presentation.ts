@@ -9,7 +9,21 @@ const coverPageStyleSchema = z.object({
   backgroundImage: artworkSchema.nullable(),
 })
 export type CoverPageStyle = z.infer<typeof coverPageStyleSchema>
+export const bookletPatterns = [
+  'dots', 'checks', 'stripes', 'waves', 'scallops', 'diamonds',
+  'hearts', 'sparkles', 'clouds', 'leaves', 'patchwork', 'constellations',
+  'stargazing', 'wildflowers', 'ripple', 'confetti',
+] as const
+export const bookletTextLimit = 28
+export const bookletSchema = z.object({
+  title: z.string().max(bookletTextLimit).optional(),
+  subtitle: z.string().max(bookletTextLimit).optional(),
+  pattern: z.enum(bookletPatterns).nullable().optional(),
+})
+export type QuizBooklet = z.infer<typeof bookletSchema>
+
 export const quizAppearanceSchema = z.object({
+  booklet: bookletSchema.optional(),
   layout: layoutSchema.default('hero'),
   coverImage: artworkSchema.nullable().default(null),
   backgroundImage: artworkSchema.nullable().default(null),

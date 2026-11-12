@@ -188,7 +188,7 @@ export function QuizPlayer({
           Participant preview — answers here are not saved
         </p>
       )}
-      {page.style === 'cover' && <QuizCover title={quiz.title} description={quiz.description} emoji={quiz.emoji} color={quiz.color} presentation={coverPresentation(page.presentation, appearance)} questionCount={allQuestions.length} action={<Button className="quiz-themed-button" onClick={next} disabled={!submissionKey}>{settings.startLabel}<ArrowRight size={16} /></Button>} />}
+      {page.style === 'cover' && <QuizCover title={quiz.title} description={quiz.description} emoji={quiz.emoji} color={quiz.color} booklet={appearance?.booklet} presentation={coverPresentation(page.presentation, appearance)} questionCount={allQuestions.length} action={<Button className="quiz-themed-button" onClick={next} disabled={!submissionKey}>{settings.startLabel}<ArrowRight size={16} /></Button>} />}
       {page.style === 'cover' && answered > 0 && <p className="quiz-resume" role="status">Your {answered} saved answers are here. Continue to pick up where you left off.</p>}
       {page.style !== 'cover' && (
         <>

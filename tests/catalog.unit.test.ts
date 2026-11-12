@@ -5,6 +5,8 @@ import { readFileSync } from 'node:fs'
 import { parseCatalog, compileCatalogQuiz } from '../lib/quiz-catalog'
 import { scoreQuiz, type QuizResponses } from '../lib/quiz-scoring'
 import { readiness } from '../lib/quiz-validation'
+import { bookletPatterns, coverPresentation, quizAppearance } from '../lib/quiz-presentation'
+import { curatedArtworkSrc, curatedBackgrounds } from '../lib/quiz-artwork'
 const raw = parseYaml(readFileSync('content/seed-quizzes.yaml', 'utf8'))
 const catalog = parseCatalog(raw)
 for (const definition of catalog.quizzes)
@@ -13,7 +15,7 @@ for (const definition of catalog.quizzes)
     assert.deepEqual(readiness(quiz), [])
     assert.equal(quiz.pages.filter(p => p.style === 'results').length, 1)
     assert.equal(quiz.pages.at(-1)?.style, 'results')
-    const questions = quiz.pages[1].questions
+    const questions = quiz.pages.flatMap(page => page.questions)
     const matches = new Set<string>()
     // Explore all low/high combinations, not just one happy-path result.
     for (let mask = 0; mask < 2 ** questions.length; mask++) {
@@ -155,7 +157,7 @@ test('starter catalog includes themed identities, endpoint artwork and varied im
       assert.ok(weights.includes(1))
       assert.ok(weights.some((weight) => weight > 0 && weight < 1))
     }
-    assert.ok(quiz.pages[1].questions.every((q) => q.emoji))
+    assert.ok(quiz.pages.flatMap(page => page.questions).every(q => q.emoji))
   }
   const invalid = structuredClone(raw)
   invalid.quizzes[0].archetypes[0].relevance = { typo: 0.5 }
@@ -165,6 +167,33 @@ test('starter catalog includes themed identities, endpoint artwork and varied im
   )
   invalid.quizzes[0].archetypes[0].relevance = { novelty: 0, company: 0 }
   assert.throws(() => parseCatalog(invalid), /at least one relevant dimension/)
+})
+
+test('seed artwork is available in the picker and all four layouts are represented', () => {
+  const layouts = new Set<string>()
+  for (const definition of catalog.quizzes) {
+    const quiz = compileCatalogQuiz(definition)
+    const appearance = quizAppearance(quiz)
+    const { booklet } = appearance
+    assert.ok(booklet?.title && booklet.subtitle && booklet.pattern)
+    assert.ok(booklet.title.trim().split(/\s+/).length <= 2)
+    assert.ok(booklet.subtitle.trim().split(/\s+/).length <= 2)
+    const cover = coverPresentation(quiz.pages[0].presentation, appearance)
+    layouts.add(cover.layout)
+    const asset = cover.coverImage?.asset
+    assert.equal(asset?.source, 'curated')
+    assert.equal(asset.id, quiz.slug)
+    assert.ok(curatedBackgrounds.includes(asset.id))
+  }
+  for (const artwork of curatedBackgrounds) {
+    assert.ok(readFileSync(`public${curatedArtworkSrc(artwork)}`).length > 0)
+  }
+  assert.deepEqual([...layouts].sort(), ['card', 'hero', 'minimal', 'split'])
+  for (const pattern of bookletPatterns) {
+    assert.ok(readFileSync(`public/images/booklet-patterns/${pattern}.webp`).length > 0)
+  }
+  const crew = compileCatalogQuiz(catalog.quizzes.find(quiz => quiz.slug === 'space-crew')!)
+  assert.deepEqual(crew.pages.slice(1, -1).map(page => page.questions.length), [5, 5, 5])
 })
 
 test('catalog varies dimension counts, archetype counts and question lengths', () => {

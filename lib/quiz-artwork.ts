@@ -8,6 +8,17 @@ export const curatedArtwork = {
   'tree-house': 'Tree house',
   'pirate-ship': 'Pirate ship',
   'galaxy-expansion': 'Galaxy',
+  'weekend-wanderer': 'Weekend wanderer',
+  'creative-sidekick': 'Creative atelier',
+  'dinner-party': 'Candlelit dinner party',
+  'fantasy-tavern': 'Fantasy tavern',
+  'city-after-dark': 'City after dark',
+  'space-crew': 'Space crew',
+  'team-project': 'Team workshop',
+  'rainy-day': 'Rainy day',
+  'reading-nook': 'Reading nook',
+  'garden-companion': 'Garden companion',
+  'festival-day': 'Festival evening',
   explorer: 'Explorer',
   scholar: 'Scholar',
   caregiver: 'Caregiver',
@@ -16,11 +27,13 @@ export const curatedArtwork = {
   inventor: 'Inventor',
 } as const
 
+const illustratedScenes = new Set(['islands', 'party', 'science', 'creation', 'tree-house', 'pirate-ship', 'galaxy-expansion'])
 const portraits = new Set(['explorer', 'scholar', 'caregiver', 'rebel', 'dreamer', 'inventor'])
 export const curatedBackgrounds = (Object.keys(curatedArtwork) as (keyof typeof curatedArtwork)[])
   .filter(id => !portraits.has(id))
 export function curatedArtworkSrc(id: keyof typeof curatedArtwork) {
-  return `/images/${portraits.has(id) ? 'personas' : 'decor'}/${id}.webp`
+  if (portraits.has(id)) return `/images/personas/${id}.webp`
+  return `/images/decor/${id}${illustratedScenes.has(id) ? '-scene' : ''}.webp`
 }
 
 function httpsUrl(host: string) {

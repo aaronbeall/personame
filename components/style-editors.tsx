@@ -18,6 +18,7 @@ type StyleFieldsProps = {
   background?: Artwork | null
   onBackgroundChange?: (artwork: Artwork | null) => void
   imageLabel?: string
+  extraControl?: ReactNode
 }
 
 export function StyleFields({
@@ -29,22 +30,26 @@ export function StyleFields({
   background,
   onBackgroundChange,
   imageLabel = 'Background image',
+  extraControl,
 }: StyleFieldsProps) {
-  return <div className="style-editor-options">
+  return <div className="style-editor-options" data-extra-control={!!extraControl}>
     <SymbolPicker value={emoji} color={color} onSelect={onEmojiChange} />
     <div className="style-color-actions">
       <ColorPicker value={color ?? undefined} showLabel={false} onSelect={onColorChange} />
       {onClearColor && color && <Button type="button" variant="ghost" size="icon" onClick={onClearColor} aria-label="Remove custom color"><Trash2 size={15} /></Button>}
     </div>
     {onBackgroundChange && <ArtworkPicker label={imageLabel} value={background ?? null} onChange={onBackgroundChange} />}
+    {extraControl}
   </div>
 }
 
 export function StyleEditors({
   children,
+  popoverFooter,
   ...fields
 }: {
   children: ReactNode
+  popoverFooter?: ReactNode
 } & StyleFieldsProps) {
   return (
     <div className="style-portrait">
@@ -70,6 +75,7 @@ export function StyleEditors({
             aria-label="Style options"
           >
             <StyleFields {...fields} />
+            {popoverFooter}
           </Popover.Content>
         </Popover.Portal>
       </Popover.Root>

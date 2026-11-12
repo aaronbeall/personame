@@ -74,7 +74,7 @@ export function PagePreview({
     })
   }
 
-  if (isCover) return <QuizCover title={quiz?.title || 'Welcome'} description={quiz?.description} emoji={quiz?.emoji} color={quiz?.color} presentation={coverPresentation(page.presentation, appearance)} questionCount={questionCount} action={<span className="quiz-themed-button">{settings.startLabel} →</span>} />
+  if (isCover) return <QuizCover title={quiz?.title || 'Welcome'} description={quiz?.description} emoji={quiz?.emoji} color={quiz?.color} booklet={appearance?.booklet} presentation={coverPresentation(page.presentation, appearance)} questionCount={questionCount} action={<span className="quiz-themed-button">{settings.startLabel} →</span>} />
   if (isResults) return <div className="studio-result-preview"><ResultHero title={page.title} name={sampleArchetype?.name || 'Your Archetype'} description={sampleArchetype?.description} emoji={sampleArchetype?.emoji} artwork={readArtwork(sampleArchetype?.imageUrl)} color={sampleArchetype?.color} presentation={page.presentation} preview /></div>
 
   return (
