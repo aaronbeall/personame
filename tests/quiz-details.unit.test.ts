@@ -23,3 +23,18 @@ test('quiz details reject blank names, excessive text, and unsupported colors', 
   ])
     assert.equal(quizDetailsSchema.safeParse(value).success, false)
 })
+
+test('quiz details accept booklet styles and reject invalid saved appearance', () => {
+  const style = 'appearance:' + JSON.stringify({
+    booklet: { title: 'Star Log', subtitle: 'Crew Guide', pattern: 'constellations' },
+  })
+  assert.equal(quizDetailsSchema.parse({ title: 'Space Crew', style }).style, style)
+  for (const invalidStyle of [
+    'unsupported',
+    'appearance:{',
+    'appearance:{"booklet":{"pattern":"unknown"}}',
+    'appearance:' + JSON.stringify({ booklet: { title: 'x'.repeat(29) } }),
+  ]) {
+    assert.equal(quizDetailsSchema.safeParse({ title: 'Space Crew', style: invalidStyle }).success, false)
+  }
+})
