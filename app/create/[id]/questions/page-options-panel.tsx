@@ -67,11 +67,6 @@ export function PageOptionsPanel({ page, onUpdate, onDelete, welcomeStyle }: Pag
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {isResults && <label className="grid gap-2 text-sm font-medium">
-            Results title
-            <Input value={page.title || ''} placeholder="Page title"
-              onChange={e => onUpdate({ ...page, title: e.target.value })} />
-          </label>}
           {isCover ? welcomeStyle && <section className="studio-welcome-style" aria-label="Quiz style">
             <h4>Quiz style</h4>
             <StyleFields
