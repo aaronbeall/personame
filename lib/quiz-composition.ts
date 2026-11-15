@@ -1,3 +1,4 @@
+import type { QuizBooklet } from './quiz-presentation'
 import type { ReadinessQuiz } from './quiz-projections'
 import { readinessByStage } from './quiz-validation'
 
@@ -54,6 +55,7 @@ export type OwnedQuizSummary = {
   visibility: string
   color: string | null
   emoji: string | null
+  booklet?: QuizBooklet
   completions: number
   updatedAt: string
   _count: { dimensions: number; archetypes: number; pages: number }

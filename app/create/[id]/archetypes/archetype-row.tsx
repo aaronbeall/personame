@@ -11,6 +11,8 @@ import { getColorTheme, getBarGradient } from '@/lib/colors'
 import type { CSSProperties } from 'react'
 import { useConfirmDialog } from '@/components/ui/confirm-dialog'
 import { StyleEditors } from '@/components/style-editors'
+import { encodeArtwork, readArtwork } from '@/lib/quiz-artwork'
+import { ArtworkCredit, ItemBackground } from '@/components/quiz-artwork'
 import { ArchetypeEditor } from './archetype-editor'
 import {
   ArchetypeBadge,
@@ -69,6 +71,7 @@ export function ArchetypeRow({
     )
   }
 
+  const artwork = readArtwork(archetype.imageUrl)
   return (
     <>
       {dialog}
@@ -81,12 +84,15 @@ export function ArchetypeRow({
           } as CSSProperties
         }
       >
-        <header className="archetype-view-header">
+        <header className="archetype-view-header archetype-heading-art item-style-surface" data-artwork={!!artwork}>
+          <ItemBackground artwork={artwork} />
           <StyleEditors
             emoji={archetype.emoji}
             color={archetype.color}
             onEmojiChange={(emoji) => onChange({ ...archetype, emoji })}
             onColorChange={(color) => onChange({ ...archetype, color })}
+            background={artwork}
+            onBackgroundChange={artwork => onChange({ ...archetype, imageUrl: encodeArtwork(artwork) })}
           >
             <ArchetypeBadge
               name={archetype.name}
@@ -97,6 +103,7 @@ export function ArchetypeRow({
           <div className="archetype-view-identity">
             <h3>{archetype.name}</h3>
             {archetype.description && <p>{archetype.description}</p>}
+            {artwork && <ArtworkCredit artwork={artwork} />}
           </div>
           <Button
             variant="ghost"
@@ -201,11 +208,13 @@ export function ArchetypeRow({
                       <DimensionEndpointLabel
                         label={dimension.minLabel || 'Low'}
                         emoji={dimension.minEmoji}
+                        color={dimension.color}
                         end="low"
                       />
                       <DimensionEndpointLabel
                         label={dimension.maxLabel || 'High'}
                         emoji={dimension.maxEmoji}
+                        color={dimension.color}
                         end="high"
                       />
                     </div>

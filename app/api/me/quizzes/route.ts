@@ -3,6 +3,7 @@ import { currentUser, apiError } from '@/lib/personas'
 import { prisma } from '@/lib/prisma'
 import { getQuizComposition } from '@/lib/quiz-composition'
 import { readinessSelect } from '@/lib/quiz-projections'
+import { readQuizAppearance } from '@/lib/quiz-presentation'
 import { listParameters } from '@/lib/pagination'
 import type { Prisma } from '@prisma/client'
 export async function GET(request: Request) {
@@ -17,7 +18,7 @@ export async function GET(request: Request) {
     }
     const [quizzes, total, groups] = await Promise.all([
       prisma.persona.findMany({ where, orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }], skip, take: limit,
-        select: { ...readinessSelect, description: true, slug: true, visibility: true, color: true, emoji: true,
+        select: { ...readinessSelect, description: true, slug: true, visibility: true, color: true, emoji: true, style: true,
           completions: true, updatedAt: true, _count: { select: { dimensions: true, archetypes: true, pages: true } } },
       }),
       prisma.persona.count({ where }),
@@ -27,7 +28,7 @@ export async function GET(request: Request) {
     const items = quizzes.map(q => ({
       id: q.id, title: q.title, description: q.description, slug: q.slug, status: q.status,
       visibility: q.visibility, color: q.color, emoji: q.emoji, completions: q.completions,
-      updatedAt: q.updatedAt, _count: q._count, composition: getQuizComposition(q),
+      booklet: readQuizAppearance(q.style)?.booklet, updatedAt: q.updatedAt, _count: q._count, composition: getQuizComposition(q),
     }))
     return NextResponse.json({ items, total, page, hasMore: skip + items.length < total, counts: { DRAFT: count('DRAFT'), PUBLISHED: count('PUBLISHED') + count('CLOSED') } })
   } catch (error) { return apiError(error) }

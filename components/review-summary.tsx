@@ -6,6 +6,7 @@ import * as Popover from '@radix-ui/react-popover'
 import type { ReactNode } from 'react'
 import type { FullQuiz } from '@/lib/personas'
 import { getColorSurface, getColorTheme } from '@/lib/colors'
+import { readQuizAppearance } from '@/lib/quiz-presentation'
 import { QuizCoverMark } from './quiz-cover-mark'
 import { ArchetypeBadge, DimensionTag } from './entity-identity'
 import { DimensionEndpointLabel } from './dimension-endpoint-label'
@@ -28,7 +29,7 @@ export function ReviewSummary({ quiz, preview }: { quiz: FullQuiz; preview?: Rea
   const edit = (stage: string, label: string) => <Link className="review-edit-link" href={`/create/${quiz.id}/${stage}`}>{label}<ArrowUpRight size={14} aria-hidden="true" /></Link>
   return <div className="review-summary">
     <section className="review-section review-identity" aria-label="Quiz summary">
-      <QuizCoverMark emoji={quiz.emoji} color={quiz.color} />
+      <QuizCoverMark emoji={quiz.emoji} color={quiz.color} booklet={readQuizAppearance(quiz.style)?.booklet} />
       <div><span className="review-eyebrow">YOUR QUIZ, AT A GLANCE</span><h2>{quiz.title || 'Untitled quiz'}</h2><p>{quiz.description || 'Add a description to give people a little context.'}</p>
         <div className="review-metadata"><span><EntityIcon kind="dimension" size={14} />{quiz.dimensions.length} dimensions</span><span><EntityIcon kind="archetype" size={14} />{quiz.archetypes.length} archetypes</span><span><ListChecks size={14} />{questions.length} questions</span></div>
       </div><div className="review-identity-actions">{preview}{edit('name', 'Edit name & style')}</div>
@@ -38,7 +39,7 @@ export function ReviewSummary({ quiz, preview }: { quiz: FullQuiz; preview?: Rea
       <header className="review-section-heading"><div><h2 id="review-dimensions-title"><EntityIcon kind="dimension" size={19} />Dimensions<span className="review-section-count">{quiz.dimensions.length}</span></h2></div>{edit('dimensions', 'Edit dimensions')}</header>
       <div className="review-section-content">{quiz.dimensions.length ? <div className="review-identity-list">{quiz.dimensions.map(d => <ReviewDetail key={d.id} title={d.name} trigger={<button type="button" className="review-dimension-card review-identity-trigger" aria-label={`About dimension ${d.name}`}><DimensionTag name={d.name} emoji={d.emoji} color={d.color} /><ChevronDown size={13} aria-hidden="true" /></button>}>
         <p>{d.description || 'No description added.'}</p>
-        <div className="review-dimension-endpoints"><DimensionEndpointLabel label={d.minLabel || 'Low'} emoji={d.minEmoji} end="low" /><DimensionEndpointLabel label={d.maxLabel || 'High'} emoji={d.maxEmoji} end="high" /></div>
+        <div className="review-dimension-endpoints"><DimensionEndpointLabel label={d.minLabel || 'Low'} emoji={d.minEmoji} color={d.color} end="low" /><DimensionEndpointLabel label={d.maxLabel || 'High'} emoji={d.maxEmoji} color={d.color} end="high" /></div>
         <div className="review-definition-track" style={{ background: getColorSurface(getColorTheme(d.color).value).background }} />
       </ReviewDetail>)}</div> : <p className="review-empty">No dimensions yet. Give your quiz its first facet.</p>}</div>
     </section>

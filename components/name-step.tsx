@@ -3,7 +3,10 @@ import { useEffect, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { LoadingState } from './ui/loading'
-import { Check } from 'lucide-react'
+import type { CSSProperties } from 'react'
+import { Check, Grid3X3 } from 'lucide-react'
+import * as Popover from '@radix-ui/react-popover'
+import { ArtworkCredit, ArtworkImage } from './quiz-artwork'
 import { AppLayoutBackground } from './app-layout-background'
 import { PageIntro } from './page-intro'
 import { StepProgress } from './step-progress'
@@ -11,25 +14,28 @@ import { Input } from './ui/input'
 import { Textarea } from './ui/textarea'
 import { ErrorBanner } from './ui/error-banner'
 import { EntityIcon, type EntityKind } from './entity-icon'
-import { QuizCoverMark } from './quiz-cover-mark'
+import { BookletPattern, QuizCoverMark } from './quiz-cover-mark'
 import { StyleEditors } from './style-editors'
 import { BuilderSaveActions } from './builder-save-actions'
 import { useProtectedPage } from '@/hooks/use-protected-page'
 import { useBuilderDraft } from '@/hooks/use-builder-draft'
 import { requestJson } from '@/lib/client-api'
 import { COLOR_THEME, getColorTheme } from '@/lib/colors'
+import { bookletPatterns, bookletTextLimit, encodeQuizAppearance, quizAppearance, type QuizAppearance, type QuizBooklet } from '@/lib/quiz-presentation'
 
 type Details = {
   title: string
   description: string
   emoji: string | null
   color: string
+  style?: string
 }
 const empty: Details = {
   title: '',
   description: '',
   emoji: null,
   color: '#8b5cf6',
+  style: encodeQuizAppearance({ layout: 'hero', coverImage: null, backgroundImage: null }),
 }
 const starterEmojis = [
   '✨',
@@ -45,6 +51,25 @@ const starterEmojis = [
   '🎨',
   '🪐',
 ]
+
+const patternNames = {
+  dots: 'Polka dots',
+  checks: 'Checkerboard',
+  stripes: 'Candy stripes',
+  waves: 'Waves',
+  scallops: 'Scallops',
+  diamonds: 'Harlequin',
+  hearts: 'Hearts',
+  sparkles: 'Sparkles',
+  clouds: 'Clouds',
+  leaves: 'Leaves',
+  patchwork: 'Patchwork',
+  constellations: 'Constellations',
+  stargazing: 'Stargazing',
+  wildflowers: 'Wildflowers',
+  ripple: 'Ripples',
+  confetti: 'Confetti',
+}
 
 export function NameStep({ quizId }: { quizId?: string }) {
   const auth = useProtectedPage()
@@ -66,6 +91,7 @@ export function NameStep({ quizId }: { quizId?: string }) {
         description: q.description || '',
         emoji: q.emoji || null,
         color: getColorTheme(q.color || '#8b5cf6').value,
+        style: q.style,
       }
     },
   })
@@ -87,10 +113,18 @@ export function NameStep({ quizId }: { quizId?: string }) {
     quizId || 'new-quiz',
   )
   const values = draft.value || empty
+  const appearance = quizAppearance(values)
+  const patternStyle = { '--quiz-color': getColorTheme(values.color).hex } as CSSProperties
   function update(next: Partial<Details>) {
     draft.update({ ...values, ...next })
     setMessage('')
     setError(null)
+  }
+  function updateAppearance(next: Partial<QuizAppearance>) {
+    update({ style: encodeQuizAppearance({ ...appearance, ...next }) })
+  }
+  function updateBooklet(next: Partial<QuizBooklet>) {
+    updateAppearance({ booklet: { ...appearance.booklet, ...next } })
   }
   async function save(advance: boolean) {
     if (!values.title.trim() || busy) return
@@ -116,6 +150,7 @@ export function NameStep({ quizId }: { quizId?: string }) {
         description: saved.description || '',
         emoji: saved.emoji || null,
         color: getColorTheme(saved.color).value,
+        style: saved.style || values.style,
       }
       draft.accept(canonical)
       cache.setQueryData(['quiz-details', saved.id], canonical)
@@ -178,6 +213,10 @@ export function NameStep({ quizId }: { quizId?: string }) {
             save(true)
           }}
         >
+          {appearance.coverImage && <header className="name-quiz-header">
+            <ArtworkImage artwork={appearance.coverImage} width={1200} />
+            <ArtworkCredit artwork={appearance.coverImage} />
+          </header>}
           <fieldset
             disabled={busy || !draft.ready}
             className="name-step-fields"
@@ -188,8 +227,51 @@ export function NameStep({ quizId }: { quizId?: string }) {
                 color={values.color}
                 onEmojiChange={(emoji) => update({ emoji })}
                 onColorChange={(color) => update({ color })}
+                background={appearance.coverImage}
+                onBackgroundChange={coverImage => updateAppearance({ coverImage })}
+                imageLabel="Quiz image"
+                popoverFooter={
+                  <div className="booklet-text-fields">
+                    <Input aria-label="Book cover label" placeholder="Label" value={appearance.booklet?.title ?? ''} maxLength={bookletTextLimit}
+                      onChange={event => updateBooklet({ title: event.target.value })} />
+                    <Input aria-label="Book cover sub-label" placeholder="Sub-label" value={appearance.booklet?.subtitle ?? ''} maxLength={bookletTextLimit}
+                      onChange={event => updateBooklet({ subtitle: event.target.value })} />
+                  </div>
+                }
+                extraControl={
+                  <Popover.Root>
+                    <Popover.Trigger
+                      type="button"
+                      className="booklet-pattern-trigger booklet-pattern-swatch"
+                      style={patternStyle}
+                      aria-label="Choose book cover pattern"
+                      title="Choose book cover pattern"
+                    >
+                      {appearance.booklet?.pattern
+                        ? <BookletPattern pattern={appearance.booklet.pattern} />
+                        : <Grid3X3 size={16} aria-hidden="true" />}
+                    </Popover.Trigger>
+                    <Popover.Portal>
+                      <Popover.Content className="style-editor-popover booklet-pattern-popover" sideOffset={8} align="end">
+                        <fieldset className="booklet-pattern-picker" style={patternStyle}>
+                          <legend>Book cover pattern</legend>
+                          {[null, ...bookletPatterns].map(pattern => (
+                            <label key={pattern ?? 'none'} title={pattern ? patternNames[pattern] : 'No pattern'}>
+                              <input className="sr-only" type="radio" name="booklet-pattern" aria-label={pattern ? patternNames[pattern] : 'No pattern'}
+                                checked={(appearance.booklet?.pattern ?? null) === pattern}
+                                onChange={() => updateBooklet({ pattern })} />
+                              <span className="booklet-pattern-swatch" aria-hidden="true">
+                                {pattern ? <BookletPattern pattern={pattern} /> : 'None'}
+                              </span>
+                            </label>
+                          ))}
+                        </fieldset>
+                      </Popover.Content>
+                    </Popover.Portal>
+                  </Popover.Root>
+                }
               >
-                <QuizCoverMark emoji={values.emoji} color={values.color} />
+                <QuizCoverMark emoji={values.emoji} color={values.color} booklet={appearance.booklet} />
               </StyleEditors>
             </div>
             <div className="quiz-setup-fields">

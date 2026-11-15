@@ -10,8 +10,9 @@ export function HomeMotion({ children }: { children: ReactNode }) {
     if (!element || !('IntersectionObserver' in window)) return
     const preference = window.matchMedia('(prefers-reduced-motion: reduce)')
     const registered = new WeakSet<HTMLElement>()
-    const reveal = (target: HTMLElement) => {
-      target.dataset.revealState = 'visible'
+    const reveal = (target: HTMLElement, animate = true) => {
+      if (target.dataset.revealState !== 'pending') return
+      target.dataset.revealState = animate ? 'visible' : 'settled'
       observer.unobserve(target)
     }
     const observer = new IntersectionObserver(
@@ -28,9 +29,10 @@ export function HomeMotion({ children }: { children: ReactNode }) {
         .forEach((target) => {
           if (registered.has(target)) return
           registered.add(target)
+          if (target.dataset.revealState === 'visible' || target.dataset.revealState === 'settled') return
           const box = target.getBoundingClientRect()
           if (preference.matches || box.bottom <= 0) {
-            target.dataset.revealState = 'visible'
+            target.dataset.revealState = 'settled'
           } else {
             target.dataset.revealState = 'pending'
             observer.observe(target)
@@ -39,13 +41,13 @@ export function HomeMotion({ children }: { children: ReactNode }) {
     }
     const reduceMotion = () => {
       if (preference.matches)
-        element.querySelectorAll<HTMLElement>('[data-reveal]').forEach(reveal)
+        element.querySelectorAll<HTMLElement>('[data-reveal]').forEach((target) => reveal(target, false))
     }
     const revealFocused = (event: FocusEvent) => {
       if (event.target instanceof HTMLElement) {
         let target = event.target.closest<HTMLElement>('[data-reveal]')
         while (target) {
-          reveal(target)
+          reveal(target, false)
           target =
             target.parentElement?.closest<HTMLElement>('[data-reveal]') ?? null
         }

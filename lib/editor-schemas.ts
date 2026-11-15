@@ -2,6 +2,12 @@ import { z } from 'zod'
 import { pagePresentationSchema } from './quiz-presentation'
 import { storedColorSchema } from './colors'
 import { DimensionDisplayScale } from '@prisma/client'
+import { readArtwork } from './quiz-artwork'
+import { quizDetailsSchema } from './quiz-details'
+
+const artworkStyle = z.string().refine(value => !value.startsWith('artwork:') || !!readArtwork(value), {
+  message: 'Choose artwork from the Personame library or Unsplash.',
+}).nullish()
 const text = z.string().trim().min(1).max(1000)
 const meta = {
   id: z.string().optional(),
@@ -12,6 +18,7 @@ const meta = {
 }
 export const dimensionInput = z.object({
   ...meta,
+  style: artworkStyle,
   name: text,
   description: z.string().nullish(),
   displayScale: z.enum(DimensionDisplayScale).optional(),
@@ -37,7 +44,7 @@ export const archetypeInput = z.object({
   ...meta,
   name: text,
   description: z.string().nullish(),
-  imageUrl: z.string().nullish(),
+  imageUrl: artworkStyle,
   order: z.number().int(),
   dimensions: z
     .array(
@@ -51,6 +58,7 @@ export const archetypeInput = z.object({
 })
 const answerInput = z.object({
   ...meta,
+  style: artworkStyle,
   text,
   order: z.number().int(),
   weights: z
@@ -64,6 +72,7 @@ const answerInput = z.object({
 })
 const questionInput = z.object({
   ...meta,
+  style: artworkStyle,
   text,
   type: z.enum(['MULTIPLE_CHOICE', 'SLIDER', 'SCALE']),
   order: z.number().int(),
@@ -72,6 +81,7 @@ const questionInput = z.object({
   answers: z.array(answerInput).max(30),
 })
 export const pagesInput = z.object({
+  quizStyle: quizDetailsSchema.pick({ emoji: true, color: true, style: true }).optional(),
   pages: z
     .array(
       z.object({

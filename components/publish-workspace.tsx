@@ -7,6 +7,7 @@ import type { FullQuiz } from '@/lib/personas'
 import { Button } from './ui/button'
 import { WhimsyButton } from './whimsy-button'
 import { QuizCoverArt } from './quiz-cover-art'
+import { readQuizAppearance } from '@/lib/quiz-presentation'
 import { EntityIcon } from './entity-icon'
 
 export function PublishWorkspace({ quiz, todoCount, busy, copied, onPublish, onClose, onCopy, reviewHref, preview }: {
@@ -22,7 +23,7 @@ export function PublishWorkspace({ quiz, todoCount, busy, copied, onPublish, onC
     </header>
     <div className="publish-body">
       <div className="publish-quiz-preview">
-        <QuizCoverArt emoji={quiz.emoji} color={quiz.color} />
+        <QuizCoverArt emoji={quiz.emoji} color={quiz.color} booklet={readQuizAppearance(quiz.style)?.booklet} />
         <h3>{quiz.title}</h3>
         {quiz.description && <p>{quiz.description}</p>}
         <div className="publish-quiz-stats"><span><EntityIcon kind="dimension" size={13} />{quiz.dimensions.length} dimensions</span><span><EntityIcon kind="archetype" size={13} />{quiz.archetypes.length} types</span><span>{questionCount} questions</span></div>

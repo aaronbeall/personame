@@ -1,6 +1,9 @@
 'use client'
 import { EntityIcon } from '@/components/entity-icon'
 import { QuizCoverArt } from '@/components/quiz-cover-art'
+import { ArtworkCredit } from '@/components/quiz-artwork'
+import type { Artwork } from '@/lib/quiz-artwork'
+import type { QuizBooklet } from '@/lib/quiz-presentation'
 import { LoadingState } from '@/components/ui/loading'
 import { useEffect, useRef, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
@@ -26,6 +29,8 @@ type Listing = {
   slug: string
   color: string | null
   emoji: string | null
+  artwork: Artwork | null
+  booklet?: QuizBooklet
   completions: number
   _count: { archetypes: number }
 }
@@ -149,7 +154,7 @@ function QuizShelf({
               style={{ animationDelay: `${(index % 5) * 85 + 90}ms` }}
             >
               <Link className="shelf-quiz" href={`/quiz/${quiz.slug}`}>
-                <QuizCoverArt emoji={quiz.emoji} color={quiz.color} art={art}>
+                <QuizCoverArt emoji={quiz.emoji} color={quiz.color} art={art} artwork={quiz.artwork} booklet={quiz.booklet}>
                   <span className="shelf-quiz-open">
                     <ArrowUpRight size={17} />
                   </span>
@@ -178,6 +183,7 @@ function QuizShelf({
                   </p>
                 </div>
               </Link>
+              {quiz.artwork && <ArtworkCredit artwork={quiz.artwork} />}
             </li>
           )
         })}

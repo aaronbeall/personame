@@ -18,6 +18,7 @@ import { AppLayoutBackground } from '@/components/app-layout-background'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { StyleEditors } from '@/components/style-editors'
+import { encodeArtwork, readArtwork } from '@/lib/quiz-artwork'
 import { ErrorBanner } from '@/components/ui/error-banner'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -41,6 +42,7 @@ interface Dimension {
   displayScale: DimensionDisplayScale
   emoji?: string
   color?: string
+  style?: string | null
 }
 
 export default function DimensionsPage({
@@ -233,6 +235,8 @@ export default function DimensionsPage({
                           <StyleEditors
                             emoji={dimension.emoji}
                             color={dimension.color}
+                            background={readArtwork(dimension.style)}
+                            onBackgroundChange={artwork => updateDimension(dimension.id, 'style', encodeArtwork(artwork))}
                             onEmojiChange={(emoji) =>
                               updateDimension(
                                 dimension.id,
@@ -248,6 +252,7 @@ export default function DimensionsPage({
                               name={name}
                               emoji={dimension.emoji}
                               color={dimension.color}
+                              background={readArtwork(dimension.style)}
                             />
                           </StyleEditors>
                         </div>
@@ -346,6 +351,7 @@ export default function DimensionsPage({
                             <div className="flex items-center gap-3 mb-3">
                               <DimensionEndpointIconEditor
                                 emoji={dimension.minEmoji}
+                                color={dimension.color}
                                 end="low"
                                 onChange={(emoji) =>
                                   updateDimension(
@@ -381,6 +387,7 @@ export default function DimensionsPage({
                             <div className="flex items-center gap-3 mb-3">
                               <DimensionEndpointIconEditor
                                 emoji={dimension.maxEmoji}
+                                color={dimension.color}
                                 end="high"
                                 onChange={(emoji) =>
                                   updateDimension(

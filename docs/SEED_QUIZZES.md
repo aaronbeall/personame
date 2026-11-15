@@ -59,6 +59,8 @@ SEED_CREATOR_EMAIL=you@example.com npm run catalog:seed
 
 Sign in once first so your creator account exists. Importing requires the configured database and applies each new quiz in a transaction. Quizzes are owned by that account. Entries marked `PUBLIC` are published immediately; `PRIVATE_DRAFT` entries remain private for review. Existing slugs are skipped, never overwritten; rerunning does not duplicate quizzes or change results.
 
-Edits to this file affect future imports, not existing database records. To revise an imported quiz, use its editor. To import a separate variation, use a new slug. The older `db:seed` remains a separate development fixture script; use `catalog:seed` for this catalog.
+The catalog includes original cover illustrations available in the artwork picker. It also demonstrates page layouts, backgrounds, emblems, image answers, and archetype heading art. Space Crew has three question pages. The optional `questionPages` entries split the ordered question list by `count`.
+
+To apply the catalog's appearance to an existing seed copy, run `npm run catalog:seed -- --refresh-artwork` with that copy's `SEED_CREATOR_EMAIL`. The refresh matches the quiz owner and catalog content before updating its styling and page arrangement. It preserves question and answer IDs, scoring, publication, and saved results. Run the regular seed command to import missing quizzes while leaving existing copies alone.
 
 `tests/catalog.unit.test.ts` validates references and scoring rules and checks every low/high response combination to ensure all 50 supplied archetypes can be reached. Changing targets can intentionally make that reachability test fail; adjust questions and targets together.

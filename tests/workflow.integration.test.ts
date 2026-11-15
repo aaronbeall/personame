@@ -3,6 +3,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { randomUUID } from 'node:crypto'
 import { PrismaClient } from '@prisma/client'
+import { encodeArtwork, type Artwork } from '../lib/quiz-artwork'
 const base = process.env.PERSONAME_TEST_URL
 
 test(
@@ -217,13 +218,13 @@ test(
       const answer = (
         id: string,
         text: string,
-        value: number,
+        value: number | null,
         order: number,
       ) => ({
         id,
         text,
         order,
-        weights: [{ dimensionId: dimension.id, value }],
+        weights: value === null ? [] : [{ dimensionId: dimension.id, value }],
       })
       const body = {
         pages: [
@@ -246,8 +247,8 @@ test(
                 order: 0,
                 required: true,
                 answers: [
-                  answer('temp-a1', 'Familiar', -20, 0),
-                  answer('temp-a2', 'New', 20, 1),
+                  answer('temp-a1', 'Familiar', 0, 0),
+                  answer('temp-a2', 'New', 100, 1),
                 ],
               },
               {
@@ -257,8 +258,8 @@ test(
                 order: 1,
                 required: true,
                 answers: [
-                  answer('temp-a3', 'Low', -20, 0),
-                  answer('temp-a4', 'High', 20, 1),
+                  answer('temp-a3', 'Low', 0, 0),
+                  answer('temp-a4', 'High', 100, 1),
                 ],
               },
               {
@@ -268,11 +269,11 @@ test(
                 order: 2,
                 required: true,
                 answers: [
-                  answer('temp-a5', 'Rarely', -20, 0),
-                  answer('temp-a6', 'Often', 20, 1),
-                  answer('temp-a7', 'No', 0, 2),
-                  answer('temp-a8', 'Maybe', 0, 3),
-                  answer('temp-a9', 'Yes', 0, 4),
+                  answer('temp-a5', 'Rarely', 0, 0),
+                  answer('temp-a6', 'Often', 100, 1),
+                  answer('temp-a7', 'No', null, 2),
+                  answer('temp-a8', 'Maybe', null, 3),
+                  answer('temp-a9', 'Yes', null, 4),
                 ],
               },
             ],
@@ -319,6 +320,22 @@ test(
         dimension.id,
       )
       current.pages[1].questions[0].text = 'Pick a direction'
+      const artwork: Artwork = {
+        asset: { source: 'curated', id: 'explorer' },
+        x: 62,
+        y: 40,
+        alt: 'An explorer with a compass',
+      }
+      const cover = current.pages.find((page: { style: string }) => page.style === 'cover')
+      cover.presentation = { ...cover.presentation, coverImage: artwork, backgroundImage: artwork }
+      current.pages[1].questions[0].style = encodeArtwork(artwork)
+      current.pages[1].questions[0].answers[0].style = encodeArtwork(artwork)
+      assert.equal((await call(`${path}/archetypes`, 'POST', {
+        archetypes: current.archetypes.map((archetype: typeof archetypes[number]) => ({
+          ...archetype,
+          imageUrl: encodeArtwork(artwork),
+        })),
+      })).status, 200)
       assert.equal(
         (await call(`${path}/questions`, 'POST', { pages: current.pages }))
           .status,
@@ -337,6 +354,11 @@ test(
       const slug = created.data.slug,
         publicPath = `/api/quiz/${slug}`
       const publicQuiz = (await call(publicPath, 'GET', undefined, null)).data
+      assert.deepEqual(publicQuiz.pages[0].presentation.coverImage, artwork)
+      assert.deepEqual(publicQuiz.pages[0].presentation.backgroundImage, artwork)
+      assert.equal(publicQuiz.pages[1].questions[0].style, encodeArtwork(artwork))
+      assert.equal(publicQuiz.pages[1].questions[0].answers[0].style, encodeArtwork(artwork))
+      assert.ok(publicQuiz.pages[1].questions[0].answers[0].text)
       assert.ok(!('weights' in publicQuiz.pages[1].questions[0].answers[0]))
       const submissionKey = randomUUID(),
         submit = { revision: publicQuiz.revision, submissionKey, responses }
@@ -368,6 +390,7 @@ test(
       assert.equal('metricId' in historical.scores[0], false)
       assert.equal('metricName' in historical.scores[0], false)
       assert.equal(historical.archetype.name, 'Explorer')
+      assert.deepEqual(historical.archetype.artwork, artwork)
       assert.equal(historical.archetype.color, '#4f46e5,#ec4899')
       assert.equal(historical.scores[0].color, '#7c3aed,#db2777')
       assert.equal(historical.scores[0].score, 100)

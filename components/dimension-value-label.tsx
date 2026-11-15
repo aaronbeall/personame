@@ -1,3 +1,4 @@
+import { QuizSymbol } from '@/components/quiz-symbol'
 import { describeDimensionValue } from '@/lib/dimension-value'
 
 export type DimensionValueLabelProps = {
@@ -24,7 +25,7 @@ export function DimensionValueLabel({
       <span className="dimension-value-description">
         {emoji && (
           <span aria-hidden="true" className="dimension-value-emoji">
-            {emoji}
+            <QuizSymbol value={emoji} />
           </span>
         )}
         <span>{result.description}</span>

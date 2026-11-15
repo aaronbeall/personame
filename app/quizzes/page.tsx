@@ -15,7 +15,6 @@ import {
   LockKeyhole,
   Radio,
   Archive,
-  ArrowRight,
   Search,
 } from 'lucide-react'
 import { useProtectedPage } from '@/hooks/use-protected-page'
@@ -52,7 +51,7 @@ export default function YourQuizzes() {
         <PageIntro
           title="Your quizzes"
           description="A home for your curious ideas. Shape your next quiz, or see what’s finding its audience."
-          art="tree-house"
+          art="party"
           eyebrow="Your creator space"
           actions={
             <Link className="button-link" href="/create">
@@ -197,6 +196,7 @@ export default function YourQuizzes() {
                                   emoji={q.emoji}
                                   color={q.color}
                                   size="sm"
+                                  booklet={q.booklet}
                                 />
                                 <span
                                   className={`status-tag ${q.status === 'PUBLISHED' ? 'published' : q.status === 'CLOSED' ? 'closed' : ''}`}
@@ -254,11 +254,7 @@ export default function YourQuizzes() {
                                   className={`button-link ${q.status === 'DRAFT' ? '' : 'secondary'}`}
                                   href={q.status === 'DRAFT' && q.composition.readyToPublish ? reviewWorkspaceHref(q.id, 'publish') : `/create/${q.id}/${q.status === 'DRAFT' ? q.composition.next : 'name'}`}
                                 >
-                                  {q.status === 'DRAFT' ? (
-                                    <ArrowRight size={14} />
-                                  ) : (
-                                    <Pencil size={14} />
-                                  )}
+                                  <Pencil size={14} />
                                   {q.status === 'DRAFT'
                                     ? q.composition.readyToPublish
                                       ? 'Review & publish'

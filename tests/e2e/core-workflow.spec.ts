@@ -44,12 +44,12 @@ test('Create, grade, preview, publish, and complete a quiz through the UI', asyn
     await page
       .getByRole('button', { name: 'Choose low end icon', exact: true })
       .click()
-    await page.getByPlaceholder('Search emojis...').fill('seedling')
+    await page.getByPlaceholder('Search emoji...').fill('seedling')
     await page.getByTitle('seedling', { exact: true }).click()
     await page
       .getByRole('button', { name: 'Choose high end icon', exact: true })
       .click()
-    await page.getByPlaceholder('Search emojis...').fill('rocket')
+    await page.getByPlaceholder('Search emoji...').fill('rocket')
     await page.getByTitle('rocket', { exact: true }).click()
     await page
       .getByRole('button', { name: 'Choose high end icon', exact: true })
@@ -63,11 +63,11 @@ test('Create, grade, preview, publish, and complete a quiz through the UI', asyn
     await page
       .getByRole('button', { name: 'Choose high end icon', exact: true })
       .click()
-    await page.getByPlaceholder('Search emojis...').fill('rocket')
+    await page.getByPlaceholder('Search emoji...').fill('rocket')
     await page.getByTitle('rocket', { exact: true }).click()
     await page.getByRole('button', { name: 'Edit style', exact: true }).click()
     await page.getByRole('button', { name: 'Choose icon', exact: true }).click()
-    await page.getByPlaceholder('Search emojis...').fill('brain')
+    await page.getByPlaceholder('Search emoji...').fill('brain')
     await page.getByTitle('brain', { exact: true }).click()
     await page.getByRole('button', { name: /^Choose color/ }).click()
     await page.getByRole('button', { name: 'Purple', exact: true }).click()

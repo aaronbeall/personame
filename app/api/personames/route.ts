@@ -4,6 +4,7 @@ import { apiError, currentUser } from '@/lib/personas'
 import { quizDetailsSchema } from '@/lib/quiz-details'
 import { generateUniqueSlug } from '@/lib/utils'
 import { publishedListings } from '@/lib/public-cache'
+import { readQuizAppearance } from '@/lib/quiz-presentation'
 
 export async function POST(req: Request) {
   try {
@@ -26,7 +27,10 @@ export async function GET() {
   try {
     const personas = await publishedListings()
 
-    return NextResponse.json(personas)
+    return NextResponse.json(personas.map(({ style, ...quiz }) => {
+      const appearance = readQuizAppearance(style)
+      return { ...quiz, artwork: appearance?.coverImage ?? null, booklet: appearance?.booklet }
+    }))
   } catch (error) {
     console.error('Error fetching personas:', error)
     return NextResponse.json(

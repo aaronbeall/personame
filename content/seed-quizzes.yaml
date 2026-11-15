@@ -4,18 +4,19 @@ quizzes:
     title: What kind of weekend wanderer are you?
     description: A tiny adventure, a scenic detour, or a very good nap. Find your preferred way to get
       away. For fun and reflection; not a validated assessment.
-    emoji: 🧭
+    emoji: icon:Compass
     dimensions:
       - key: novelty
         name: Adventure
         minLabel: Familiar
         maxLabel: Adventurous
         description: Your appetite for new places and unexpected detours.
-        emoji: 🧭
-        minEmoji: 🏡
-        maxEmoji: 🥾
+        emoji: icon:Signpost
+        minEmoji: icon:House
+        maxEmoji: persona:explorer
         color: "#14b8a6"
         displayScale: PERCENT_ASCENDING
+        background: weekend-wanderer
       - key: company
         name: Company
         minLabel: Solitary
@@ -29,7 +30,7 @@ quizzes:
     archetypes:
       - name: The Hideaway
         description: A familiar corner, a quiet morning, and nobody asking for the itinerary.
-        emoji: 🌿
+        emoji: persona:explorer
         targets:
           novelty: 15
           company: 15
@@ -37,6 +38,7 @@ quizzes:
         relevance:
           novelty: 1
           company: 0.8
+        background: weekend-wanderer
       - name: The Trailblazer
         description: You follow your curiosity, even when nobody else can find the path.
         emoji: 🥾
@@ -74,7 +76,9 @@ quizzes:
           - text: Return to my favorite spot.
             weights:
               novelty: 0
-            emoji: 🏡
+            emoji: icon:Compass
+            background: islands
+            color: "#0f766e"
           - text: See what sounds good tomorrow.
             weights:
               novelty: 50
@@ -83,9 +87,11 @@ quizzes:
             weights:
               novelty: 100
             emoji: 🥾
-        emoji: 🧭
+        emoji: icon:Compass
         dimensionInfluences:
           novelty: 12
+        background: tree-house
+        color: "#0f766e"
       - type: MULTIPLE_CHOICE
         text: You spot an unmarked path beside the main trail.
         answers:
@@ -178,22 +184,36 @@ quizzes:
           company: 16
     color: "#2563eb,#7c3aed"
     publication: PUBLIC
+    cover:
+      booklet:
+        title: Weekend Map
+        subtitle: Scenic Route
+        pattern: leaves
+      image: weekend-wanderer
+      layout: hero
+    questionPages:
+      - title: Take the scenic route
+        count: 6
+        layout: hero
+        emoji: icon:Map
+        color: "#0f766e"
   - slug: creative-sidekick
     title: Which creative sidekick are you?
     description: Meet the part of you that helps an idea escape the notebook. For fun and reflection;
       not a validated assessment.
-    emoji: 🎨
+    emoji: icon:Palette
     dimensions:
       - key: experimentation
         name: Experimentation
         minLabel: Methodical
         maxLabel: Experimental
         description: Whether you polish a proven idea or test an unfamiliar one.
-        emoji: 🧪
+        emoji: icon:Paintbrush
         minEmoji: 🛠️
-        maxEmoji: 💡
+        maxEmoji: icon:Sparkles
         color: "#8b5cf6"
         displayScale: PERCENT_ASCENDING
+        background: creative-sidekick
       - key: visibility
         name: Visibility
         minLabel: Private
@@ -217,7 +237,7 @@ quizzes:
     archetypes:
       - name: The Quiet Craftsperson
         description: You make the small details sing without needing to announce the performance.
-        emoji: 🪡
+        emoji: persona:inventor
         targets:
           experimentation: 15
           visibility: 15
@@ -227,6 +247,7 @@ quizzes:
           experimentation: 1
           visibility: 0.8
           persistence: 0.65
+        background: creative-sidekick
       - name: The Secret Inventor
         description: Your private experiments have a habit of becoming everyone’s favorite discovery.
         emoji: 🧪
@@ -292,9 +313,11 @@ quizzes:
             weights:
               experimentation: 100
             emoji: 💡
-        emoji: 🧪
+        emoji: icon:Palette
         dimensionInfluences:
           experimentation: 12
+        background: creative-sidekick
+        color: "#9333ea"
       - type: MULTIPLE_CHOICE
         text: A first draft is almost working. You…
         answers:
@@ -443,11 +466,24 @@ quizzes:
           persistence: 16
     color: "#7c3aed,#db2777"
     publication: PUBLIC
+    cover:
+      booklet:
+        title: Studio Notes
+        subtitle: Creative Spark
+        pattern: sparkles
+      image: creative-sidekick
+      layout: split
+    questionPages:
+      - title: Make a little mess
+        count: 9
+        layout: split
+        color: "#9333ea"
+        background: creation
   - slug: dinner-party
     title: What is your dinner-party superpower?
     description: There is more than one way to keep a table happy. Find the role you naturally bring.
       For fun and reflection; not a validated assessment.
-    emoji: 🍝
+    emoji: 🍽️
     dimensions:
       - key: improvisation
         name: Improvisation
@@ -482,7 +518,7 @@ quizzes:
     archetypes:
       - name: The Comfort Cook
         description: You make a small table feel like everyone has come home.
-        emoji: 🥘
+        emoji: persona:caregiver
         targets:
           improvisation: 15
           hosting: 15
@@ -492,6 +528,7 @@ quizzes:
           improvisation: 1
           hosting: 0.8
           presentation: 0.65
+        background: dinner-party
       - name: The Kitchen Alchemist
         description: Your intimate dinners double as delicious experiments.
         emoji: 🌶️
@@ -523,7 +560,9 @@ quizzes:
           - text: A recipe I have made a dozen times.
             weights:
               improvisation: 0
-            emoji: 📖
+            emoji: icon:Utensils
+            background: dinner-party
+            color: "#be123c"
           - text: A favorite with one new dish.
             weights:
               improvisation: 50
@@ -683,11 +722,24 @@ quizzes:
           presentation: 16
     color: "#c2410c,#f59e0b"
     publication: PUBLIC
+    cover:
+      booklet:
+        title: Dinner Party
+        subtitle: Table Talk
+        pattern: checks
+      image: dinner-party
+      layout: card
+    questionPages:
+      - title: Pull up a chair
+        count: 9
+        layout: card
+        emoji: icon:CupSoda
+        color: "#be123c"
   - slug: fantasy-tavern
     title: Who are you at the fantasy tavern?
     description: Your quest can wait five minutes. There is a mysterious noticeboard and suspiciously
       good soup. For fun and reflection; not a validated assessment.
-    emoji: 🐉
+    emoji: icon:Castle
     dimensions:
       - key: risk
         name: Risk appetite
@@ -732,7 +784,7 @@ quizzes:
     archetypes:
       - name: The Hearthkeeper
         description: You know the safe roads and the value of a peaceful corner.
-        emoji: 🕯️
+        emoji: persona:rebel
         targets:
           risk: 15
           sociability: 15
@@ -744,6 +796,7 @@ quizzes:
           sociability: 0.8
           allegiance: 0.65
           wonder: 0.8
+        background: fantasy-tavern
       - name: The Lone Ranger
         description: You travel light and accept the quests with questionable maps.
         emoji: 🏹
@@ -830,9 +883,11 @@ quizzes:
             weights:
               risk: 100
             emoji: ⚔️
-        emoji: 🐉
+        emoji: icon:Castle
         dimensionInfluences:
           risk: 12
+        background: fantasy-tavern
+        color: "#7e22ce"
       - type: MULTIPLE_CHOICE
         text: A glowing potion is offered for free. You…
         answers:
@@ -1037,11 +1092,24 @@ quizzes:
           wonder: 16
     color: "#0f766e,#38bdf8"
     publication: PUBLIC
+    cover:
+      booklet:
+        title: Tavern Tales
+        subtitle: Quest Guide
+        pattern: stargazing
+      image: fantasy-tavern
+      layout: hero
+      background: pirate-ship
+    questionPages:
+      - title: An evening by the hearth
+        count: 12
+        layout: hero
+        emoji: icon:Flame
   - slug: city-after-dark
     title: What kind of city explorer are you?
     description: Side streets, bright lights, and the place that only serves one excellent thing. For
       fun and reflection; not a validated assessment.
-    emoji: 🌃
+    emoji: icon:TrainFront
     dimensions:
       - key: discovery
         name: Discovery
@@ -1173,7 +1241,9 @@ quizzes:
           - text: Comfortably known
             weights:
               discovery: 0
-            emoji: 🏘️
+            emoji: icon:TrainFront
+            background: rainy-day
+            color: "#4f46e5"
           - text: Entirely new
             weights:
               discovery: 100
@@ -1205,22 +1275,37 @@ quizzes:
           pace: 16
     color: "#475569,#a5b4fc"
     publication: PUBLIC
+    cover:
+      booklet:
+        title: Night Walk
+        subtitle: After Dark
+        pattern: stripes
+      image: city-after-dark
+      layout: split
+    questionPages:
+      - title: Follow the city lights
+        count: 6
+        layout: minimal
+        emoji: icon:MapPin
+        color: "#4f46e5"
+        background: city-after-dark
   - slug: space-crew
     title: What is your space-crew assignment?
     description: The ship is held together by good intentions. Luckily, you have a useful kind of weird.
       For fun and reflection; not a validated assessment.
-    emoji: 🚀
+    emoji: icon:Rocket
     dimensions:
       - key: adaptation
         name: Adaptation
         minLabel: Systematic
         maxLabel: Adaptive
         description: How readily you improvise when the mission changes.
-        emoji: 🛸
-        minEmoji: 📋
-        maxEmoji: 🔧
+        emoji: icon:Atom
+        minEmoji: icon:Shield
+        maxEmoji: icon:Rocket
         color: "#22c55e"
         displayScale: PERCENT_ASCENDING
+        background: space-crew
       - key: outreach
         name: Outreach
         minLabel: Introspective
@@ -1264,7 +1349,7 @@ quizzes:
     archetypes:
       - name: The Systems Keeper
         description: You keep the ship steady through patient attention and trusted procedures.
-        emoji: ⚙️
+        emoji: icon:Telescope
         targets:
           adaptation: 15
           outreach: 15
@@ -1278,6 +1363,7 @@ quizzes:
           boldness: 0.65
           stewardship: 0.8
           horizon: 0.65
+        background: space-crew
       - name: The Deep-Space Tinkerer
         description: You solve quiet emergencies with unlikely parts and original thinking.
         emoji: 🔧
@@ -1391,9 +1477,11 @@ quizzes:
             weights:
               adaptation: 100
             emoji: 🔧
-        emoji: 🛸
+        emoji: icon:Rocket
         dimensionInfluences:
           adaptation: 12
+        background: space-crew
+        color: "#7e22ce"
       - type: MULTIPLE_CHOICE
         text: The mission plan hits an unexpected obstacle. You…
         answers:
@@ -1654,11 +1742,40 @@ quizzes:
           horizon: 16
     color: "#be185d,#fb7185"
     publication: PUBLIC
+    cover:
+      booklet:
+        title: Star Log
+        subtitle: Crew Guide
+        pattern: constellations
+      image: space-crew
+      layout: hero
+      background: galaxy-expansion
+    questionPages:
+      - title: On the bridge
+        description: The ship is underway. Make the first calls for your crew.
+        count: 5
+        layout: hero
+        emoji: icon:Rocket
+        color: "#4338ca"
+        background: space-crew
+      - title: Beyond the charts
+        description: A signal and a shortcut put your instincts to the test.
+        count: 5
+        layout: split
+        emoji: icon:Telescope
+        color: "#0f766e"
+        background: galaxy-expansion
+      - title: Life aboard
+        description: Decide what matters when you have time to think.
+        count: 5
+        layout: card
+        emoji: persona:inventor
+        color: "#7e22ce"
   - slug: team-project
     title: What do you bring to a team project?
     description: A playful look at your collaboration style, without turning your coworkers into a
       personality spreadsheet. For fun and reflection; not a validated assessment.
-    emoji: 🛠️
+    emoji: icon:Users
     dimensions:
       - key: structure
         name: Structure
@@ -1703,7 +1820,7 @@ quizzes:
     archetypes:
       - name: The Responsive Ally
         description: You help the team adapt and make the work better where it needs you most.
-        emoji: 🌱
+        emoji: icon:Handshake
         targets:
           structure: 15
           initiative: 15
@@ -1715,6 +1832,7 @@ quizzes:
           initiative: 0.8
           collaboration: 0.65
           momentum: 0.8
+        background: team-project
       - name: The Reliable Finisher
         description: You turn a shared plan into something people can depend on.
         emoji: 🧱
@@ -1779,7 +1897,9 @@ quizzes:
           - text: Trying a small experiment.
             weights:
               structure: 0
-            emoji: 🌱
+            emoji: persona:inventor
+            background: creation
+            color: "#0369a1"
           - text: Agreeing on a loose outline.
             weights:
               structure: 50
@@ -1788,9 +1908,11 @@ quizzes:
             weights:
               structure: 100
             emoji: 📐
-        emoji: 🗂️
+        emoji: icon:Users
         dimensionInfluences:
           structure: 12
+        background: team-project
+        color: "#0369a1"
       - type: MULTIPLE_CHOICE
         text: A deadline shifts. You prefer to…
         answers:
@@ -1995,11 +2117,23 @@ quizzes:
           momentum: 16
     color: "#166534,#84cc16"
     publication: PUBLIC
+    cover:
+      booklet:
+        title: Team Notes
+        subtitle: Better together
+        pattern: patchwork
+      image: team-project
+      layout: card
+    questionPages:
+      - title: Get everyone to the table
+        count: 12
+        layout: split
+        color: "#0369a1"
   - slug: rainy-day
     title: What is your rainy-day alter ego?
     description: The forecast says stay inside. Your ideal indoor world says a little more. For fun and
       reflection; not a validated assessment.
-    emoji: 🌧️
+    emoji: persona:dreamer
     dimensions:
       - key: stimulation
         name: Stimulation
@@ -2034,7 +2168,7 @@ quizzes:
     archetypes:
       - name: The Blanket Philosopher
         description: You create a quiet pocket of time for your own thoughts and comforts.
-        emoji: 📖
+        emoji: persona:dreamer
         targets:
           stimulation: 15
           sharing: 15
@@ -2044,6 +2178,7 @@ quizzes:
           stimulation: 1
           sharing: 0.8
           nostalgia: 0.65
+        background: rainy-day
       - name: The Solo Side-Quest
         description: You disappear into a game, a project, or a wonderfully consuming rabbit hole.
         emoji: 🎮
@@ -2247,11 +2382,24 @@ quizzes:
           nostalgia: 16
     color: "#c2410c,#a855f7"
     publication: PUBLIC
+    cover:
+      booklet:
+        title: Rainy Day
+        subtitle: Cozy Hours
+        pattern: clouds
+      image: rainy-day
+      layout: minimal
+    questionPages:
+      - title: Watch the rain roll in
+        count: 9
+        layout: minimal
+        color: "#475569"
+        background: rainy-day
   - slug: reading-nook
     title: What is your reading-nook personality?
     description: Find the reading ritual and fictional company that feel like home. For fun and
       reflection; not a validated assessment.
-    emoji: 📚
+    emoji: icon:BookOpen
     color: "#7c3aed,#db2777"
     publication: PRIVATE_DRAFT
     dimensions:
@@ -2277,7 +2425,7 @@ quizzes:
         displayScale: PERCENT_ASCENDING
     archetypes:
       - name: The Window-Seat Observer
-        emoji: 🚆
+        emoji: persona:scholar
         description: You find whole worlds in ordinary lives and can settle into a story anywhere.
         color: "#2563eb,#7c3aed"
         targets:
@@ -2286,6 +2434,7 @@ quizzes:
         relevance:
           escape: 1
           ritual: 0.8
+        background: reading-nook
       - name: The Pocket Portal
         emoji: 🗝️
         description: You carry an escape hatch in your bag and open it whenever the day allows.
@@ -2319,7 +2468,7 @@ quizzes:
     questions:
       - type: MULTIPLE_CHOICE
         text: You can borrow one book for a long train ride.
-        emoji: 🗝️
+        emoji: persona:scholar
         answers:
           - text: A close look at an ordinary life.
             emoji: 🪴
@@ -2335,6 +2484,8 @@ quizzes:
               escape: 100
         dimensionInfluences:
           escape: 12
+        background: reading-nook
+        color: "#92400e"
       - type: SLIDER
         text: The setting of your ideal story feels…
         emoji: 🗝️
@@ -2429,24 +2580,37 @@ quizzes:
             weights: {}
         dimensionInfluences:
           ritual: 16
+    cover:
+      booklet:
+        title: Book Nook
+        subtitle: Quiet Reads
+        pattern: stargazing
+      image: reading-nook
+      layout: card
+    questionPages:
+      - title: Find a place to settle in
+        count: 6
+        layout: card
+        color: "#92400e"
   - slug: garden-companion
     title: What kind of garden companion are you?
     description: Discover how you bring a patch of green to life. For fun and reflection; not a
       validated assessment.
-    emoji: 🌻
+    emoji: icon:Sprout
     color: "#7c3aed,#db2777"
     publication: PRIVATE_DRAFT
     dimensions:
       - key: planning
         name: Planning
-        emoji: 📐
+        emoji: persona:caregiver
         minLabel: Free-form
         maxLabel: Orderly
-        minEmoji: 🌱
-        maxEmoji: 📏
+        minEmoji: persona:caregiver
+        maxEmoji: icon:TreeDeciduous
         description: How much structure you enjoy in a growing space.
         color: "#14b8a6"
         displayScale: PERCENT_ASCENDING
+        background: garden-companion
       - key: purpose
         name: Purpose
         emoji: 🍅
@@ -2469,7 +2633,7 @@ quizzes:
         displayScale: PERCENT_ASCENDING
     archetypes:
       - name: The Wildflower Wanderer
-        emoji: 🌼
+        emoji: icon:Flower2
         description: You leave room for surprise and grow a quiet place to pause.
         color: "#2563eb,#7c3aed"
         targets:
@@ -2480,6 +2644,7 @@ quizzes:
           planning: 1
           purpose: 0.8
           sharing: 0.8
+        background: garden-companion
       - name: The Courtyard Curator
         emoji: 🏺
         description: You arrange a personal sanctuary with a careful eye for beauty.
@@ -2697,11 +2862,25 @@ quizzes:
             weights: {}
         dimensionInfluences:
           sharing: 16
+    cover:
+      booklet:
+        title: Garden Notes
+        subtitle: Growing Season
+        pattern: wildflowers
+      image: garden-companion
+      layout: hero
+    questionPages:
+      - title: See what grows
+        count: 9
+        layout: hero
+        emoji: 🌿
+        color: "#15803d"
+        background: garden-companion
   - slug: festival-day
     title: Who are you on a festival day?
     description: Find your rhythm in a field full of possibilities. For fun and reflection; not a
       validated assessment.
-    emoji: 🎪
+    emoji: icon:Ticket
     color: "#7c3aed,#db2777"
     publication: PRIVATE_DRAFT
     dimensions:
@@ -2737,7 +2916,7 @@ quizzes:
         displayScale: PERCENT_ASCENDING
     archetypes:
       - name: The Meadow Listener
-        emoji: 🌳
+        emoji: icon:Music
         description: You enjoy familiar music at your own pace, with space to hear yourself think.
         color: "#2563eb,#7c3aed"
         targets:
@@ -2748,6 +2927,7 @@ quizzes:
           discovery: 1
           energy: 0.8
           coordination: 0.8
+        background: festival-day
       - name: The Hidden-Stage Hunter
         emoji: 🔎
         description: You follow unfamiliar sounds with enough energy to make one more detour.
@@ -2831,6 +3011,9 @@ quizzes:
               discovery: 100
           - text: Not at all
             weights: {}
+            background: festival-day
+            emoji: icon:Ticket
+            color: "#be185d"
           - text: A little
             weights: {}
           - text: Somewhat
@@ -2953,3 +3136,16 @@ quizzes:
             weights: {}
         dimensionInfluences:
           coordination: 16
+    cover:
+      booklet:
+        title: Festival Pass
+        subtitle: Good Vibes
+        pattern: waves
+      image: festival-day
+      layout: split
+      background: party
+    questionPages:
+      - title: See where the music takes you
+        count: 9
+        layout: split
+        color: "#be185d"

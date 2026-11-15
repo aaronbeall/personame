@@ -32,6 +32,8 @@ import {
 } from '@prisma/client'
 import { PageNavigator } from './page-navigator'
 import { PagePreview } from './page-preview'
+import { encodeQuizAppearance, quizAppearance } from '@/lib/quiz-presentation'
+import { requestJson } from '@/lib/client-api'
 import { PageOptionsPanel } from './page-options-panel'
 import { QuestionOptionsPanel } from './question-options-panel'
 
@@ -45,6 +47,8 @@ type QuizPageWithQuestions = QuizPage & {
     })[]
   })[]
 }
+type QuizStyleDraft = { emoji: string | null; color: string | null; style: string }
+type QuestionsDraft = { pages: QuizPageWithQuestions[]; quizStyle?: QuizStyleDraft }
 
 export default function QuestionsPage({
   params,
@@ -62,6 +66,10 @@ export default function QuestionsPage({
   const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(
     null,
   )
+  const details = useQuery({
+    queryKey: ['quiz-details', id],
+    queryFn: () => requestJson<{ title: string; description: string | null; emoji: string | null; color: string | null; style: string }>(`/api/personames/${id}/details`),
+  })
 
   // Fetch dimensions
   const dimensionsQuery = useQuery({
@@ -114,17 +122,25 @@ export default function QuestionsPage({
     }))
   }, [pagesQuery.data, id])
 
-  const draft = useBuilderDraft(sourcePages, id)
-  const pages = draft.value ?? []
-  const setPages = draft.update
+  const source = useMemo(() => sourcePages ? { pages: sourcePages } : undefined, [sourcePages])
+  const draft = useBuilderDraft<QuestionsDraft>(source, id)
+  const pages = draft.value?.pages ?? []
+  const setPages = (pages: QuizPageWithQuestions[]) => draft.update({ ...draft.value, pages })
+  const quiz = details.data && { ...details.data, ...draft.value?.quizStyle }
+  const appearance = quizAppearance(quiz ?? {}, pages.find(page => page.style === 'cover')?.presentation)
+  const setQuizStyle = (patch: Partial<QuizStyleDraft>) => {
+    if (!quiz) return
+    const next = { emoji: quiz.emoji, color: quiz.color, style: quiz.style, ...patch }
+    draft.update({ pages, quizStyle: next })
+  }
   const dirty = draft.dirty
 
   const savePagesMutation = useMutation({
-    mutationFn: async ({ pages: pagesToSave }: {pages: QuizPageWithQuestions[]; advance: boolean}) => {
+    mutationFn: async ({ pages: pagesToSave, quizStyle }: QuestionsDraft & { advance: boolean }) => {
       const res = await fetch(`/api/personames/${id}/questions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pages: pagesToSave }),
+        body: JSON.stringify({ pages: pagesToSave, quizStyle }),
       })
 
       if (!res.ok) {
@@ -134,8 +150,11 @@ export default function QuestionsPage({
       return res.json()
     },
     onSuccess: (data, variables) => {
-      draft.accept(data)
+      draft.accept({ pages: data })
       queryClient.setQueryData(['questions', id], data)
+      if (variables.quizStyle && details.data) {
+        queryClient.setQueryData(['quiz-details', id], { ...details.data, ...variables.quizStyle })
+      }
       queryClient.invalidateQueries({ queryKey: ['review', id] })
       queryClient.invalidateQueries({ queryKey: ['progress', id] })
       queryClient.invalidateQueries({ queryKey: ['personal'] })
@@ -312,9 +331,9 @@ export default function QuestionsPage({
     }
   }
 
-  const handleSave = () => {
-    if (pages.length < 2) return
-    savePagesMutation.mutate({pages, advance: true})
+  const handleSave = (advance: boolean) => {
+    if (pages.length < 2 || savePagesMutation.isPending) return
+    savePagesMutation.mutate({ ...draft.value, pages, advance })
   }
 
   const currentPage = pages[currentPageIndex]
@@ -355,7 +374,7 @@ export default function QuestionsPage({
           }
         />
 
-        <header className="studio-toolbar"><div><span className="quiz-kicker">YOUR CREATIVE WORKSPACE</span><p role="status">{savePagesMutation.isPending ? 'Saving…' : dirty ? 'Unsaved changes' : 'All changes saved'}</p></div><div className="studio-toolbar-actions"><StudioPreview id={id} dirty={dirty || savePagesMutation.isPending} /><Button variant="outline" onClick={() => savePagesMutation.mutate({pages, advance: false})} disabled={savePagesMutation.isPending || !dirty}>Save changes</Button></div></header>
+        <header className="studio-toolbar"><div><span className="quiz-kicker">YOUR CREATIVE WORKSPACE</span><p role="status">{savePagesMutation.isPending ? 'Saving…' : dirty ? 'Unsaved changes' : 'All changes saved'}</p></div><div className="studio-toolbar-actions"><StudioPreview id={id} dirty={dirty || savePagesMutation.isPending} /><Button variant="outline" onClick={() => handleSave(false)} disabled={savePagesMutation.isPending || !dirty}>Save changes</Button></div></header>
         <nav className="studio-mobile-nav" aria-label="Studio panels">{['outline','canvas','settings'].map(panel => <button key={panel} aria-pressed={mobilePanel === panel} onClick={() => setMobilePanel(panel)}>{panel}</button>)}</nav>
         <div className="studio-grid" data-panel={mobilePanel}>
           {/* Page Navigator - Left sidebar */}
@@ -419,6 +438,8 @@ export default function QuestionsPage({
               {currentPage && (
                 <PagePreview
                   page={currentPage}
+                  quiz={quiz}
+                  appearance={appearance}
                   questionCount={pages.flatMap(p => p.questions).length}
                   sampleArchetype={archetypesQuery.data?.[0]}
                   selectedQuestionId={selectedQuestionId}
@@ -439,12 +460,20 @@ export default function QuestionsPage({
                 question={selectedQuestion}
                 dimensions={dimensionsQuery.data || []}
                 onUpdate={handleUpdateQuestion}
-                onClose={() => setSelectedQuestionId(null)}
+                onSelectPageSettings={() => setSelectedQuestionId(null)}
               />
             ) : (
               currentPage && (
                 <PageOptionsPanel
                   page={currentPage}
+                  welcomeStyle={quiz && {
+                    emoji: quiz.emoji,
+                    color: quiz.color,
+                    appearance,
+                    onEmojiChange: emoji => setQuizStyle({ emoji }),
+                    onColorChange: color => setQuizStyle({ color }),
+                    onAppearanceChange: patch => setQuizStyle({ style: encodeQuizAppearance({ ...appearance, ...patch }) }),
+                  }}
                   onUpdate={(updated) =>
                     handleUpdatePage({ ...currentPage, ...updated })
                   }
@@ -478,15 +507,25 @@ export default function QuestionsPage({
             </Button>
           }
         >
-          <Button
-            onClick={handleSave}
-            loading={savePagesMutation.isPending}
-            disabled={pages.length < 2 || savePagesMutation.isPending}
-            className="builder-primary-action"
-          >
-            {savePagesMutation.isPending ? 'Saving...' : 'Continue to Review'}
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            {dirty && <Button
+              variant="outline"
+              onClick={() => handleSave(false)}
+              loading={savePagesMutation.isPending && !savePagesMutation.variables?.advance}
+              disabled={savePagesMutation.isPending}
+            >
+              Save draft
+            </Button>}
+            <Button
+              onClick={() => handleSave(true)}
+              loading={savePagesMutation.isPending && savePagesMutation.variables?.advance}
+              disabled={pages.length < 2 || savePagesMutation.isPending}
+              className="builder-primary-action"
+            >
+              Continue to Review
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
         </BuilderFooter>
       </div>
     </AppLayoutBackground>

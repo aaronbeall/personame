@@ -8,9 +8,13 @@ import { useCallback, useMemo, useState } from 'react'
 import { SearchInput } from './search-input'
 import type { ReactElement, ReactNode } from 'react'
 import { cn } from '@/lib/utils'
+import { QuizSymbol, symbolChoices } from '@/components/quiz-symbol'
+
+const categories = ['Emoji', 'Icons', 'Personas'] as const
 
 interface EmojiPickerProps {
   value?: string | null
+  color?: string | null
   onSelect: (emoji: string | null) => void
   trigger?: ReactElement
   fallback?: ReactNode
@@ -24,14 +28,16 @@ interface EmojiGroup {
   variants: Array<{ emoji: string; name: string }>
 }
 
-export function EmojiPicker({
+export function SymbolPicker({
   value,
+  color,
   onSelect,
   fallback,
   trigger,
   ariaLabel = 'Choose icon',
 }: EmojiPickerProps) {
   const [open, setOpen] = useState(false)
+  const [category, setCategory] = useState<(typeof categories)[number]>('Emoji')
   const [search, setSearch] = useState('')
   const [variants, setVariants] = useState<EmojiGroup | null>(null)
   const [variantSearch, setVariantSearch] = useState('')
@@ -143,7 +149,7 @@ export function EmojiPicker({
   // Show emoji-plus icon if value is null/empty
   const showEmoji = value || ''
   const triggerContent = showEmoji
-    ? showEmoji
+    ? <QuizSymbol value={showEmoji} color={color} />
     : (fallback ?? <SmilePlus className="w-6 h-6 text-muted-400" />)
 
   return (
@@ -169,8 +175,26 @@ export function EmojiPicker({
           align="start"
         >
           <div className="p-3 border-b border-border">
+            <div className="flex gap-1 mb-2" role="group" aria-label="Symbol type">
+              {categories.map(item => (
+                <Button
+                  key={item}
+                  type="button"
+                  size="sm"
+                  variant={category === item ? 'default' : 'ghost'}
+                  aria-pressed={category === item}
+                  onClick={() => {
+                    setCategory(item)
+                    setSearch('')
+                    setVariants(null)
+                  }}
+                >
+                  {item}
+                </Button>
+              ))}
+            </div>
             <SearchInput
-              placeholder={variants ? 'Search variants...' : 'Search emojis...'}
+              placeholder={variants ? 'Search variants...' : `Search ${category.toLowerCase()}...`}
               value={variants ? variantSearch : search}
               onChange={(e) =>
                 variants
@@ -181,12 +205,13 @@ export function EmojiPicker({
             {/* Show current selection with remove button, styled inline */}
             {value && !variants && (
               <div className="flex items-center gap-2 mt-2">
-                <span className="text-2xl">{value}</span>
+                <span className="text-2xl"><QuizSymbol value={value} color={color} /></span>
                 <button
                   type="button"
                   onClick={() => handleEmojiSelect(null)}
                   className="text-xs text-muted-600 hover:text-destructive-600 flex items-center gap-1 px-2 py-1 rounded hover:bg-muted-100"
-                  title="Remove emoji"
+                  aria-label="Remove symbol"
+                  title={value.startsWith('icon:') || value.startsWith('persona:') ? 'Remove symbol' : 'Remove emoji'}
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -194,7 +219,7 @@ export function EmojiPicker({
             )}
           </div>
 
-          <div
+          {category === 'Emoji' ? <div
             className={cn(
               'max-h-80 overflow-y-auto p-3',
               variants ? 'hidden' : 'block',
@@ -229,7 +254,27 @@ export function EmojiPicker({
                 No emojis found
               </div>
             )}
-          </div>
+          </div> : (
+            <div className="emblem-picker-grid max-h-80 overflow-y-auto p-3" data-personas={category === 'Personas'}>
+              {symbolChoices[category]
+                .filter(({label, keywords}) =>
+                  `${label} ${keywords}`.toLowerCase().includes(search.trim().toLowerCase())
+                )
+                .map(({value: choice, label}) => (
+                  <button
+                    key={choice}
+                    type="button"
+                    aria-label={label}
+                    title={label}
+                    aria-pressed={choice === value}
+                    onClick={() => handleEmojiSelect(choice)}
+                    className="rounded hover:bg-primary-50 aria-pressed:bg-primary-100"
+                  >
+                    <QuizSymbol value={choice} color={color} />
+                  </button>
+                ))}
+            </div>
+          )}
 
           {variants && (
             <div className=" bg-white/95 backdrop-blur-sm rounded-lg p-3 flex flex-col">

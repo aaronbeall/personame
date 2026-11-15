@@ -58,7 +58,7 @@ export default function Selves() {
           title="Your many selves"
           eyebrow="Your archetype collection"
           description="A little of this, a little of that. Meet the archetypes you’ve discovered in yourself."
-          art="islands"
+          art="tree-house"
           actions={
             <Link href="/explore" className="button-link">
               <EntityIcon kind="archetype" size={16} />
