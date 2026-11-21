@@ -15,6 +15,7 @@ import { Textarea } from './ui/textarea'
 import { ErrorBanner } from './ui/error-banner'
 import { EntityIcon, type EntityKind } from './entity-icon'
 import { BookletPattern, QuizCoverMark } from './quiz-cover-mark'
+import { QuizTagInput } from './quiz-tag-input'
 import { StyleEditors } from './style-editors'
 import { BuilderSaveActions } from './builder-save-actions'
 import { useProtectedPage } from '@/hooks/use-protected-page'
@@ -26,6 +27,7 @@ import { bookletPatterns, bookletTextLimit, encodeQuizAppearance, quizAppearance
 type Details = {
   title: string
   description: string
+  tags: string[]
   emoji: string | null
   color: string
   style?: string
@@ -33,6 +35,7 @@ type Details = {
 const empty: Details = {
   title: '',
   description: '',
+  tags: [],
   emoji: null,
   color: '#8b5cf6',
   style: encodeQuizAppearance({ layout: 'hero', coverImage: null, backgroundImage: null }),
@@ -89,6 +92,7 @@ export function NameStep({ quizId }: { quizId?: string }) {
       return {
         title: q.title,
         description: q.description || '',
+        tags: q.tags,
         emoji: q.emoji || null,
         color: getColorTheme(q.color || '#8b5cf6').value,
         style: q.style,
@@ -148,6 +152,7 @@ export function NameStep({ quizId }: { quizId?: string }) {
       const canonical = {
         title: saved.title,
         description: saved.description || '',
+        tags: saved.tags,
         emoji: saved.emoji || null,
         color: getColorTheme(saved.color).value,
         style: saved.style || values.style,
@@ -306,6 +311,7 @@ export function NameStep({ quizId }: { quizId?: string }) {
                 />
                 <p id="description-hint">Set the mood in a sentence or two.</p>
               </div>
+              <QuizTagInput tags={values.tags} onChange={tags => update({ tags })} />
             </div>
           </fieldset>
           <div className="quiz-setup-footer name-step-footer">

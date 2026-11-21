@@ -26,6 +26,7 @@ type Listing = {
   id: string
   title: string
   description: string | null
+  tags: string[]
   slug: string
   color: string | null
   emoji: string | null
@@ -205,7 +206,7 @@ export function DiscoverQuizzes({
   const term = search.trim().toLowerCase()
   const quizzes =
     query.data?.filter((q) =>
-      `${q.title} ${q.description || ''}`.toLowerCase().includes(term),
+      [q.title, q.description, ...q.tags].join(' ').toLowerCase().includes(term),
     ) ?? []
   return (
     <section
