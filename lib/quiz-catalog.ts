@@ -189,6 +189,7 @@ export function compileCatalogQuiz(definition: CatalogQuiz): FullQuiz {
   const quiz = {
     ...definition,
     id: definition.slug,
+    tags: [],
     style: definition.cover ? encodeQuizAppearance({
       layout: 'hero', backgroundImage: null, coverImage: artwork(definition.cover.image), booklet: definition.cover.booklet,
     }) : null,

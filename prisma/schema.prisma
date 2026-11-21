@@ -65,6 +65,7 @@ model Persona {
   id          String            @id @default(cuid())
   title       String
   description String?
+  tags        String[]          @default([])
   slug        String            @unique
   emoji       String?
   color       String? // Ordered comma-separated lowercase hex colors (#rrggbb[,#rrggbb...])

@@ -8,11 +8,14 @@ import { Button } from './ui/button'
 import { WhimsyButton } from './whimsy-button'
 import { QuizCoverArt } from './quiz-cover-art'
 import { readQuizAppearance } from '@/lib/quiz-presentation'
+import { QuizTagInput } from './quiz-tag-input'
 import { EntityIcon } from './entity-icon'
 
-export function PublishWorkspace({ quiz, todoCount, busy, copied, onPublish, onClose, onCopy, reviewHref, preview }: {
-  quiz: FullQuiz; todoCount: number; busy: boolean; copied: boolean; onPublish: () => void; onClose: () => void; onCopy: () => void; reviewHref: string; preview: ReactNode
+export function PublishWorkspace({ quiz, todoCount, pendingAction, copied, onPublish, onClose, onCopy, reviewHref, preview, tags, tagsDirty, onTagsChange, onSaveTags }: {
+  quiz: FullQuiz; todoCount: number; pendingAction: 'publish' | 'close' | 'tags' | null; copied: boolean; onPublish: () => void; onClose: () => void; onCopy: () => void; reviewHref: string; preview: ReactNode
+  tags: string[]; tagsDirty: boolean; onTagsChange: (tags: string[]) => void; onSaveTags: () => void
 }) {
+  const busy = pendingAction !== null
   const live = quiz.status === 'PUBLISHED'
   const closed = quiz.status === 'CLOSED'
   const released = live || closed
@@ -29,20 +32,25 @@ export function PublishWorkspace({ quiz, todoCount, busy, copied, onPublish, onC
         <div className="publish-quiz-stats"><span><EntityIcon kind="dimension" size={13} />{quiz.dimensions.length} dimensions</span><span><EntityIcon kind="archetype" size={13} />{quiz.archetypes.length} types</span><span>{questionCount} questions</span></div>
         <div className="publish-preview-invite"><h4>{released ? 'Take your quiz for a spin' : 'Try it before you publish'}</h4><p>Check the questions and your result. Preview answers aren’t saved.</p>{preview}</div>
       </div>
-      <section className="publish-settings" aria-labelledby="publish-settings-title"><header className="review-section-heading"><div><h2 id="publish-settings-title">Publish settings<span className="publish-future-label">Coming later</span></h2><p>A peek at what’s next. These settings aren’t saved or applied yet.</p></div></header>
+      <section className="publish-settings" aria-labelledby="publish-settings-title">
+        <header className="review-section-heading"><div><h2 id="publish-settings-title">Publish settings<span className="publish-future-label">Coming later</span></h2><p>A peek at what’s next. These settings aren’t saved or applied yet.</p></div></header>
         <fieldset disabled className="publish-settings-grid"><legend className="sr-only">Future publishing controls</legend>
           <label><span>Discoverability</span><select defaultValue="public"><option value="public">Public · Listed in Explore</option><option value="unlisted">Unlisted · Anyone with the link</option><option value="private">Private · Invite only</option></select><small>Choose who can find your quiz.</small></label>
           <label><span>Publish timing</span><select defaultValue="now"><option value="now">Publish immediately</option><option value="scheduled">Schedule a launch</option></select><small>Plan a launch date and time.</small></label>
           <label><span>Closing date</span><input type="datetime-local" /><small>Stop accepting new responses at a set time.</small></label>
           <label><span>Response limit</span><input type="number" min="1" placeholder="No limit" /><small>Close after a set number of responses.</small></label>
         </fieldset>
+        <div className="publish-tag-settings">
+          <QuizTagInput tags={tags} onChange={onTagsChange} disabled={busy} />
+          {tagsDirty && <Button type="button" variant="outline" size="sm" disabled={busy} loading={pendingAction === 'tags'} onClick={onSaveTags}>Save tags</Button>}
+        </div>
       </section>
     </div>
     {!released && todoCount > 0 && <div className="publish-readiness" role="status"><span>{todoCount} {todoCount === 1 ? 'item needs' : 'items need'} attention before publishing.</span><Link href={reviewHref}>Review checklist →</Link></div>}
     <footer className="publish-actions"><div className="publish-action-note">{released ? 'Closing pauses new responses. Existing results stay available.' : 'Your quiz will be public and ready to share.'}
       {released && <div className="publish-sharing">{live && <Link className="review-edit-link" href={`/quiz/${quiz.slug}`} target="_blank">Open quiz<ExternalLink size={13} /></Link>}<Button variant="ghost" size="sm" onClick={onCopy}><Copy size={13} />{copied ? 'Copied!' : 'Copy link'}</Button></div>}
       </div>
-      {live ? <Button className="publish-close-action" variant="outline" loading={busy} onClick={onClose}><CircleStop size={16} />{busy ? 'Closing…' : 'Close quiz'}</Button> : <WhimsyButton className="publish-main-action" loading={busy} disabled={busy || todoCount > 0} onClick={onPublish}><Rocket size={17} />{busy ? closed ? 'Reopening…' : 'Publishing…' : closed ? 'Reopen quiz' : 'Publish quiz'}</WhimsyButton>}
+      {live ? <Button className="publish-close-action" variant="outline" disabled={busy} loading={pendingAction === 'close'} onClick={onClose}><CircleStop size={16} />{pendingAction === 'close' ? 'Closing…' : 'Close quiz'}</Button> : <WhimsyButton className="publish-main-action" loading={pendingAction === 'publish'} disabled={busy || todoCount > 0} onClick={onPublish}><Rocket size={17} />{pendingAction === 'publish' ? closed ? 'Reopening…' : 'Publishing…' : closed ? 'Reopen quiz' : 'Publish quiz'}</WhimsyButton>}
     </footer>
   </section>
 }

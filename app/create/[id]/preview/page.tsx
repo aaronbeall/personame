@@ -3,6 +3,7 @@ import { use, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import { ChevronDown, Check, ArrowRight, CheckCircle2, Rocket, Radio, CircleStop, ScanEye, ListChecks, ChartNoAxesCombined } from 'lucide-react'
+import { useBuilderDraft } from '@/hooks/use-builder-draft'
 import { useProtectedPage } from '@/hooks/use-protected-page'
 import { AppLayoutBackground } from '@/components/app-layout-background'
 import { StepProgress } from '@/components/step-progress'
@@ -35,21 +36,33 @@ export default function ReviewPage({ params }: { params: Promise<{ id: string }>
   const query = useQuery({ queryKey: ['review', id], queryFn: () => requestJson<ReviewQuiz>(`/api/personames/${id}`), enabled: status === 'authenticated', retry: false })
   const { tab, setTab, hrefFor } = useUrlTab(REVIEW_TABS, 'review')
   const [celebrating, setCelebrating] = useState(false)
-  const [busy, setBusy] = useState(false)
+  const [pendingAction, setPendingAction] = useState<'publish' | 'close' | 'tags' | null>(null)
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
   const [checklistExpanded, setChecklistExpanded] = useState(false)
   const quiz = query.data
+  const tagDraft = useBuilderDraft(quiz?.tags, id)
   const refresh = () => Promise.all(['review', 'progress', 'personal', 'discover'].map(key => cache.invalidateQueries({ queryKey: key === 'review' || key === 'progress' ? [key, id] : [key] })))
-  const mutate = async (action: 'publish' | 'close') => {
-    setBusy(true); setError('')
+  const mutate = async (action: 'publish' | 'close' | 'tags') => {
+    if (pendingAction) return
+    setPendingAction(action)
+    setError('')
     try {
-      if (action === 'publish') await requestJson(`/api/personames/${id}/publish`, { method: 'POST' })
-      else await requestJson(`/api/personames/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'CLOSED' }) })
+      const tags = tagDraft.dirty ? tagDraft.value : undefined
+      const path = `/api/personames/${id}`
+      const saved = await requestJson<{ tags: string[] }>(action === 'publish' ? `${path}/publish` : path, {
+        method: action === 'publish' ? 'POST' : 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(action === 'close' ? { status: 'CLOSED' } : { tags }),
+      })
+      if (action !== 'close') {
+        tagDraft.accept(saved.tags)
+        void cache.invalidateQueries({ queryKey: ['quiz-details', id] })
+      }
       await refresh()
       if (action === 'publish' && quiz?.status === 'DRAFT') setCelebrating(true)
     } catch (e) { setError(e instanceof Error ? e.message : 'Unable to update your quiz.') }
-    finally { setBusy(false) }
+    finally { setPendingAction(null) }
   }
   if (!quiz) return <AppLayoutBackground><div className="review-page">{query.error ? <p role="alert" className="notice error">{query.error.message}</p> : <LoadingState label="Preparing your review…" />}</div></AppLayoutBackground>
   const issues = readinessByStage(quiz)
@@ -95,7 +108,7 @@ export default function ReviewPage({ params }: { params: Promise<{ id: string }>
     {todoCount > 0 && quiz.status === 'DRAFT' && <p className="review-publish-guidance">Finish the to-do items above to unlock publishing. <Link href={hrefFor('publish')}>Publish settings →</Link></p>}
     </>}
     {tab === 'analyze' && <div className="review-analysis-stack" key={quiz.updatedAt.toString()}><ArchetypeSpace dimensions={quiz.dimensions} archetypes={quiz.archetypes} /><TargetsImportance dimensions={quiz.dimensions} archetypes={quiz.archetypes} /><QuestionSpace quiz={quiz} /></div>}
-    {tab === 'publish' && <PublishWorkspace quiz={quiz} todoCount={todoCount} busy={busy} copied={copied} reviewHref={hrefFor('review')} onPublish={() => { void mutate('publish') }} preview={<QuizPreviewDialog quiz={playerQuiz} />} onClose={() => { void mutate('close') }} onCopy={async () => { try { await navigator.clipboard.writeText(`${location.origin}/quiz/${quiz.slug}`); setCopied(true) } catch { setError('Copy the quiz address from your browser.') } }} />}
+    {tab === 'publish' && <PublishWorkspace quiz={quiz} tags={tagDraft.value ?? quiz.tags} tagsDirty={tagDraft.dirty} onTagsChange={tagDraft.update} onSaveTags={() => { void mutate('tags') }} todoCount={todoCount} pendingAction={pendingAction} copied={copied} reviewHref={hrefFor('review')} onPublish={() => { void mutate('publish') }} preview={<QuizPreviewDialog quiz={playerQuiz} />} onClose={() => { void mutate('close') }} onCopy={async () => { try { await navigator.clipboard.writeText(`${location.origin}/quiz/${quiz.slug}`); setCopied(true) } catch { setError('Copy the quiz address from your browser.') } }} />}
     </div>
   </div></AppLayoutBackground>
 }

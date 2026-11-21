@@ -21,9 +21,10 @@ export async function PATCH(req: Request, { params }: Context) {
       .partial()
       .extend({ status: z.enum(['DRAFT', 'CLOSED']).optional() })
       .parse(await req.json())
+    const tagsOnly = body.tags !== undefined && Object.keys(body).length === 1
     const saved = await prisma.persona.update({
         where: { id: quiz.id },
-        data: { ...body, status: body.status ?? 'DRAFT' },
+        data: { ...body, status: tagsOnly ? undefined : body.status ?? 'DRAFT' },
       })
     invalidatePublicQuiz(quiz.id)
     return NextResponse.json(saved)
