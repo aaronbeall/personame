@@ -17,6 +17,10 @@ A platform for creating and sharing custom personality quizzes.
 - **See Results**: Get matched to archetypes with dimension visualizations
 - **Share**: Share results on social media
 
+## Feature status
+
+See the [comprehensive feature checklist](docs/FEATURE_CHECKLIST.md) for implemented features, remaining work, refinements, and product decisions.
+
 ## Core workflow
 
 Create a quiz, define dimensions and archetypes, build question pages, preview, and publish. Participants can answer multiple-choice, slider, and scale questions and receive a shareable archetype result. Your quizzes lets you return to drafts and live quizzes.
